@@ -483,7 +483,7 @@ const HomePage = () => {
       backgroundColor: '#f8fafc',
       boxSizing: 'border-box'
     },
-    queryBar: {
+   /* queryBar: {
       display: 'flex',
       flexDirection: 'column',
       backgroundColor: '#ffffff',
@@ -496,6 +496,20 @@ const HomePage = () => {
       minHeight: '80px',
       gap: '0.4rem',
       boxSizing: 'border-box'
+    },*/
+      queryBar: {
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: '#ffffff',
+      borderRadius: '24px',
+      border: '1px solid #e5e7eb',
+      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
+      padding: '1rem',
+      width: '100%',
+      maxWidth: '900px',
+      minHeight: '96px',
+      gap: '0.5rem',
+      position: 'relative',
     },
     inputRow: {
       display: 'flex',
