@@ -739,7 +739,7 @@ const HomePage = () => {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <a
-              href="/portfolio/index.html"
+              href="https://mtptisid.github.io"
               style={styles.profileLink}
               onMouseEnter={(e) => e.target.style.color = '#08d7fc'}
               onMouseLeave={(e) => e.target.style.color = '#ffffff'}
