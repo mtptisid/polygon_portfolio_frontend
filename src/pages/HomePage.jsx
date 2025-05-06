@@ -352,7 +352,7 @@ const HomePage = () => {
       top: '60px',
       left: sidebarVisible ? '0' : '-300px',
       width: '250px',
-      height: 'calc(100vh - 140px)', // Adjusted to prevent overlap with query bar
+      height: 'calc(100vh - 140px)',
       backgroundColor: '#ffffff',
       color: '#1e293b',
       display: 'flex',
@@ -360,13 +360,13 @@ const HomePage = () => {
       padding: '1rem',
       boxShadow: '2px 0 10px rgba(0,0,0,0.05)',
       transition: 'left 0.3s ease',
-      zIndex: 1001, // Increased z-index to stay above query bar
+      zIndex: 1001,
       borderRight: '1px solid #e5e7eb',
       boxSizing: 'border-box'
     },
     chatHistoryContainer: {
       flex: 1,
-      overflowY: 'auto', // Ensures scrollability
+      overflowY: 'auto',
       padding: '0.5rem',
       marginTop: '0.5rem'
     },
@@ -510,7 +510,7 @@ const HomePage = () => {
       justifyContent: 'space-between',
       width: '100%',
       gap: '0.5rem',
-      flexWrap: 'nowrap' // Prevents wrapping to reduce height on mobile
+      flexWrap: 'nowrap'
     },
     messageInput: {
       flex: 1,
@@ -576,7 +576,7 @@ const HomePage = () => {
       fontSize: '0.875rem',
       fontWeight: '500',
       boxSizing: 'border-box',
-      whiteSpace: 'nowrap' // Prevents wrapping on mobile
+      whiteSpace: 'nowrap'
     },
     sendButton: {
       display: 'flex',
@@ -821,14 +821,14 @@ const HomePage = () => {
             }
             .queryBar {
               max-width: 95%;
-              min-height: 70px;
-              padding: 0.5rem;
+              min-height: 60px; /* Reduced height */
+              padding: 0.4rem; /* Reduced padding */
             }
             .messageInput {
               font-size: 0.875rem;
-              min-height: 32px;
-              max-height: 100px;
-              padding: 0.5rem;
+              min-height: 28px; /* Reduced height */
+              max-height: 80px;
+              padding: 0.4rem; /* Reduced padding */
             }
             .example-prompts {
               display: none;
@@ -836,27 +836,43 @@ const HomePage = () => {
             .inputContainer {
               padding: 0.5rem;
             }
-            .actionButton, .iconButton, .sendButton, .scrollButton {
-              width: 40px;
-              height: 40px;
-              min-width: 40px;
-              padding: 0.25rem;
+            .actionButton {
+              width: auto; /* Allow natural width */
+              min-width: 70px; /* Reduced min-width */
+              height: 32px; /* Reduced height */
+              padding: 0.3rem 0.6rem; /* Reduced padding */
+              font-size: 0.75rem; /* Smaller font */
+            }
+            .iconButton, .sendButton, .scrollButton {
+              width: 32px; /* Reduced size */
+              height: 32px;
+              min-width: 32px;
+              padding: 0.2rem;
               font-size: 0.75rem;
             }
-            .modelSelector, .dropdownItem {
+            .modelSelector {
               font-size: 0.75rem;
-              padding: 0.5rem;
+              padding: 0.3rem 0.6rem; /* Reduced padding */
+              height: 32px; /* Match actionButton height */
             }
             .modelDropdownContent {
-              min-width: 140px;
+              min-width: 120px;
+            }
+            .dropdownItem {
+              font-size: 0.75rem;
+              padding: 0.3rem 0.6rem;
             }
             .userMessage, .botMessage {
               max-width: 85%;
               font-size: 0.875rem;
               padding: 0.75rem;
             }
-            .inputRow, .controlsRow {
-              gap: 0.5rem;
+            .inputRow {
+              gap: 0.3rem; /* Reduced gap */
+            }
+            .controlsRow {
+              gap: 0.3rem; /* Reduced gap */
+              flex-wrap: nowrap; /* Force single line */
             }
           }
           @media (max-width: 480px) {
@@ -902,14 +918,14 @@ const HomePage = () => {
             }
             .queryBar {
               max-width: 98%;
-              min-height: 60px;
-              padding: 0.5rem;
+              min-height: 50px; /* Further reduced height */
+              padding: 0.3rem; /* Further reduced padding */
             }
             .messageInput {
               font-size: 0.75rem;
-              min-height: 28px;
-              max-height: 80px;
-              padding: 0.5rem;
+              min-height: 24px; /* Further reduced height */
+              max-height: 60px;
+              padding: 0.3rem; /* Further reduced padding */
             }
             .examplePrompt {
               min-width: 100%;
@@ -925,29 +941,43 @@ const HomePage = () => {
             .inputContainer {
               padding: 0.25rem;
             }
-            .actionButton, .iconButton, .sendButton, .scrollButton {
-              width: 36px;
-              height: 36px;
-              min-width: 36px;
-              padding: 0.25rem;
-              font-size: 0.75rem;
+            .actionButton {
+              width: auto; /* Allow natural width */
+              min-width: 60px; /* Further reduced min-width */
+              height: 28px; /* Further reduced height */
+              padding: 0.2rem 0.5rem; /* Further reduced padding */
+              font-size: 0.7rem; /* Smaller font */
             }
-            .modelSelector, .dropdownItem {
-              font-size: 0.75rem;
-              padding: 0.25rem 0.5rem;
+            .iconButton, .sendButton, .scrollButton {
+              width: 28px; /* Further reduced size */
+              height: 28px;
+              min-width: 28px;
+              padding: 0.15rem;
+              font-size: 0.7rem;
+            }
+            .modelSelector {
+              font-size: 0.7rem;
+              padding: 0.2rem 0.5rem; /* Further reduced padding */
+              height: 28px; /* Match actionButton height */
             }
             .modelDropdownContent {
-              min-width: 120px;
+              min-width: 100px;
+            }
+            .dropdownItem {
+              font-size: 0.7rem;
+              padding: 0.2rem 0.5rem;
             }
             .userMessage, .botMessage {
               max-width: 90%;
               font-size: 0.75rem;
               padding: 0.5rem;
             }
-            .inputRow, .controlsRow {
-              flex-direction: row;
-              flex-wrap: wrap;
-              gap: 0.25rem;
+            .inputRow {
+              gap: 0.2rem; /* Further reduced gap */
+            }
+            .controlsRow {
+              gap: 0.2rem; /* Further reduced gap */
+              flex-wrap: nowrap; /* Force single line */
             }
           }
         `}
