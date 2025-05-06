@@ -502,7 +502,7 @@ const HomePage = () => {
       paddingLeft: '1rem',
       paddingRight: '1rem',
       marginBottom: '120px',
-      height: '100%',
+      //height: '100%',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
