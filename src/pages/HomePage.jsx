@@ -258,8 +258,8 @@ const HomePage = () => {
     const subdesc = "Select any AI Model and ask for anything.";
     
     return (
-      <div style={{ textAlign: 'center', margin: '1rem 0', maxWidth: '1200px', width: '100%' }}>
-        <div style={{ fontSize: '30px', color: '#6b7280', marginBottom: '0.5rem' }}>
+      <div style={{ textAlign: 'center', margin: '1.5rem auto', width: '100%', maxWidth: '1200px' }} className="header">
+        <div style={{ fontSize: '1.75rem', color: '#6b7280', marginBottom: '0.75rem' }}>
           {prefix.split('').map((char, index) => (
             <span
               key={index}
@@ -273,7 +273,7 @@ const HomePage = () => {
             </span>
           ))}
         </div>
-        <div style={{ fontSize: '44px', fontWeight: '600' }}>
+        <div style={{ fontSize: '2.5rem', fontWeight: '600' }}>
           <a
             href="https://mtptisid.github.io"
             style={{
@@ -308,7 +308,7 @@ const HomePage = () => {
             </span>
           ))}
         </div>
-        <div style={{ fontSize: '28px', color: '#b4b9c2', marginBottom: '0.5rem', marginTop: '1.5rem' }}>
+        <div style={{ fontSize: '1.5rem', color: 'rgb(180 185 194)', marginBottom: '0.75rem', marginTop: '1.5rem' }}>
           {subdesc.split('').map((char, index) => (
             <span
               key={index}
@@ -333,6 +333,10 @@ const HomePage = () => {
       height: '100vh',
       width: '100vw',
       backgroundColor: '#ffffff',
+      boxSizing: 'border-box',
+      overflow: 'hidden',
+      margin: 0,
+      padding: 0
     },
     sidebar: {
       position: 'fixed',
@@ -349,24 +353,25 @@ const HomePage = () => {
       transition: 'left 0.3s ease',
       zIndex: 100,
       borderRight: '1px solid #e5e7eb',
+      boxSizing: 'border-box'
     },
     chatHistoryContainer: {
       flex: 1,
       overflowY: 'auto',
       padding: '0.5rem',
-      marginTop: '0.5rem',
+      marginTop: '0.5rem'
     },
     chatHistoryItem: {
-      padding: '0.5rem',
+      padding: '0.75rem',
       borderRadius: '8px',
       cursor: 'pointer',
       marginBottom: '0.5rem',
       backgroundColor: '#f3f4f6',
       transition: 'background-color 0.2s ease',
-      fontSize: '14px',
+      fontSize: '0.875rem',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap',
+      whiteSpace: 'nowrap'
     },
     newChatButton: {
       backgroundColor: '#404347',
@@ -375,44 +380,57 @@ const HomePage = () => {
       border: 'none',
       borderRadius: '50px',
       cursor: 'pointer',
-      fontSize: '20px',
+      fontSize: '1rem',
       fontWeight: '500',
-      transition: 'background-color 0.2s ease'
+      transition: 'background-color 0.2s ease',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem'
     },
     navbar: {
       position: 'fixed',
-      width: '99%',
-      height: '60px',
+      width: '100vw',
+      minHeight: '60px',
       backgroundColor: '#404347',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: '0 1rem',
       top: 0,
       zIndex: 101,
-      borderBottom: '1px solid #e5e7eb'
+      borderBottom: '1px solid #e5e7eb',
+      flexWrap: 'wrap',
+      gap: '0.5rem',
+      boxSizing: 'border-box'
     },
     appName: {
       margin: 0,
       color: '#ffffff',
-      fontWeight: '500',
-      fontSize: '30px',
+      fontWeight: '600',
+      fontSize: '1.5rem',
       cursor: 'pointer',
       transition: 'color 0.2s ease',
-      textShadow: '0 0 3px rgba(255, 255, 255, 0.6)'
+      textShadow: '0 0 3px rgba(255, 255, 255, 0.6)',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      maxWidth: '50%'
     },
     profileLink: {
       color: '#ffffff',
-      fontSize: '20px',
-      marginRight: '8px',
-      fontWeight: '900',
+      fontSize: '1rem',
+      fontWeight: '700',
       cursor: 'pointer',
       transition: 'color 0.2s ease',
       textDecoration: 'none',
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem'
+      gap: '0.5rem',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      maxWidth: '40%'
     },
     promptsContainer: {
       paddingTop: '80px',
@@ -421,14 +439,14 @@ const HomePage = () => {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      width: '100%',
+      width: '100vw',
       backgroundColor: '#f8fafc',
       minHeight: 'calc(100vh - 60px)',
-      overflowY: 'hidden',
-      boxSizing: 'border-box',
+      overflowY: 'auto',
+      boxSizing: 'border-box'
     },
     chatContainer: {
-      margin: '0 1rem',
+      //margin: '0 1rem',
       padding: '40px 1rem 75px',
       flex: 1,
       overflowY: 'auto',
@@ -438,10 +456,11 @@ const HomePage = () => {
       alignItems: 'center',
       backgroundColor: '#f8fafc',
       maxWidth: '100%',
+      //maxWidth: '900px',
       width: '100%',
       height: '100%',
       boxSizing: 'border-box',
-      paddingBottom: '80px',
+      paddingBottom: '70px',
       position: 'relative',
     },
     inputContainer: {
@@ -454,6 +473,8 @@ const HomePage = () => {
       right: 0,
       zIndex: 1000,
       justifyContent: 'center',
+      backgroundColor: '#f8fafc',
+      boxSizing: 'border-box'
     },
     queryBar: {
       display: 'flex',
@@ -461,32 +482,34 @@ const HomePage = () => {
       backgroundColor: '#ffffff',
       borderRadius: '24px',
       border: '1px solid #e5e7eb',
-      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-      padding: '1rem',
+      boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+      padding: '0.75rem',
       width: '100%',
-      maxWidth: '900px',
-      minHeight: '96px',
+      maxWidth: '950px',
+      minHeight: '80px',
       gap: '0.5rem',
-      position: 'relative',
+      boxSizing: 'border-box'
     },
     inputRow: {
       display: 'flex',
       alignItems: 'center',
       gap: '0.5rem',
-      width: '100%'
+      width: '100%',
+      flexWrap: 'wrap'
     },
     controlsRow: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
       width: '100%',
-      position: 'relative',
+      gap: '0.5rem',
+      flexWrap: 'wrap'
     },
     messageInput: {
       flex: 1,
       padding: '0.75rem 1rem',
       border: 'none',
-      fontSize: '16px',
+      fontSize: '1rem',
       backgroundColor: 'transparent',
       color: '#1e293b',
       outline: 'none',
@@ -494,13 +517,14 @@ const HomePage = () => {
       minHeight: '40px',
       maxHeight: '120px',
       lineHeight: '1.5',
-      overflowY: 'auto'
+      overflowY: 'auto',
+      boxSizing: 'border-box'
     },
     actionButton: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '0.5rem',
+      gap: '0.25rem',
       padding: '0.5rem 1rem',
       borderRadius: '20px',
       border: '1px solid #e5e7eb',
@@ -508,10 +532,11 @@ const HomePage = () => {
       color: '#4b5563',
       cursor: 'pointer',
       transition: 'background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
-      fontSize: '14px',
+      fontSize: '0.875rem',
       fontWeight: '500',
-      minWidth: '40px',
-      height: '40px',
+      minWidth: '48px',
+      height: '48px',
+      boxSizing: 'border-box'
     },
     isDeepSearchActive: {
       backgroundColor: '#e2e8f0',
@@ -528,20 +553,22 @@ const HomePage = () => {
       backgroundColor: '#ffffff',
       cursor: 'pointer',
       transition: 'background-color 0.2s ease',
-      width: '40px',
-      height: '40px',
+      width: '48px',
+      height: '48px',
+      boxSizing: 'border-box'
     },
     modelSelector: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem',
+      gap: '0.25rem',
       padding: '0.5rem 1rem',
       borderRadius: '20px',
       backgroundColor: '#f3f4f6',
       color: '#374151',
       cursor: 'pointer',
-      fontSize: '14px',
+      fontSize: '0.875rem',
       fontWeight: '500',
+      boxSizing: 'border-box'
     },
     sendButton: {
       display: 'flex',
@@ -553,8 +580,9 @@ const HomePage = () => {
       backgroundColor: '#404347',
       cursor: 'pointer',
       transition: 'background-color 0.2s ease',
-      width: '40px',
-      height: '40px',
+      width: '48px',
+      height: '48px',
+      boxSizing: 'border-box'
     },
     scrollButton: {
       position: 'fixed',
@@ -569,10 +597,11 @@ const HomePage = () => {
       backgroundColor: '#ffffff',
       cursor: 'pointer',
       transition: 'background-color 0.2s ease',
-      width: '40px',
-      height: '40px',
+      width: '48px',
+      height: '48px',
       boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
       zIndex: 1000,
+      boxSizing: 'border-box'
     },
     modelDropdownContent: {
       position: 'absolute',
@@ -584,7 +613,8 @@ const HomePage = () => {
       padding: '0.5rem',
       minWidth: '160px',
       zIndex: 103,
-      border: '1px solid #e5e7eb'
+      border: '1px solid #e5e7eb',
+      boxSizing: 'border-box'
     },
     dropdownItem: {
       padding: '0.5rem 1rem',
@@ -592,34 +622,33 @@ const HomePage = () => {
       color: '#1e293b',
       borderRadius: '4px',
       transition: 'background-color 0.2s ease',
-      fontSize: '14px',
+      fontSize: '0.875rem',
+      boxSizing: 'border-box'
     },
     userMessage: {
       backgroundColor: '#e9e9e980',
       padding: '1rem',
       borderRadius: '1.5rem',
-      marginBottom: '0',
+      marginBottom: '0.5rem',
       fontWeight: '450',
-      fontSize: '16px',
-      maxWidth: '900px',
+      fontSize: '1rem',
+      maxWidth: '80%',
       width: 'auto',
       alignSelf: 'flex-end',
       border: '2px solid #e9e9e980',
       color: '#1e293b',
-      wordBreak: 'break-all',
+      wordBreak: 'break-word',
       overflow: 'hidden',
-      boxSizing: 'border-box',
+      boxSizing: 'border-box'
     },
     botMessage: {
       backgroundColor: '#ffffff',
       padding: '1rem',
       borderRadius: '1.5rem',
-      marginBottom: '1rem',
-      width: '900px',
-      overflowX: 'hidden',
-      maxWidth: '900px',
+      marginBottom: '0.5rem',
+      maxWidth: '80%',
       fontWeight: '450',
-      fontSize: '16px',
+      fontSize: '1rem',
       alignSelf: 'flex-start',
       border: '1px solid #e2e8f0',
       color: '#1e293b',
@@ -627,38 +656,37 @@ const HomePage = () => {
       overflowWrap: 'break-word',
       overflow: 'hidden',
       boxSizing: 'border-box',
-      whiteSpace: 'pre-wrap',
+      whiteSpace: 'pre-wrap'
     },
     examplePrompt: {
-      padding: '2rem',
+      padding: '1rem',
       backgroundColor: '#ffffff',
       color: '#1e293b',
-      borderRadius: '20px',
+      borderRadius: '16px',
       cursor: 'pointer',
-      flex: '1',
-      maxWidth: '400px',
-      minWidth: '250px',
-      fontSize: '14px',
+      flex: '1 1 200px',
+      maxWidth: 'calc(33.33% - 1rem)',
+      minWidth: '200px',
+      fontSize: '0.875rem',
       fontWeight: '600',
       transition: 'all 0.3s ease',
       border: '1px solid #e5e7eb',
-      boxShadow: '0 9px 20px rgba(0,0,0,0.15)',
+      boxShadow: '0 6px 15px rgba(0,0,0,0.1)',
       display: 'flex',
       alignItems: 'center',
       gap: '0.5rem',
       overflow: 'hidden',
-      outline: 'none',
-      position: 'relative',
+      boxSizing: 'border-box'
     },
     promptRow: {
       display: 'flex',
-      gap: '0.75rem',
-      marginBottom: '0.75rem',
+      gap: '1rem',
+      marginBottom: '1rem',
       justifyContent: 'center',
-      flexWrap: 'nowrap',
+      flexWrap: 'wrap',
       width: '100%',
-      maxWidth: '900px',
-      position: 'relative',
+      maxWidth: '1200px',
+      boxSizing: 'border-box'
     }
   };
 
@@ -666,6 +694,9 @@ const HomePage = () => {
     <div style={styles.container}>
       <style>
         {`
+          * {
+            box-sizing: border-box;
+          }
           @keyframes fadeInScale {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
@@ -679,7 +710,246 @@ const HomePage = () => {
           }
           @keyframes glow {
             0%, 100% { text-shadow: 0 0 3px currentColor, 0 0 8px currentColor; }
-            50% { text-shadow: 0 0 8px currentColor, 0 0 10px currentColor; }
+            50% { text-shadow: 0 0 8px currentColor, 0 0 12px currentColor; }
+          }
+          @media (min-width: 1024px) {
+            .container {
+              width: 100vw;
+            }
+            .chatContainer, .promptsContainer {
+              width: 100vw;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+            .chatContainer > div, .promptsContainer > div {
+              max-width: 1200px;
+              width: 100%;
+              margin: 0 auto;
+            }
+            .promptRow {
+              max-width: 1200px;
+              width: 100%;
+              margin: 0 auto;
+              justify-content: center;
+            }
+            .header {
+              max-width: 1200px;
+              width: 100%;
+              margin: 1.5rem auto;
+            }
+            .example-prompt {
+              font-size: 1rem !important;
+              padding: 1.5rem !important;
+            }
+          }
+          @media (min-width: 768px) and (max-width: 1023px) {
+            .container {
+              width: 100vw;
+            }
+            .chatContainer, .promptsContainer {
+              width: 100vw;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+            .chatContainer > div, .promptsContainer > div {
+              max-width: 90%;
+              width: 100%;
+              margin: 0 auto;
+            }
+            .promptRow {
+              max-width: 90%;
+              width: 100%;
+              margin: 0 auto;
+              justify-content: center;
+            }
+            .header {
+              max-width: 90%;
+              width: 100%;
+              margin: 1.5rem auto;
+            }
+            .examplePrompt {
+              max-width: calc(50% - 1rem);
+              flex: 1 1 calc(50% - 1rem);
+            }
+          }
+          @media (max-width: 767px) {
+            .navbar {
+              min-height: 60px;
+              padding: 0.5rem;
+              flex-direction: row;
+              flex-wrap: wrap;
+              gap: 0.5rem;
+              justify-content: space-between;
+            }
+            .hide-on-mobile {
+              display: none;
+            }
+            .appName {
+              font-size: 1.25rem;
+              max-width: 50%;
+            }
+            .profileLink {
+              font-size: 0.875rem;
+              max-width: 45%;
+            }
+            .newChatButton {
+              font-size: 0.875rem;
+              padding: 0.5rem 0.75rem;
+            }
+            .sidebar {
+              width: 200px;
+              left: ${sidebarVisible ? '0' : '-200px'};
+              padding: 0.75rem;
+            }
+            .promptsContainer {
+              padding: 60px 0.5rem 0;
+              width: 100vw;
+            }
+            .chatContainer {
+              padding: 20px 0.5rem 60px;
+              width: 100vw;
+            }
+            .queryBar {
+              max-width: 95%;
+              min-height: 70px;
+              padding: 0.5rem;
+            }
+            .messageInput {
+              font-size: 0.875rem;
+              min-height: 32px;
+              max-height: 100px;
+              padding: 0.5rem;
+            }
+            .examplePrompt {
+              min-width: 100%;
+              max-width: 100%;
+              padding: 0.75rem;
+              font-size: 0.75rem;
+            }
+            .promptRow {
+              flex-direction: column;
+              gap: 0.5rem;
+              width: 100%;
+              margin: 0 auto;
+            }
+            .inputContainer {
+              padding: 0.5rem;
+            }
+            .actionButton, .iconButton, .sendButton, .scrollButton {
+              width: 40px;
+              height: 40px;
+              min-width: 40px;
+              padding: 0.25rem;
+              font-size: 0.75rem;
+            }
+            .modelSelector, .dropdownItem {
+              font-size: 0.75rem;
+              padding: 0.5rem;
+            }
+            .modelDropdownContent {
+              min-width: 140px;
+            }
+            .userMessage, .botMessage {
+              max-width: 85%;
+              font-size: 0.875rem;
+              padding: 0.75rem;
+            }
+            .inputRow, .controlsRow {
+              gap: 0.5rem;
+            }
+          }
+          @media (max-width: 480px) {
+            .navbar {
+              flex-direction: row;
+              justify-content: space-between;
+              align-items: center;
+              padding: 0.5rem;
+              gap: 0.25rem;
+            }
+            .hide-on-mobile {
+              display: none;
+            }
+            .newChatButton {
+              font-size: 0;
+              padding: 0.5rem;
+              width: 40px;
+              height: 40px;
+              justify-content: center;
+            }
+            .profileLink {
+              font-size: 0;
+              padding: 0.5rem;
+              max-width: 40px;
+              justify-content: center;
+            }
+            .appName {
+              font-size: 1rem;
+              max-width: 100%;
+            }
+            .sidebar {
+              width: 160px;
+              left: ${sidebarVisible ? '0' : '-160px'};
+              padding: 0.5rem;
+            }
+            .promptsContainer {
+              padding: 50px 0.25rem 0;
+              width: 100vw;
+            }
+            .chatContainer {
+              padding: 15px 0.25rem 50px;
+              width: 100vw;
+            }
+            .queryBar {
+              max-width: 98%;
+              min-height: 60px;
+              padding: 0.5rem;
+            }
+            .messageInput {
+              font-size: 0.75rem;
+              min-height: 28px;
+              max-height: 80px;
+              padding: 0.5rem;
+            }
+            .examplePrompt {
+              min-width: 100%;
+              padding: 0.5rem;
+              font-size: 0.75rem;
+            }
+            .promptRow {
+              flex-direction: column;
+              gap: 0.5rem;
+              width: 100%;
+              margin: 0 auto;
+            }
+            .inputContainer {
+              padding: 0.25rem;
+            }
+            .actionButton, .iconButton, .sendButton, .scrollButton {
+              width: 36px;
+              height: 36px;
+              min-width: 36px;
+              padding: 0.25rem;
+              font-size: 0.75rem;
+            }
+            .modelSelector, .dropdownItem {
+              font-size: 0.75rem;
+              padding: 0.25rem 0.5rem;
+            }
+            .modelDropdownContent {
+              min-width: 120px;
+            }
+            .userMessage, .botMessage {
+              max-width: 90%;
+              font-size: 0.75rem;
+              padding: 0.5rem;
+            }
+            .inputRow, .controlsRow {
+              flex-direction: row;
+              flex-wrap: wrap;
+              gap: 0.25rem;
+            }
           }
         `}
       </style>
@@ -690,10 +960,11 @@ const HomePage = () => {
         <button
           style={styles.newChatButton}
           onClick={handleNewChat}
-          onMouseEnter={(e) => e.target.style.backgroundColor = '#404347'}
+          onMouseEnter={(e) => e.target.style.backgroundColor = '#555555'}
           onMouseLeave={(e) => e.target.style.backgroundColor = '#404347'}
         >
-          + New Chat
+          <FiMessageSquare size={16} />
+          New Chat
         </button>
         <div style={styles.chatHistoryContainer}>
           {chatHistory.map(session => (
@@ -713,14 +984,16 @@ const HomePage = () => {
           ))}
         </div>
       </div>
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, width: '100vw' }}>
         <nav style={styles.navbar}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, maxWidth: '60%' }}>
             <button
               style={styles.newChatButton}
               onClick={() => setSidebarVisible(!sidebarVisible)}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#555555'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#404347'}
             >
-              <FiMessageSquare size={15} />
+              <FiMessageSquare size={16} />
             </button>
             <div
               onMouseEnter={(e) => e.target.style.color = '#08d7fc'}
@@ -728,6 +1001,7 @@ const HomePage = () => {
             >
               <h1
                 style={styles.appName}
+                className="hide-on-mobile"
                 onClick={() => window.location.reload()}
                 role="button"
                 tabIndex={0}
@@ -737,7 +1011,7 @@ const HomePage = () => {
               </h1>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, justifyContent: 'flex-end', maxWidth: '40%' }}>
             <a
               href="https://mtptisid.github.io"
               style={styles.profileLink}
@@ -745,34 +1019,35 @@ const HomePage = () => {
               onMouseLeave={(e) => e.target.style.color = '#ffffff'}
             >
               <FaUser size={16} />
-              Siddharamayya M
+              <span className="hide-on-mobile">Siddharamayya M</span>
             </a>
           </div>
         </nav>
         {messages.length === 0 && (
           <div style={styles.promptsContainer}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+            <div style={{ width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
               {[...Array(Math.ceil(displayedPrompts.length / 2))].map((_, rowIndex) => (
                 <div key={rowIndex} style={styles.promptRow}>
                   {displayedPrompts.slice(rowIndex * 2, rowIndex * 2 + 2).map((prompt, idx) => (
                     <div
                       key={`${promptCycleIndex}-${idx}`}
                       style={styles.examplePrompt}
+                      className="example-prompt"
                       onClick={() => handleExamplePrompt(prompt)}
                       onMouseDown={(e) => e.preventDefault()}
                       onMouseEnter={(e) => {
                         e.target.style.backgroundColor = '#f3f4f6';
-                        e.target.style.transform = 'translateY(-3px)';
-                        e.target.style.boxShadow = '0 8px 20px rgba(0,0,0,0.2)';
+                        e.target.style.transform = 'translateY(-4px)';
+                        e.target.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
                       }}
                       onMouseLeave={(e) => {
                         e.target.style.backgroundColor = '#ffffff';
                         e.target.style.transform = 'translateY(0)';
-                        e.target.style.boxShadow = '0 9px 20px rgba(0,0,0,0.15)';
+                        e.target.style.boxShadow = '0 6px 15px rgba(0,0,0,0.1)';
                       }}
                     >
                       {promptIcons[prompt]?.icon || null}
-                      <span style={{ flex: 1 }}>
+                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {prompt.split('').map((char, charIndex) => (
                           <span
                             key={`${promptCycleIndex}-${idx}-${charIndex}`}
@@ -797,15 +1072,17 @@ const HomePage = () => {
         )}
         {messages.length > 0 && (
           <div ref={chatContainerRef} style={styles.chatContainer}>
-            <ChatContainer
-              messages={messages}
-              setMessages={setMessages}
-              examplePrompts={messages.length === 0 ? [] : displayedPrompts}
-              selectedChatId={selectedChatId}
-              styles={styles}
-              onExamplePromptClick={handleExamplePrompt}
-              onSendMessage={handleSendMessage}
-            />
+            <div style={{ width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
+              <ChatContainer
+                messages={messages}
+                setMessages={setMessages}
+                examplePrompts={messages.length === 0 ? [] : displayedPrompts}
+                selectedChatId={selectedChatId}
+                styles={styles}
+                onExamplePromptClick={handleExamplePrompt}
+                onSendMessage={handleSendMessage}
+              />
+            </div>
             <div ref={bottomRef} />
           </div>
         )}
@@ -817,7 +1094,7 @@ const HomePage = () => {
             onMouseLeave={(e) => e.target.style.backgroundColor = '#ffffff'}
             aria-label="Scroll to bottom"
           >
-            <FiArrowDown size={18} color="#4b5563" />
+            <FiArrowDown size={24} color="#4b5563" />
           </button>
         )}
         <div style={styles.inputContainer}>
@@ -829,7 +1106,7 @@ const HomePage = () => {
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#ffffff'}
                 aria-label="Attach file"
               >
-                <FiPaperclip size={18} color="#4b5563" />
+                <FiPaperclip size={24} color="#4b5563" />
               </button>
               <textarea
                 ref={textareaRef}
@@ -845,15 +1122,15 @@ const HomePage = () => {
                   handleSendMessage(message, tool);
                   setMessage('');
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#404347'}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#555555'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#404347'}
                 aria-label="Send message"
               >
-                <FiArrowUpRight size={18} color="white" />
+                <FiArrowUpRight size={24} color="white" />
               </button>
             </div>
             <div style={styles.controlsRow}>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <button
                   style={{
                     ...styles.actionButton,
@@ -868,7 +1145,7 @@ const HomePage = () => {
                   }}
                   aria-label="DeepSearch"
                 >
-                  <FiSearch style={{ marginRight: '0.5rem' }} size={18} color="#4b5563" />
+                  <FiSearch style={{ marginRight: '0.25rem' }} size={20} color="#4b5563" />
                   DeepSearch
                 </button>
                 <button
@@ -877,7 +1154,7 @@ const HomePage = () => {
                   onMouseLeave={(e) => e.target.style.backgroundColor = '#ffffff'}
                   aria-label="Think"
                 >
-                  <FiCpu style={{ marginRight: '0.5rem' }} size={18} color="#4b5563" />
+                  <FiCpu style={{ marginRight: '0.25rem' }} size={20} color="#4b5563" />
                   Think
                 </button>
               </div>
@@ -888,7 +1165,7 @@ const HomePage = () => {
               >
                 <div style={styles.modelSelector}>
                   {selectedModel}
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2">
                     <path d="M6 9l6 6 6-6"/>
                   </svg>
                 </div>
