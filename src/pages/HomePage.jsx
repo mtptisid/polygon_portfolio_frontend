@@ -104,7 +104,7 @@ const HomePage = () => {
     // Fetch session history on mount
     const fetchHistory = async () => {
       try {
-        const response = await fetch('/api/ai_chat/history');
+        const response = await fetch('https://portpoliosid.onrender.com/api/ai_chat/history');
         if (!response.ok) throw new Error('Failed to fetch history');
         const history = await response.json();
         setChatHistory(history);
@@ -159,7 +159,7 @@ const HomePage = () => {
     console.log('Sending payload:', JSON.stringify(payload, null, 2));
 
     try {
-      const response = await fetch('/api/ai_chat/request', {
+      const response = await fetch('https://portpoliosid.onrender.com/api/ai_chat/request', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -178,7 +178,7 @@ const HomePage = () => {
       // Update chat history
       const fetchHistory = async () => {
         try {
-          const response = await fetch('/api/ai_chat/history');
+          const response = await fetch('https://portpoliosid.onrender.com/api/ai_chat/history');
           if (!response.ok) throw new Error('Failed to fetch history');
           const history = await response.json();
           setChatHistory(history);
