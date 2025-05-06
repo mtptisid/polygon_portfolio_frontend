@@ -1122,7 +1122,7 @@ const HomePage = () => {
               </button>
             </div>
             <div style={styles.controlsRow}>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                 <button
                   style={{
                     ...styles.actionButton,
@@ -1137,7 +1137,7 @@ const HomePage = () => {
                   }}
                   aria-label="DeepSearch"
                 >
-                  <FiSearch style={{ marginRight: '0.25rem' }} size={20} color="#4b5563" />
+                  <FiSearch style={{ marginRight: '0.15rem' }} size={16} color="#4b5563" />
                   DeepSearch
                 </button>
                 <button
@@ -1146,7 +1146,7 @@ const HomePage = () => {
                   onMouseLeave={(e) => e.target.style.backgroundColor = '#ffffff'}
                   aria-label="Think"
                 >
-                  <FiCpu style={{ marginRight: '0.25rem' }} size={20} color="#4b5563" />
+                  <FiCpu style={{ marginRight: '0.15rem' }} size={16} color="#4b5563" />
                   Think
                 </button>
               </div>
