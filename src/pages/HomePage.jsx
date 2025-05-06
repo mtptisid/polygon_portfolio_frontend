@@ -482,11 +482,11 @@ const HomePage = () => {
       borderRadius: '24px',
       border: '1px solid #e5e7eb',
       boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-      padding: '0.75rem',
-      width: '100%',
+      padding: '0.65rem',
+      width: '90%',
       maxWidth: '900px',
-      minHeight: '80px',
-      gap: '0.5rem',
+      minHeight: '70px',
+      gap: '0.4rem',
       boxSizing: 'border-box'
     },
     inputRow: {
