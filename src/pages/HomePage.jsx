@@ -18,6 +18,7 @@ const HomePage = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [promptCycleIndex, setPromptCycleIndex] = useState(0);
   const [tool, setTool] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
   const textareaRef = useRef(null);
   const chatContainerRef = useRef(null);
   const bottomRef = useRef(null);
@@ -72,6 +73,16 @@ const HomePage = () => {
     "Visit Sid's portfolio": { icon: <FaGlobe size={18} color="#d91a89" />, emoji: "🌐" },
     "Download Resume": { icon: <FaFileDownload size={18} color="#f59e0b" />, emoji: "📄" }
   };
+
+  // Detect mobile view
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 767);
+    };
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Shuffle array for random prompt positions
   const shuffleArray = (array) => {
@@ -335,6 +346,51 @@ const HomePage = () => {
     );
   };
 
+  const renderExamplePrompts = () => (
+    <div className="example-prompts">
+      {[...Array(Math.ceil(displayedPrompts.length / 2))].map((_, rowIndex) => (
+        <div key={rowIndex} style={styles.promptRow} className="prompt-row">
+          {displayedPrompts.slice(rowIndex * 2, rowIndex * 2 + 2).map((prompt, idx) => (
+            <div
+              key={`${promptCycleIndex}-${idx}`}
+              style={styles.examplePrompt}
+              className="example-prompt"
+              onClick={() => handleExamplePrompt(prompt)}
+              onMouseDown={(e) => e.preventDefault()}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = '#f3f4f6';
+                e.target.style.transform = 'translateY(-4px)';
+                e.target.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = '#ffffff';
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
+              }}
+            >
+              {promptIcons[prompt]?.icon || null}
+              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {prompt.split('').map((char, charIndex) => (
+                  <span
+                    key={`${promptCycleIndex}-${idx}-${charIndex}`}
+                    style={{
+                      animation: `fadeInScale 0.5s ease-in-out ${charIndex * 0.05}s forwards`,
+                      opacity: 0,
+                      display: char === ' ' ? 'inline' : 'inline-block'
+                    }}
+                  >
+                    {char}
+                  </span>
+                ))}
+              </span>
+              <span>{promptIcons[prompt]?.emoji}</span>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+
   const styles = {
     container: {
       display: 'flex',
@@ -483,7 +539,7 @@ const HomePage = () => {
       backgroundColor: '#f8fafc',
       boxSizing: 'border-box'
     },
-   /* queryBar: {
+    queryBar: {
       display: 'flex',
       flexDirection: 'column',
       backgroundColor: '#ffffff',
@@ -496,20 +552,6 @@ const HomePage = () => {
       minHeight: '80px',
       gap: '0.4rem',
       boxSizing: 'border-box'
-    },*/
-      queryBar: {
-      display: 'flex',
-      flexDirection: 'column',
-      backgroundColor: '#ffffff',
-      borderRadius: '24px',
-      border: '1px solid #e5e7eb',
-      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-      padding: '1rem',
-      width: '100%',
-      maxWidth: '900px',
-      minHeight: '96px',
-      gap: '0.5rem',
-      position: 'relative',
     },
     inputRow: {
       display: 'flex',
@@ -835,39 +877,51 @@ const HomePage = () => {
             }
             .queryBar {
               max-width: 95%;
-              min-height: 60px; /* Reduced height */
-              padding: 0.4rem; /* Reduced padding */
+              min-height: 50px;
+              padding: 0.3rem;
             }
             .messageInput {
               font-size: 0.875rem;
-              min-height: 28px; /* Reduced height */
+              min-height: 28px;
               max-height: 80px;
-              padding: 0.4rem; /* Reduced padding */
+              padding: 0.3rem;
             }
-            .example-prompts {
-              display: none;
+            .examplePrompt {
+              max-width: 100%;
+              min-width: 100%;
+              padding: 0.5rem;
+              font-size: 0.75rem;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+              border-radius: 12px;
+              gap: 0.3rem;
+            }
+            .promptRow {
+              flex-direction: column;
+              gap: 0.3rem;
+              margin-bottom: 1rem;
             }
             .inputContainer {
               padding: 0.5rem;
             }
             .actionButton {
-              width: auto; /* Allow natural width */
-              min-width: 70px; /* Reduced min-width */
-              height: 32px; /* Reduced height */
-              padding: 0.3rem 0.6rem; /* Reduced padding */
-              font-size: 0.75rem; /* Smaller font */
+              width: auto;
+              min-width: 60px;
+              height: 28px;
+              padding: 0.2rem 0.5rem;
+              font-size: 0.7rem;
             }
             .iconButton, .sendButton, .scrollButton {
-              width: 32px; /* Reduced size */
-              height: 32px;
-              min-width: 32px;
-              padding: 0.2rem;
-              font-size: 0.75rem;
+              width: 28px;
+              height: 28px;
+              min-width: 28px;
+              padding: 0.15rem;
+              font-size: 0.7rem;
             }
             .modelSelector {
-              font-size: 0.75rem;
-              padding: 0.3rem 0.6rem; /* Reduced padding */
-              height: 32px; /* Match actionButton height */
+              padding: 0.2rem;
+              width: 28px;
+              height: 28px;
+              justify-content: center;
             }
             .modelDropdownContent {
               min-width: 120px;
@@ -882,11 +936,11 @@ const HomePage = () => {
               padding: 0.75rem;
             }
             .inputRow {
-              gap: 0.3rem; /* Reduced gap */
+              gap: 0.2rem;
             }
             .controlsRow {
-              gap: 0.3rem; /* Reduced gap */
-              flex-wrap: nowrap; /* Force single line */
+              gap: 0.2rem;
+              flex-wrap: nowrap;
             }
           }
           @media (max-width: 480px) {
@@ -932,47 +986,51 @@ const HomePage = () => {
             }
             .queryBar {
               max-width: 98%;
-              min-height: 50px; /* Further reduced height */
-              padding: 0.3rem; /* Further reduced padding */
+              min-height: 48px;
+              padding: 0.25rem;
             }
             .messageInput {
               font-size: 0.75rem;
-              min-height: 24px; /* Further reduced height */
+              min-height: 24px;
               max-height: 60px;
-              padding: 0.3rem; /* Further reduced padding */
+              padding: 0.25rem;
             }
             .examplePrompt {
+              max-width: 100%;
               min-width: 100%;
-              padding: 0.5rem;
-              font-size: 0.75rem;
+              padding: 0.4rem;
+              font-size: 0.7rem;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+              border-radius: 10px;
+              gap: 0.2rem;
             }
             .promptRow {
               flex-direction: column;
-              gap: 0.5rem;
-              width: 100%;
-              margin: 0 auto;
+              gap: 0.2rem;
+              margin-bottom: 0.8rem;
             }
             .inputContainer {
               padding: 0.25rem;
             }
             .actionButton {
-              width: auto; /* Allow natural width */
-              min-width: 60px; /* Further reduced min-width */
-              height: 28px; /* Further reduced height */
-              padding: 0.2rem 0.5rem; /* Further reduced padding */
-              font-size: 0.7rem; /* Smaller font */
+              width: auto;
+              min-width: 50px;
+              height: 24px;
+              padding: 0.15rem 0.4rem;
+              font-size: 0.65rem;
             }
             .iconButton, .sendButton, .scrollButton {
-              width: 28px; /* Further reduced size */
-              height: 28px;
-              min-width: 28px;
-              padding: 0.15rem;
-              font-size: 0.7rem;
+              width: 24px;
+              height: 24px;
+              min-width: 24px;
+              padding: 0.1rem;
+              font-size: 0.65rem;
             }
             .modelSelector {
-              font-size: 0.7rem;
-              padding: 0.2rem 0.5rem; /* Further reduced padding */
-              height: 28px; /* Match actionButton height */
+              padding: 0.15rem;
+              width: 24px;
+              height: 24px;
+              justify-content: center;
             }
             .modelDropdownContent {
               min-width: 100px;
@@ -987,11 +1045,11 @@ const HomePage = () => {
               padding: 0.5rem;
             }
             .inputRow {
-              gap: 0.2rem; /* Further reduced gap */
+              gap: 0.15rem;
             }
             .controlsRow {
-              gap: 0.2rem; /* Further reduced gap */
-              flex-wrap: nowrap; /* Force single line */
+              gap: 0.15rem;
+              flex-wrap: nowrap;
             }
           }
         `}
@@ -1069,49 +1127,17 @@ const HomePage = () => {
         {messages.length === 0 && (
           <div style={styles.promptsContainer}>
             <div style={{ width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
-              <div className="example-prompts">
-                {[...Array(Math.ceil(displayedPrompts.length / 2))].map((_, rowIndex) => (
-                  <div key={rowIndex} style={styles.promptRow} className="prompt-row">
-                    {displayedPrompts.slice(rowIndex * 2, rowIndex * 2 + 2).map((prompt, idx) => (
-                      <div
-                        key={`${promptCycleIndex}-${idx}`}
-                        style={styles.examplePrompt}
-                        className="example-prompt"
-                        onClick={() => handleExamplePrompt(prompt)}
-                        onMouseDown={(e) => e.preventDefault()}
-                        onMouseEnter={(e) => {
-                          e.target.style.backgroundColor = '#f3f4f6';
-                          e.target.style.transform = 'translateY(-4px)';
-                          e.target.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.backgroundColor = '#ffffff';
-                          e.target.style.transform = 'translateY(0)';
-                          e.target.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
-                        }}
-                      >
-                        {promptIcons[prompt]?.icon || null}
-                        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {prompt.split('').map((char, charIndex) => (
-                            <span
-                              key={`${promptCycleIndex}-${idx}-${charIndex}`}
-                              style={{
-                                animation: `fadeInScale 0.5s ease-in-out ${charIndex * 0.05}s forwards`,
-                                opacity: 0,
-                                display: char === ' ' ? 'inline' : 'inline-block'
-                              }}
-                            >
-                              {char}
-                            </span>
-                          ))}
-                        </span>
-                        <span>{promptIcons[prompt]?.emoji}</span>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-              {renderHeader()}
+              {isMobile ? (
+                <>
+                  {renderHeader()}
+                  {renderExamplePrompts()}
+                </>
+              ) : (
+                <>
+                  {renderExamplePrompts()}
+                  {renderHeader()}
+                </>
+              )}
             </div>
           </div>
         )}
@@ -1209,10 +1235,18 @@ const HomePage = () => {
                 onMouseLeave={() => setHoveredModel(false)}
               >
                 <div style={styles.modelSelector}>
-                  {selectedModel}
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2">
-                    <path d="M6 9l6 6 6-6"/>
-                  </svg>
+                  {isMobile ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2">
+                      <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                  ) : (
+                    <>
+                      {selectedModel}
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2">
+                        <path d="M6 9l6 6 6-6"/>
+                      </svg>
+                    </>
+                  )}
                 </div>
                 {hoveredModel && (
                   <div style={styles.modelDropdownContent}>
