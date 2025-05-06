@@ -100,20 +100,20 @@ const HomePage = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Load chat history from local storage on mount
   useEffect(() => {
-    // Fetch session history on mount
-    const fetchHistory = async () => {
-      try {
-        const response = await fetch('https://portpoliosid.onrender.com/api/ai_chat/history');
-        if (!response.ok) throw new Error('Failed to fetch history');
-        const history = await response.json();
-        setChatHistory(history);
-      } catch (error) {
-        console.error('Error fetching history:', error);
-      }
-    };
-    fetchHistory();
+    const storedHistory = localStorage.getItem('chatHistory');
+    if (storedHistory) {
+      setChatHistory(JSON.parse(storedHistory));
+    }
   }, []);
+
+  // Save chat history to local storage whenever it changes
+  useEffect(() => {
+    if (chatHistory.length > 0) {
+      localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+    }
+  }, [chatHistory]);
 
   const generateSessionId = () => {
     return Math.floor(10000 + Math.random() * 90000);
@@ -139,7 +139,7 @@ const HomePage = () => {
   const handleSendMessage = async (content, selectedTool = null) => {
     if (!content.trim()) return;
 
-    const userMessage = { content, isUser: true };
+    const userMessage = { content, isUser: true, is_bot: false };
     setMessages(prev => [...prev, userMessage]);
     setMessage('');
     setTool(null); // Reset tool after sending
@@ -173,20 +173,28 @@ const HomePage = () => {
       }
 
       const data = await response.json();
-      setMessages(prev => [...prev, { content: data.content, isUser: false }]);
+      const botMessage = { content: data.content, isUser: false, is_bot: true };
+      setMessages(prev => [...prev, botMessage]);
 
-      // Update chat history
-      const fetchHistory = async () => {
-        try {
-          const response = await fetch('https://portpoliosid.onrender.com/api/ai_chat/history');
-          if (!response.ok) throw new Error('Failed to fetch history');
-          const history = await response.json();
-          setChatHistory(history);
-        } catch (error) {
-          console.error('Error fetching history:', error);
+      // Update chat history in local storage
+      const updatedHistory = chatHistory.map(session => {
+        if (session.session_id === sessionId) {
+          return {
+            ...session,
+            messages: [...session.messages, userMessage, botMessage]
+          };
         }
-      };
-      fetchHistory();
+        return session;
+      });
+
+      if (!updatedHistory.some(session => session.session_id === sessionId)) {
+        updatedHistory.push({
+          session_id: sessionId,
+          messages: [userMessage, botMessage]
+        });
+      }
+
+      setChatHistory(updatedHistory);
     } catch (error) {
       console.error('Error sending message:', error);
       setMessages(prev => [...prev, { content: `Error: ${error.message}`, isUser: false }]);
@@ -194,7 +202,7 @@ const HomePage = () => {
   };
 
   const handleExamplePrompt = async (prompt) => {
-    if (prompt === "Visit Siddharamayya's portfolio") {
+    if (prompt === "Visit Sid's portfolio") {
       window.location.href = 'https://mtptisid.github.io';
     } else if (prompt === "Download Resume") {
       const link = document.createElement('a');
@@ -344,7 +352,7 @@ const HomePage = () => {
       top: '60px',
       left: sidebarVisible ? '0' : '-300px',
       width: '250px',
-      height: 'calc(100vh - 60px)',
+      height: 'calc(100vh - 140px)', // Adjusted to prevent overlap with query bar
       backgroundColor: '#ffffff',
       color: '#1e293b',
       display: 'flex',
@@ -352,13 +360,13 @@ const HomePage = () => {
       padding: '1rem',
       boxShadow: '2px 0 10px rgba(0,0,0,0.05)',
       transition: 'left 0.3s ease',
-      zIndex: 100,
+      zIndex: 1001, // Increased z-index to stay above query bar
       borderRight: '1px solid #e5e7eb',
       boxSizing: 'border-box'
     },
     chatHistoryContainer: {
       flex: 1,
-      overflowY: 'auto',
+      overflowY: 'auto', // Ensures scrollability
       padding: '0.5rem',
       marginTop: '0.5rem'
     },
@@ -502,7 +510,7 @@ const HomePage = () => {
       justifyContent: 'space-between',
       width: '100%',
       gap: '0.5rem',
-      flexWrap: 'wrap'
+      flexWrap: 'nowrap' // Prevents wrapping to reduce height on mobile
     },
     messageInput: {
       flex: 1,
@@ -567,7 +575,8 @@ const HomePage = () => {
       cursor: 'pointer',
       fontSize: '0.875rem',
       fontWeight: '500',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+      whiteSpace: 'nowrap' // Prevents wrapping on mobile
     },
     sendButton: {
       display: 'flex',
