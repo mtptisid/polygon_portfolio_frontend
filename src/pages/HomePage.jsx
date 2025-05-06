@@ -457,7 +457,7 @@ const HomePage = () => {
       backgroundColor: '#f8fafc',
       maxWidth: '100%',
       width: '100%',
-      height: '110%',
+      height: '100%',
       boxSizing: 'border-box',
       paddingBottom: '80px',
       position: 'relative',
@@ -708,8 +708,8 @@ const HomePage = () => {
             100% { color: #d91a89; }
           }
           @keyframes glow {
-            0%, 100% { text-shadow: 0 0 3px currentColor, 0 0 8px currentColor; }
-            50% { text-shadow: 0 0 8px currentColor, 0 0 12px currentColor; }
+            0%, 100% { text-shadow: 0 0 1px currentColor, 0 0 4px currentColor; }
+            50% { text-shadow: 0 0 4px currentColor, 0 0 8px currentColor; }
           }
           @media (min-width: 1024px) {
             .container {
