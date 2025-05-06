@@ -446,7 +446,6 @@ const HomePage = () => {
       boxSizing: 'border-box'
     },
     chatContainer: {
-      //margin: '0 1rem',
       padding: '40px 1rem 75px',
       flex: 1,
       overflowY: 'auto',
@@ -456,11 +455,10 @@ const HomePage = () => {
       alignItems: 'center',
       backgroundColor: '#f8fafc',
       maxWidth: '100%',
-      //maxWidth: '900px',
       width: '100%',
-      height: '100%',
+      height: '109%',
       boxSizing: 'border-box',
-      paddingBottom: '100px',
+      paddingBottom: '70px',
       position: 'relative',
     },
     inputContainer: {
@@ -629,9 +627,9 @@ const HomePage = () => {
       backgroundColor: '#e9e9e980',
       padding: '1rem',
       borderRadius: '1.5rem',
-      marginBottom: '0.1rem',
+      marginBottom: '0.5rem',
       fontWeight: '450',
-      fontSize: '1rem',
+      fontSize: '0.9rem',
       maxWidth: '100%',
       width: 'auto',
       alignSelf: 'flex-end',
@@ -646,9 +644,9 @@ const HomePage = () => {
       padding: '1rem',
       borderRadius: '1.5rem',
       marginBottom: '0.5rem',
-      maxWidth: '80%',
+      maxWidth: '100%',
       fontWeight: '450',
-      fontSize: '1rem',
+      fontSize: '0.9rem',
       alignSelf: 'flex-start',
       border: '1px solid #e2e8f0',
       color: '#1e293b',
@@ -659,19 +657,19 @@ const HomePage = () => {
       whiteSpace: 'pre-wrap'
     },
     examplePrompt: {
-      padding: '1rem',
+      padding: '0.7rem',
       backgroundColor: '#ffffff',
       color: '#1e293b',
       borderRadius: '16px',
       cursor: 'pointer',
       flex: '1 1 200px',
-      maxWidth: 'calc(33.33% - 1rem)',
+      maxWidth: 'calc(33.33% - 0.5rem)',
       minWidth: '200px',
       fontSize: '0.875rem',
       fontWeight: '600',
       transition: 'all 0.3s ease',
       border: '1px solid #e5e7eb',
-      boxShadow: '0 6px 15px rgba(0,0,0,0.1)',
+      boxShadow: '0 6px 12px rgba(0,0,0,0.1)',
       display: 'flex',
       alignItems: 'center',
       gap: '0.5rem',
@@ -680,8 +678,8 @@ const HomePage = () => {
     },
     promptRow: {
       display: 'flex',
-      gap: '1rem',
-      marginBottom: '1rem',
+      gap: '0.5rem',
+      marginBottom: '0.5rem',
       justifyContent: 'center',
       flexWrap: 'wrap',
       width: '100%',
@@ -740,7 +738,7 @@ const HomePage = () => {
             }
             .example-prompt {
               font-size: 1rem !important;
-              padding: 1.5rem !important;
+              padding: 1rem !important;
             }
           }
           @media (min-width: 768px) and (max-width: 1023px) {
@@ -770,8 +768,8 @@ const HomePage = () => {
               margin: 1.5rem auto;
             }
             .examplePrompt {
-              max-width: calc(50% - 1rem);
-              flex: 1 1 calc(50% - 1rem);
+              max-width: calc(50% - 0.5rem);
+              flex: 1 1 calc(50% - 0.5rem);
             }
           }
           @media (max-width: 767px) {
@@ -822,17 +820,8 @@ const HomePage = () => {
               max-height: 100px;
               padding: 0.5rem;
             }
-            .examplePrompt {
-              min-width: 100%;
-              max-width: 100%;
-              padding: 0.75rem;
-              font-size: 0.75rem;
-            }
-            .promptRow {
-              flex-direction: column;
-              gap: 0.5rem;
-              width: 100%;
-              margin: 0 auto;
+            .example-prompts {
+              display: none;
             }
             .inputContainer {
               padding: 0.5rem;
@@ -984,7 +973,7 @@ const HomePage = () => {
           ))}
         </div>
       </div>
-      <div style={{ flex: 1, width: '100vw' }}>
+      <div style={{ flex: 1, width: '100vw', overflowY: 'auto' }}>
         <nav style={styles.navbar}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, maxWidth: '60%' }}>
             <button
@@ -1026,46 +1015,48 @@ const HomePage = () => {
         {messages.length === 0 && (
           <div style={styles.promptsContainer}>
             <div style={{ width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
-              {[...Array(Math.ceil(displayedPrompts.length / 2))].map((_, rowIndex) => (
-                <div key={rowIndex} style={styles.promptRow}>
-                  {displayedPrompts.slice(rowIndex * 2, rowIndex * 2 + 2).map((prompt, idx) => (
-                    <div
-                      key={`${promptCycleIndex}-${idx}`}
-                      style={styles.examplePrompt}
-                      className="example-prompt"
-                      onClick={() => handleExamplePrompt(prompt)}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = '#f3f4f6';
-                        e.target.style.transform = 'translateY(-4px)';
-                        e.target.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = '#ffffff';
-                        e.target.style.transform = 'translateY(0)';
-                        e.target.style.boxShadow = '0 6px 15px rgba(0,0,0,0.1)';
-                      }}
-                    >
-                      {promptIcons[prompt]?.icon || null}
-                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {prompt.split('').map((char, charIndex) => (
-                          <span
-                            key={`${promptCycleIndex}-${idx}-${charIndex}`}
-                            style={{
-                              animation: `fadeInScale 0.5s ease-in-out ${charIndex * 0.05}s forwards`,
-                              opacity: 0,
-                              display: char === ' ' ? 'inline' : 'inline-block'
-                            }}
-                          >
-                            {char}
-                          </span>
-                        ))}
-                      </span>
-                      <span>{promptIcons[prompt]?.emoji}</span>
-                    </div>
-                  ))}
-                </div>
-              ))}
+              <div className="example-prompts">
+                {[...Array(Math.ceil(displayedPrompts.length / 2))].map((_, rowIndex) => (
+                  <div key={rowIndex} style={styles.promptRow} className="prompt-row">
+                    {displayedPrompts.slice(rowIndex * 2, rowIndex * 2 + 2).map((prompt, idx) => (
+                      <div
+                        key={`${promptCycleIndex}-${idx}`}
+                        style={styles.examplePrompt}
+                        className="example-prompt"
+                        onClick={() => handleExamplePrompt(prompt)}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = '#f3f4f6';
+                          e.target.style.transform = 'translateY(-4px)';
+                          e.target.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = '#ffffff';
+                          e.target.style.transform = 'translateY(0)';
+                          e.target.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
+                        }}
+                      >
+                        {promptIcons[prompt]?.icon || null}
+                        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {prompt.split('').map((char, charIndex) => (
+                            <span
+                              key={`${promptCycleIndex}-${idx}-${charIndex}`}
+                              style={{
+                                animation: `fadeInScale 0.5s ease-in-out ${charIndex * 0.05}s forwards`,
+                                opacity: 0,
+                                display: char === ' ' ? 'inline' : 'inline-block'
+                              }}
+                            >
+                              {char}
+                            </span>
+                          ))}
+                        </span>
+                        <span>{promptIcons[prompt]?.emoji}</span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
               {renderHeader()}
             </div>
           </div>
