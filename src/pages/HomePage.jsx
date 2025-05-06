@@ -194,7 +194,7 @@ const HomePage = () => {
   };
 
   const handleExamplePrompt = async (prompt) => {
-    if (prompt === "Visit Sid's portfolio") {
+    if (prompt === "Visit Siddharamayya's portfolio") {
       window.location.href = 'https://mtptisid.github.io';
     } else if (prompt === "Download Resume") {
       const link = document.createElement('a');
@@ -301,6 +301,7 @@ const HomePage = () => {
               style={{
                 animation: `fadeInScale 0.5s ease-in-out ${(prefix.length + name.length + 3 + index) * 0.05}s forwards`,
                 opacity: 0,
+                color: '#000000',
                 display: char === ' ' ? 'inline' : 'inline-block'
               }}
             >
@@ -456,9 +457,9 @@ const HomePage = () => {
       backgroundColor: '#f8fafc',
       maxWidth: '100%',
       width: '100%',
-      height: '109%',
+      height: '110%',
       boxSizing: 'border-box',
-      paddingBottom: '70px',
+      paddingBottom: '80px',
       position: 'relative',
     },
     inputContainer: {
@@ -483,7 +484,7 @@ const HomePage = () => {
       boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
       padding: '0.75rem',
       width: '100%',
-      maxWidth: '950px',
+      maxWidth: '900px',
       minHeight: '80px',
       gap: '0.5rem',
       boxSizing: 'border-box'
