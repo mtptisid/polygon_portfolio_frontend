@@ -483,9 +483,9 @@ const HomePage = () => {
       border: '1px solid #e5e7eb',
       boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
       padding: '0.65rem',
-      width: '90%',
+      width: '100%',
       maxWidth: '900px',
-      minHeight: '70px',
+      minHeight: '80px',
       gap: '0.4rem',
       boxSizing: 'border-box'
     },
@@ -533,8 +533,8 @@ const HomePage = () => {
       transition: 'background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
       fontSize: '0.875rem',
       fontWeight: '500',
-      minWidth: '48px',
-      height: '48px',
+      minWidth: '40px',
+      height: '40px',
       boxSizing: 'border-box'
     },
     isDeepSearchActive: {
@@ -552,8 +552,8 @@ const HomePage = () => {
       backgroundColor: '#ffffff',
       cursor: 'pointer',
       transition: 'background-color 0.2s ease',
-      width: '48px',
-      height: '48px',
+      width: '40px',
+      height: '40px',
       boxSizing: 'border-box'
     },
     modelSelector: {
@@ -579,8 +579,8 @@ const HomePage = () => {
       backgroundColor: '#404347',
       cursor: 'pointer',
       transition: 'background-color 0.2s ease',
-      width: '48px',
-      height: '48px',
+      width: '40px',
+      height: '40px',
       boxSizing: 'border-box'
     },
     scrollButton: {
