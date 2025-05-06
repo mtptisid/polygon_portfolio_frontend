@@ -195,7 +195,7 @@ const HomePage = () => {
 
   const handleExamplePrompt = async (prompt) => {
     if (prompt === "Visit Sid's portfolio") {
-      window.location.href = '/portfolio/index.html';
+      window.location.href = 'https://mtptisid.github.io';
     } else if (prompt === "Download Resume") {
       const link = document.createElement('a');
       link.href = '/portfolio/images/Mathapati_Siddharamayya_2025.pdf';
@@ -275,7 +275,7 @@ const HomePage = () => {
         </div>
         <div style={{ fontSize: '44px', fontWeight: '600' }}>
           <a
-            href="/portfolio/index.html"
+            href="https://mtptisid.github.io"
             style={{
               textDecoration: 'none',
               display: 'inline-block',
