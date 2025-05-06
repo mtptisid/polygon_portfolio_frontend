@@ -460,7 +460,7 @@ const HomePage = () => {
       width: '100%',
       height: '100%',
       boxSizing: 'border-box',
-      paddingBottom: '70px',
+      paddingBottom: '80px',
       position: 'relative',
     },
     inputContainer: {
