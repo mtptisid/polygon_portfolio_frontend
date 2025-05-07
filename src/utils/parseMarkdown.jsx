@@ -24,8 +24,11 @@ const escapeHtml = (text) => {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/'/g, '&#039;');
 };
 
 // Syntax highlighting for code blocks
