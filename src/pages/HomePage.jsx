@@ -96,7 +96,7 @@ const HomePage = () => {
 
   // Cycle through example prompts every 15 seconds
   useEffect(() => {
-    const fixedPrompts = ["Visit Sid's portfolio", "Download Resume"];
+    const fixedPrompts = ["Visit Siddharamayya's portfolio", "Download Resume"];
     const otherPrompts = examplePrompts.filter(prompt => !fixedPrompts.includes(prompt));
     const getRandomPrompts = () => {
       const shuffled = shuffleArray(otherPrompts);
