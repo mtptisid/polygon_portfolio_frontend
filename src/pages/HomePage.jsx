@@ -45,7 +45,7 @@ const HomePage = () => {
     "What is Siddharamayya’s tech stack?",
     "How does Siddharamayya use Docker and Kubernetes?",
     "What are Siddharamayya’s contributions to web development?",
-    "Visit Sid's portfolio",
+    "Visit Siddharamayya's portfolio",
     "Download Resume"
   ];
 
@@ -70,7 +70,7 @@ const HomePage = () => {
     "What is Siddharamayya’s tech stack?": { icon: <FaCode size={18} color="#10b981" />, emoji: "💻" },
     "How does Siddharamayya use Docker and Kubernetes?": { icon: <FaTools size={18} color="#1e293b" />, emoji: "☁️" },
     "What are Siddharamayya’s contributions to web development?": { icon: <FaCode size={18} color="#10b981" />, emoji: "🌐" },
-    "Visit Sid's portfolio": { icon: <FaGlobe size={18} color="#d91a89" />, emoji: "🌐" },
+    "Visit Siddharamayya's portfolio": { icon: <FaGlobe size={18} color="#d91a89" />, emoji: "🌐" },
     "Download Resume": { icon: <FaFileDownload size={18} color="#f59e0b" />, emoji: "📄" }
   };
 
@@ -213,7 +213,7 @@ const HomePage = () => {
   };
 
   const handleExamplePrompt = async (prompt) => {
-    if (prompt === "Visit Sid's portfolio") {
+    if (prompt === "Visit Siddharamayya's portfolio") {
       window.location.href = 'https://mtptisid.github.io';
     } else if (prompt === "Download Resume") {
       const link = document.createElement('a');
