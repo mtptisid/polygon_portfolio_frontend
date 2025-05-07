@@ -750,7 +750,7 @@ const HomePage = () => {
       color: '#1e293b',
       borderRadius: '16px',
       cursor: 'pointer',
-      flex: '0 0 200px',
+      flex: '0 0 290px',
       width: '200px',
       height: '90px',
       fontSize: '0.675rem',
