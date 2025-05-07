@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { FiHome, FiCode } from 'react-icons/fi';
 import { FaUser } from 'react-icons/fa';
 
@@ -250,6 +250,11 @@ const projects = [
 ];
 
 const ProjectsPage = () => {
+  const [shuffledProjects, setShuffledProjects] = useState(() => {
+    const shuffled = [...projects].sort(() => Math.random() - 0.5);
+    return shuffled;
+  });
+
   useEffect(() => {
     console.log("ProjectsPage component mounted");
   }, []);
@@ -259,100 +264,101 @@ const ProjectsPage = () => {
       position: 'fixed',
       width: '100vw',
       minHeight: '60px',
-      backgroundColor: '#404347',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      backgroundColor: '#2d3748',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 1rem',
+      padding: '0 1.5rem',
       top: 0,
       zIndex: 101,
-      borderBottom: '1px solid #e5e7eb',
+      borderBottom: '1px solid #4a5568',
       flexWrap: 'wrap',
-      gap: '0.5rem',
+      gap: '0.75rem',
       boxSizing: 'border-box'
     },
     appName: {
       margin: 0,
-      color: '#ffffff',
-      fontWeight: '600',
-      fontSize: '1.5rem',
+      color: '#edf2f7',
+      fontWeight: '700',
+      fontSize: '1.75rem',
       cursor: 'pointer',
-      transition: 'color 0.2s ease',
-      textShadow: '0 0 3px rgba(255, 255, 255, 0.6)',
+      transition: 'color 0.3s ease',
+      textShadow: '0 0 5px rgba(255, 255, 255, 0.5)',
       whiteSpace: 'nowrap'
     },
     actionButton: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '0.25rem',
-        padding: '0.5rem 1rem',
-        borderRadius: '20px',
-        border: '1px solid #e5e7eb',
-        backgroundColor: '#404347',
-        color: '#ffffff',
-        cursor: 'pointer',
-        transition: 'background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
-        fontSize: '0.875rem',
-        fontWeight: '500',
-        minWidth: '40px',
-        height: '40px',
-        boxSizing: 'border-box'
-      },
-    navLink: {
-      color: '#ffffff',
-      fontSize: '1rem',
-      fontWeight: '700',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '0.5rem',
+      padding: '0.75rem 1.5rem',
+      borderRadius: '9999px',
+      border: '1px solid #e2e8f0',
+      backgroundColor: '#2d3748',
+      color: '#edf2f7',
       cursor: 'pointer',
-      transition: 'color 0.2s ease',
+      transition: 'background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease',
+      fontSize: '1rem',
+      fontWeight: '600',
+      minWidth: '50px',
+      height: '45px',
+      boxSizing: 'border-box',
+      boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
+      transform: 'scale(1)'
+    },
+    navLink: {
+      color: '#edf2f7',
+      fontSize: '1.125rem',
+      fontWeight: '600',
+      cursor: 'pointer',
+      transition: 'color 0.3s ease, background-color 0.3s ease',
       textDecoration: 'none',
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem',
+      gap: '0.75rem',
       whiteSpace: 'nowrap',
-      padding: '0.5rem 0.75rem',
+      padding: '0.75rem 1rem',
       borderRadius: '8px',
-      backgroundColor: 'transparent',
-      visibility: 'visible',
-      opacity: 1,
-      zIndex: 1
+      backgroundColor: 'transparent'
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50 font-['Inter']">
       <style>
         {`
           @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
           }
           .animate-fadeIn {
-            animation: fadeIn 0.5s ease-out forwards;
+            animation: fadeIn 0.6s ease-out forwards;
           }
           .project-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            box-shadow: 2px 8px 16px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 20px;
-            padding: 1.5rem;
+            margin-bottom: 1rem;
+            padding: 2rem;
             display: grid;
-            gap: 1.5rem;
+            gap: 1rem;
           }
           .project-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
           }
           .project-card-odd {
             grid-template-columns: 1fr 2fr;
             grid-template-rows: auto auto;
+            background-color: #e6eff5;
           }
           .project-card-even {
             grid-template-columns: 2fr 1fr;
             grid-template-rows: auto auto;
+            background-color: #ffffff;
           }
           .project-image-container {
             grid-row: 1;
@@ -360,7 +366,7 @@ const ProjectsPage = () => {
             overflow: hidden;
             position: relative;
             width: 100%;
-            height: 250px;
+            height: 280px;
           }
           .project-image-container-odd {
             grid-column: 1;
@@ -372,11 +378,11 @@ const ProjectsPage = () => {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 12px;
-            transition: transform 0.3s ease;
+            border-radius: 18px;
+            transition: transform 0.4s ease;
           }
           .project-image:hover {
-            transform: scale(1.05);
+            transform: scale(1.08);
           }
           .project-details {
             grid-row: 1;
@@ -392,7 +398,7 @@ const ProjectsPage = () => {
             grid-column: 1 / -1;
             display: flex;
             flex-wrap: wrap;
-            gap: 0.5rem;
+            gap: 1rem;
             align-items: center;
             justify-content: center;
           }
@@ -404,73 +410,98 @@ const ProjectsPage = () => {
           }
           @media (max-width: 767px) {
             .navbar {
-              padding: 0.5rem;
-              flex-direction: row;
-              flex-wrap: nowrap;
-              gap: 0.25rem;
-              justify-content: space-between;
-              align-items: center;
+              padding: 0.75rem;
+              gap: 0.5rem;
             }
             .hide-on-mobile {
               display: none;
             }
             .appName {
-              font-size: 1.25rem;
+              font-size: 1.5rem;
             }
             .navLink {
-              font-size: 0.875rem;
+              font-size: 1rem;
               padding: 0.5rem;
-              max-width: 40px;
-              justify-content: center;
+              max-width: 50px;
             }
-            .project-card, .project-card-odd, .project-card-even {
+            .project-list {
               display: flex;
-              flex-direction: column;
-              gap: 1rem;
+              overflow-x: scroll;
+              scroll-snap-type: x mandatory;
+              -webkit-overflow-scrolling: touch;
+              gap: 1.5rem;
+              padding: 0 1rem;
             }
-            .project-image-container, .project-image-container-odd, .project-image-container-even {
-              width: 100% !important;
-              height: 200px !important;
+            .project-list::-webkit-scrollbar {
+              display: none;
             }
-            .project-details, .project-details-odd, .project-details-even {
+            .project-card {
+              flex: 0 0 90%;
+              scroll-snap-align: start;
+              margin-bottom: 0;
+              padding: 1.5rem;
+            }
+            .project-image-container {
+              display: none;
+            }
+            .project-details {
               text-align: center;
             }
             .tech-stack {
               justify-content: center;
             }
-            .button-container {
-              justify-content: center;
+            .project-details h3 {
+              font-size: 1.5rem;
+            }
+            .project-details p {
+              font-size: 0.875rem;
+            }
+            .tech-stack img {
+              height: 1rem;
+            }
+            .button-container button {
+              padding: 0.5rem 1rem;
+              font-size: 0.875rem;
+              height: 45px;
+            }
+            .welcome-heading {
+              font-size: 2.5rem;
+              margin-top: 1rem;
+              font-weight: bold; 
+            }
+            .welcome-text {
+              font-size: 1rem;
+              margin-top: 1rem;
             }
           }
           @media (max-width: 480px) {
             .appName {
-              font-size: 1rem;
+              font-size: 1.25rem;
             }
             .navLink {
               font-size: 0;
               padding: 0.5rem;
               max-width: 40px;
-              justify-content: center;
             }
-            .project-image-container {
-              height: 150px !important;
+            .project-card {
+              flex: 0 0 95%;
             }
             .project-details h3 {
-              font-size: 1.125rem;
+              font-size: 1.25rem;
             }
             .project-details p {
-              font-size: 0.875rem;
+              font-size: 0.75rem;
             }
           }
         `}
       </style>
       <nav style={styles.navbar}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
           <h1
             style={styles.appName}
             onClick={() => window.location.href = '/'}
-            onMouseEnter={(e) => e.target.style.color = '#08d7fc'}
-            onMouseLeave={(e) => e.target.style.color = '#ffffff'}
+            onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
+            onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
             role="button"
             tabIndex={0}
             onKeyPress={(e) => e.key === 'Enter' && (window.location.href = '/')}
@@ -478,50 +509,53 @@ const ProjectsPage = () => {
             PolyGenAI - MultiModal AI
           </h1>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, justifyContent: 'flex-end' }}>
           <a
             href="/"
+            className="nav-link-home"
             style={styles.navLink}
-            onMouseEnter={(e) => e.target.style.color = '#08d7fc'}
-            onMouseLeave={(e) => e.target.style.color = '#ffffff'}
+            onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
+            onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
           >
-            <FiHome size={16} />
+            <FiHome size={18} />
             <span className="hide-on-mobile">Back to Home</span>
           </a>
           <a
             href="https://mtptisid.github.io"
             style={styles.navLink}
-            onMouseEnter={(e) => e.target.style.color = '#08d7fc'}
-            onMouseLeave={(e) => e.target.style.color = '#ffffff'}
+            onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
+            onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
           >
-            <FaUser size={16} />
+            <FaUser size={18} />
             <span className="hide-on-mobile">Siddharamayya M</span>
           </a>
         </div>
       </nav>
-      <section className="pt-24 pb-12 px-4 sm:px-6 lg:px-8 bg-gray-100">
+      <section className="pt-[60px] pb-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 animate-fadeIn">👋 Welcome!</h1>
-          <p className="text-lg text-gray-700 mb-6 animate-fadeIn" style={{ animationDelay: '0.2s' }}>
-            Below you’ll find a curate list of my personal and professional projects, covering a wide range of domains including Machine Learning, DevOps, AI, IoT, Web Development, and Automation.
-          </p>
-          <p className="text-lg text-gray-700 mb-6 animate-fadeIn" style={{ animationDelay: '0.4s' }}>
-            Each project card links directly to its GitHub repository. Simply click on a project to explore its source code directly in VS Code using GitHub’s web-based editor (vscode.dev).
-          </p>
-          <div className="text-left text-gray-700 animate-fadeIn" style={{ animationDelay: '0.6s' }}>
-            <p className="font-semibold mb-2">🔹 How to use this list:</p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>Click on any project title to open its code in VS Code online.</li>
-              <li>Each description highlights the project’s purpose, key features, and technologies used.</li>
-              <li>Browse freely to understand my contributions, development practices, and the problems I’ve tackled.</li>
-            </ul>
+          <h1 className="text-6xl font-extrabold text-gray-900 mb-8 animate-fadeIn welcome-heading">👋 Welcome to My Projects</h1>
+          <div className="text-xl text-gray-700 space-y-6 leading-relaxed">
+            <p className="welcome-text">
+              Below you’ll find a curated selection of my personal and professional projects, spanning diverse domains such as Machine Learning, DevOps, AI, IoT, Web Development, and Automation.
+            </p>
+            <p className="welcome-text">
+              Each project card provides a direct link to its GitHub repository. Click on a project to explore its source code in VS Code via GitHub’s web-based editor (vscode.dev).
+            </p>
+            <div className="text-left text-gray-700">
+              <p className="font-semibold mb-3 welcome-text">🔹 How to Navigate:</p>
+              <ul className="list-disc pl-8 space-y-3">
+                <li className="welcome-text">Click a project title to view its code online in VS Code.</li>
+                <li className="welcome-text">Descriptions outline each project’s purpose, features, and technologies.</li>
+                <li className="welcome-text">Explore freely to see my work, coding style, and problem-solving approach.</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
-      <section className="pb-12 px-4 sm:px-6 lg:px-8">
+      <section className="pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <div className="space-y-6">
-            {projects.map((project, index) => (
+          <div className="project-list">
+            {shuffledProjects.map((project, index) => (
               <div
                 key={index}
                 className={`project-card ${index % 2 === 0 ? 'project-card-odd' : 'project-card-even'} animate-fadeIn`}
@@ -534,17 +568,14 @@ const ProjectsPage = () => {
                     className="project-image"
                   />
                 </div>
-                    <div className={`project-details p-6 mb-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 ${
-                            index % 2 === 0 ? 'project-details-odd' : 'project-details-even'
-                        }`}
-                        >
-                        <h3 className="text-5xl font-black text-gray-900 mb-3 hover:text-[#08d7fc] transition-colors duration-200">
-                            Project {index + 1}: {project.title}
-                        </h3>
-                        <p className="text-lg text-gray-700 leading-relaxed">
-                            {project.description}
-                        </p>
-                  </div>
+                <div className={`project-details p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 ${index % 2 === 0 ? 'project-details-odd' : 'project-details-even'}`}>
+                  <h3 className="text-4xl font-bold text-gray-900 mb-4 hover:text-blue-500 transition-colors duration-200">
+                    Project {index + 1}: {project.title}
+                  </h3>
+                  <p className="text-lg text-gray-600 leading-relaxed">
+                    {project.description}
+                  </p>
+                </div>
                 <div className="tech-stack">
                   {project.technologies.map((tech, idx) => (
                     techBadges[tech] && (
@@ -552,28 +583,39 @@ const ProjectsPage = () => {
                         key={idx}
                         src={techBadges[tech]}
                         alt={`${tech} badge`}
-                        className="h-5"
+                        className="h-6"
                       />
                     )
                   ))}
                 </div>
                 <div className="button-container">
-                <button
-                  style={styles.actionButton}
-                  onClick={() => window.open(project.url, '_blank')}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#404347'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = '#404347'}
-                  aria-label="Explore Code"
-                >
-                  <FiCode style={{ marginRight: '0.15rem' }} size={16} color="#ffffff" />
-                  Explore Code
-                </button>
+                  <button
+                    style={styles.actionButton}
+                    onClick={() => window.open(project.url, '_blank')}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#4a5568';
+                      e.target.style.transform = 'scale(1.05)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = '#2d3748';
+                      e.target.style.transform = 'scale(1)';
+                    }}
+                    aria-label="Explore Code"
+                  >
+                    <FiCode style={{ marginRight: '0.5rem' }} size={18} color="#edf2f7" />
+                    Explore Code
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         </div>
       </section>
+      <footer className="bg-gray-800 text-white py-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-lg font-medium">© 2023 Siddharamayya M. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 };
