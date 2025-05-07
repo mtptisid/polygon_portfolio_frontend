@@ -802,9 +802,9 @@ const ProjectsPage = () => {
           ))}
         </div>
       </section>
-      <footer style={{ backgroundColor: '#1f2937', color: '#ffffff', padding: '2rem 0' }}>
+      <footer style={{ backgroundColor: '#404347', color: '#ffffff', padding: '1rem 0' }}>
         <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: '1.125rem', fontWeight: '500' }}>© 2025 Siddharamayya M. All rights reserved.</p>
+          <p style={{ fontSize: '1.125rem', fontWeight: '600' }}>© 2025 Siddharamayya M. All rights reserved.</p>
         </div>
       </footer>
     </div>
