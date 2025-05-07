@@ -259,12 +259,36 @@ const ProjectsPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!hasClicked) {
-      const timer = setTimeout(() => {
+    if (hasClicked) return;
+
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    let timer;
+
+    const handleMediaChange = (e) => {
+      if (e.matches) {
+        timer = setTimeout(() => {
+          navigate('/projects-view');
+        }, 10000); // 10 seconds
+      } else {
+        clearTimeout(timer);
+      }
+    };
+
+    // Initial check
+    if (mediaQuery.matches) {
+      timer = setTimeout(() => {
         navigate('/projects-view');
       }, 10000); // 10 seconds
-      return () => clearTimeout(timer);
     }
+
+    // Add listener for resize
+    mediaQuery.addEventListener('change', handleMediaChange);
+
+    // Cleanup
+    return () => {
+      clearTimeout(timer);
+      mediaQuery.removeEventListener('change', handleMediaChange);
+    };
   }, [hasClicked, navigate]);
 
   const handleArrowClick = () => {
@@ -322,7 +346,7 @@ const ProjectsPage = () => {
     },
     navLink: {
       color: '#edf2f7',
-      fontSize : '1.125rem',
+      fontSize: '1.125rem',
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'color 0.3s ease',
@@ -388,7 +412,7 @@ const ProjectsPage = () => {
             overflow: hidden;
             position: relative;
             width: 100%;
-            height: 280px;
+            height: 200px;
           }
           .project-image-container-odd {
             grid-column: 1;
@@ -408,6 +432,9 @@ const ProjectsPage = () => {
           }
           .project-details {
             grid-row: 1;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
           }
           .project-details-odd {
             grid-column: 2;
@@ -482,6 +509,9 @@ const ProjectsPage = () => {
             .project-section, .footer {
               display: none !important;
             }
+            .project-image-container {
+              height: 150px;
+            }
           }
           @media (min-width: 768px) {
             .mobile-nav, .arrow-container {
@@ -523,6 +553,9 @@ const ProjectsPage = () => {
             .arrow-button {
               width: 40px;
               height: 40px;
+            }
+            .project-image-container {
+              height: 120px;
             }
           }
         `}
@@ -655,7 +688,15 @@ const ProjectsPage = () => {
                   />
                 </div>
                 <div className={`project-details p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 ${index % 2 === 0 ? 'project-details-odd' : 'project-details-even'}`}>
-                  <h3 style={{ fontSize: '2.25rem', fontWeight: '700', color: '#1a202c', marginBottom: '1rem' }}>
+                  <h3 style={{ 
+                    fontSize: '2.25rem', 
+                    fontWeight: '700', 
+                    color: '#1a202c', 
+                    marginBottom: '1rem',
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    maxWidth: '100%'
+                  }}>
                     Project {index + 1}: {project.title}
                   </h3>
                   <p style={{ fontSize: '1.125rem', color: '#4a5568', lineHeight: '1.75' }}>
@@ -697,9 +738,9 @@ const ProjectsPage = () => {
           </div>
         </div>
       </section>
-      <footer style={{ backgroundColor: '#1f2937', color: '#404347', padding: '0.1rem 0' }}>
+      <footer style={{ backgroundColor: '#daebdd', color: '#000000', padding: '0.1rem 0' }}>
         <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: '1rem', fontWeight: '400' }}>© 2025 Siddharamayya M. All rights reserved.</p>
+          <p style={{ fontSize: '1rem', fontWeight: '500' }}>© 2025 Siddharamayya M. All rights reserved.</p>
         </div>
       </footer>
     </div>
