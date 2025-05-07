@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiMessageSquare, FiSearch, FiCpu, FiPaperclip, FiArrowUpRight, FiArrowDown, FiTrash2 } from 'react-icons/fi';
+import { FiMessageSquare, FiSearch, FiCpu, FiPaperclip, FiArrowUpRight, FiArrowDown, FiTrash2, FiHome } from 'react-icons/fi';
 import { FaBrain, FaCode, FaUser, FaBriefcase, FaGraduationCap, FaLanguage, FaEnvelope, FaProjectDiagram, FaGithub, FaGlobe, FaTools, FaRobot, FaDollarSign, FaFileDownload } from 'react-icons/fa';
 import ChatContainer from './ChatContainer';
 
@@ -475,6 +475,22 @@ const HomePage = () => {
       alignItems: 'center',
       gap: '0.5rem'
     },
+    homeButton: {
+      backgroundColor: '#404347',
+      color: 'white',
+      padding: '0.5rem',
+      border: 'none',
+      borderRadius: '50px',
+      cursor: 'pointer',
+      fontSize: '0.875rem',
+      fontWeight: '500',
+      transition: 'background-color 0.2s ease',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '40px',
+      height: '40px'
+    },
     navbar: {
       position: 'fixed',
       width: '100vw',
@@ -500,10 +516,7 @@ const HomePage = () => {
       cursor: 'pointer',
       transition: 'color 0.2s ease',
       textShadow: '0 0 3px rgba(255, 255, 255, 0.6)',
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      maxWidth: '50%'
+      whiteSpace: 'nowrap'
     },
     profileLink: {
       color: '#ffffff',
@@ -522,8 +535,6 @@ const HomePage = () => {
     },
     promptsContainer: {
       paddingTop: '85px',
-      //paddingLeft: '0.1rem',
-      //paddingRight: '0.1rem',
       height: '100vh',
       display: 'flex',
       flexDirection: 'column',
@@ -875,7 +886,6 @@ const HomePage = () => {
             }
             .appName {
               font-size: 1.25rem;
-              max-width: 50%;
             }
             .profileLink {
               font-size: 0.875rem;
@@ -884,6 +894,12 @@ const HomePage = () => {
             .newChatButton {
               font-size: 0.875rem;
               padding: 0.5rem 0.75rem;
+            }
+            .homeButton {
+              font-size: 0.875rem;
+              padding: 0.5rem;
+              width: 40px;
+              height: 40px;
             }
             .sidebar {
               width: 200px;
@@ -989,6 +1005,13 @@ const HomePage = () => {
               height: 40px;
               justify-content: center;
             }
+            .homeButton {
+              font-size: 0;
+              padding: 0.5rem;
+              width: 40px;
+              height: 40px;
+              justify-content: center;
+            }
             .profileLink {
               font-size: 0;
               padding: 0.5rem;
@@ -997,7 +1020,6 @@ const HomePage = () => {
             }
             .appName {
               font-size: 1rem;
-              max-width: 100%;
             }
             .sidebar {
               width: 160px;
@@ -1137,7 +1159,7 @@ const HomePage = () => {
       </div>
       <div style={{ flex: 1, width: '100vw', overflowY: 'auto' }}>
         <nav style={styles.navbar}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, maxWidth: '60%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, maxWidth: isMobile ? 'auto' : '60%' }}>
             <button
               style={styles.newChatButton}
               onClick={() => setSidebarVisible(!sidebarVisible)}
@@ -1150,19 +1172,30 @@ const HomePage = () => {
               onMouseEnter={(e) => e.target.style.color = '#08d7fc'}
               onMouseLeave={(e) => e.target.style.color = '#ffffff'}
             >
-              <h1
-                style={styles.appName}
-                className="hide-on-mobile"
-                onClick={() => window.location.reload()}
-                role="button"
-                tabIndex={0}
-                onKeyPress={(e) => e.key === 'Enter' && window.location.reload()}
-              >
-                PolyGenAI - MultiModal AI
-              </h1>
+              {isMobile ? (
+                <button
+                  style={styles.homeButton}
+                  onClick={() => window.location.reload()}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#555555'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#404347'}
+                  aria-label="Home"
+                >
+                  <FiHome size={16} />
+                </button>
+              ) : (
+                <h1
+                  style={styles.appName}
+                  onClick={() => window.location.reload()}
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={(e) => e.key === 'Enter' && window.location.reload()}
+                >
+                  PolyGenAI - MultiModal AI
+                </h1>
+              )}
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, justifyContent: 'flex-end', maxWidth: '40%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, justifyContent: 'flex-end', maxWidth: isMobile ? 'auto' : '40%' }}>
             <a
               href="https://mtptisid.github.io"
               style={styles.profileLink}
