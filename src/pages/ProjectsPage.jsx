@@ -717,7 +717,7 @@ const ProjectsPage = () => {
                 </div>
                 <div className={`project-details p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 ${index % 2 === 0 ? 'project-details-odd' : 'project-details-even'}`}>
                   <h3 style={{ fontSize: '2.25rem', fontWeight: '700', color: '#1a202c', marginBottom: '1rem' }}>
-                    Project {index + 1}: {project.title}
+                    {project.title}
                   </h3>
                   <p style={{ fontSize: '1.125rem', color: '#4a5568', lineHeight: '1.75' }}>
                     {project.description}
