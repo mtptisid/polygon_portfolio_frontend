@@ -294,11 +294,11 @@ const HomePage = () => {
     const prefix = 'Welcome to my digital workspace.';
     const name = 'Siddharamayya M';
     const description = 'Crafting solutions with AI, data, and code';
-    const subdesc = "Select any AI Model and ask for anything.";
+    const subdesc = 'Select any AI Model and ask for anything.';
     
     return (
-      <div style={{ textAlign: 'center', margin: '1.5rem auto', width: '100%', maxWidth: '1200px' }} className="header">
-        <div style={{ fontSize: '1.75rem', color: '#6b7280', marginBottom: '0.75rem' }}>
+      <div style={{ textAlign: 'center', margin: '1rem auto', width: '100%', maxWidth: '1200px' }} className="header">
+        <div style={{ fontSize: isMobile ? '1.25rem' : '2rem', color: '#6b7280', marginBottom: '0.5rem' }}>
           {prefix.split('').map((char, index) => (
             <span
               key={index}
@@ -312,7 +312,7 @@ const HomePage = () => {
             </span>
           ))}
         </div>
-        <div style={{ fontSize: '2.7rem', fontWeight: '700' }}>
+        <div style={{ fontSize: isMobile ? '1.75rem' : '3.15rem', fontWeight: '800' }}>
           <a
             href="https://mtptisid.github.io"
             style={{
@@ -348,7 +348,7 @@ const HomePage = () => {
             </span>
           ))}
         </div>
-        <div style={{ fontSize: '1.5rem', color: 'rgb(180 185 194)', marginBottom: '0.75rem', marginTop: '1.5rem' }}>
+        <div style={{ fontSize: isMobile ? '1rem' : '2rem', color: 'rgb(180 185 194)', marginBottom: '0.5rem', marginTop: '1rem' }}>
           {subdesc.split('').map((char, index) => (
             <span
               key={index}
@@ -389,7 +389,9 @@ const HomePage = () => {
           >
             {promptIcons[prompt]?.icon || null}
             <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {prompt}
+              <marquee behavior="scroll" direction="left" scrollamount="3">
+                {prompt}
+              </marquee>
             </span>
             <span>{promptIcons[prompt]?.emoji}</span>
           </div>
@@ -519,9 +521,9 @@ const HomePage = () => {
       maxWidth: '40%'
     },
     promptsContainer: {
-      paddingTop: '80px',
-      paddingLeft: '1rem',
-      paddingRight: '1rem',
+      paddingTop: '85px',
+      //paddingLeft: '0.1rem',
+      //paddingRight: '0.1rem',
       height: '100vh',
       display: 'flex',
       flexDirection: 'column',
@@ -704,7 +706,7 @@ const HomePage = () => {
     },
     dropdownItem: {
       padding: '0.5rem 1rem',
-      cursor: "pointer",
+      cursor: 'pointer',
       color: '#1e293b',
       borderRadius: '4px',
       transition: 'background-color 0.2s ease',
@@ -750,28 +752,27 @@ const HomePage = () => {
       color: '#1e293b',
       borderRadius: '16px',
       cursor: 'pointer',
-      flex: '0 0 290px',
+      flex: '0 0 260px',
       width: '200px',
-      height: '90px',
-      fontSize: '0.675rem',
-      fontWeight: '550',
-      transition: 'all 0.6s ease',
+      height: '100px',
+      fontSize: '0.875rem',
+      fontWeight: '600',
+      transition: 'all 0.3s ease',
       border: '1px solid #e5e7eb',
       boxShadow: '0 6px 12px rgba(0,0,0,0.1)',
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem',
+      gap: '0.7rem',
       overflow: 'hidden',
       boxSizing: 'border-box',
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis'
+      whiteSpace: 'nowrap'
     },
     promptsMarquee: {
       width: '100%',
-      maxWidth: '1300px',
+      maxWidth: '1200px',
       overflow: 'hidden',
       whiteSpace: 'nowrap',
-      marginBottom: '2rem'
+      marginBottom: '1rem'
     },
     marqueeContent: {
       display: 'inline-flex',
@@ -920,6 +921,7 @@ const HomePage = () => {
             }
             .promptsMarquee {
               margin-bottom: 0.5rem;
+              margin-top: 0;
             }
             .inputContainer {
               padding: 0.5rem;
@@ -1033,6 +1035,7 @@ const HomePage = () => {
             }
             .promptsMarquee {
               margin-bottom: 0.4rem;
+              margin-top: 0;
             }
             .inputContainer {
               padding: 0.25rem;
@@ -1066,8 +1069,8 @@ const HomePage = () => {
             }
             .userMessage, .botMessage {
               max-width: 90%;
-              fontSize: '0.75rem',
-              padding: '0.5rem'
+              font-size: 0.75rem;
+              padding: 0.5rem;
             }
             .inputRow {
               gap: 0.15rem;
@@ -1176,8 +1179,8 @@ const HomePage = () => {
             <div style={{ width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
               {isMobile ? (
                 <>
-                  {renderHeader()}
                   {renderExamplePrompts()}
+                  {renderHeader()}
                 </>
               ) : (
                 <>
