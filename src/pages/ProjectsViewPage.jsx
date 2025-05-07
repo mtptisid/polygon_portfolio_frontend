@@ -421,7 +421,7 @@ const ProjectsViewPage = () => {
             transform: scale(1.05);
           }
           .footer {
-            background-color: #1f2937;
+            background-color: #404347;
             color: #ffffff;
             padding: 0.1rem 0;
             width: 100vw;
@@ -525,7 +525,7 @@ const ProjectsViewPage = () => {
       </section>
       <footer className="footer">
         <div style={{ maxWidth: '896px', margin: '0 auto' }}>
-          <p style={{ fontSize: '0.2rem', fontWeight: '300' }}>
+          <p style={{ fontSize: '0.5rem', fontWeight: '300' }}>
             © 2025 Siddharamayya M. All rights reserved.
           </p>
         </div>
