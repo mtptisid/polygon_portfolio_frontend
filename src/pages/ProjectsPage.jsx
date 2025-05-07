@@ -694,7 +694,6 @@ const ProjectsPage = () => {
                 <li className="welcome-text">Click a project title to view its code online in VS Code.</li>
                 <li className="welcome-text" style={{ marginTop: '0.75rem' }}>Descriptions outline each project’s purpose, features, and technologies.</li>
                 <li className="welcome-text" style={{ marginTop: '0.75rem' }}>Explore freely to see my work, coding style, and problem-solving approach.</li>
-                <p className="welcome-text" style={{ marginTop: '0.75rem', fontSize: '2rem', fontWeight: '600' }}>scroll down to see all the project and explore code.</p>
               </ul>
             </div>
           </div>
