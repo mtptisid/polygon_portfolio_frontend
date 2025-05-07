@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ProjectsPage from './pages/ProjectsPage';
 import ProjectsViewPage from './pages/ProjectsViewPage';
-import HomePage from './pages/HomePage'; // Adjust this import based on your homepage component
-import './index.css'; // Assuming global styles, adjust if needed
+import HomePage from './pages/HomePage'; 
+import './index.css'; 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
