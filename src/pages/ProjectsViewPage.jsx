@@ -454,7 +454,7 @@ const ProjectsViewPage = () => {
               height: 36px;
             }
             .footer {
-              padding: 1.5rem 0;
+              padding: 0.5rem 0;
               font-size: 0.875rem;
             }
           }
@@ -525,7 +525,7 @@ const ProjectsViewPage = () => {
       </section>
       <footer className="footer">
         <div style={{ maxWidth: '896px', margin: '0 auto' }}>
-          <p style={{ fontSize: '1rem', fontWeight: '300' }}>
+          <p style={{ fontSize: '0.2rem', fontWeight: '300' }}>
             © 2025 Siddharamayya M. All rights reserved.
           </p>
         </div>
