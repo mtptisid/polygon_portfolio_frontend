@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { FiHome, FiCode } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+import { FiHome, FiCode, FiArrowRight } from 'react-icons/fi';
 import { FaUser } from 'react-icons/fa';
 
 const techBadges = {
@@ -54,7 +55,7 @@ const techBadges = {
   "Text-to-Speech": "https://img.shields.io/badge/text_to_speech-%23121011.svg?style=flat&logo=python&logoColor=white",
   "FastAPI": "https://img.shields.io/badge/fastapi-%23009688.svg?style=flat&logo=fastapi&logoColor=white",
   "Polygon API": "https://img.shields.io/badge/polygon_api-%23121011.svg?style=flat&logo=python&logoColor=white",
-  "REST": "https://img.shields.io/badge/rest-%230000 ছোট্ট-বড়্ট-কম্পিউটারের-মতো-দেখতে-একটি-অ্যাপ্লিকেশন-যা-ইন্টারনেটে-কাজ-করে।svg?style=flat&logo=rest&logoColor=white",
+  "REST": "https://img.shields.io/badge/rest-%23000000.svg?style=flat&logo=rest&logoColor=white",
   "JavaScript": "https://img.shields.io/badge/javascript-%23323330.svg?style=flat&logo=javascript&logoColor=%23F7DF1E",
   "React": "https://img.shields.io/badge/react-%2320232a.svg?style=flat&logo=react&logoColor=%2361DAFB",
   "Vite": "https://img.shields.io/badge/vite-%23646CFF.svg?style=flat&logo=vite&logoColor=white",
@@ -254,14 +255,22 @@ const ProjectsPage = () => {
     const shuffled = [...projects].sort(() => Math.random() - 0.5);
     return shuffled;
   });
-  const [showSlider, setShowSlider] = useState(false);
+  const [hasClicked, setHasClicked] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSlider(true);
-    }, 6000);
-    return () => clearTimeout(timer);
-  }, []);
+    if (!hasClicked) {
+      const timer = setTimeout(() => {
+        navigate('/projects-view');
+      }, 10000); // 10 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [hasClicked, navigate]);
+
+  const handleArrowClick = () => {
+    setHasClicked(true);
+    navigate('/projects-view');
+  };
 
   const styles = {
     navbar: {
@@ -296,9 +305,24 @@ const ProjectsPage = () => {
       boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
       transform: 'scale(1)'
     },
+    arrowButton: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '0.75rem',
+      borderRadius: '50%',
+      border: '1px solid #e2e8f0',
+      backgroundColor: '#2d3748',
+      color: '#edf2f7',
+      cursor: 'pointer',
+      transition: 'background-color 0.3s ease, transform 0.3s ease',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+      width: '48px',
+      height: '48px'
+    },
     navLink: {
       color: '#edf2f7',
-      fontSize: '1.125rem',
+      fontSize : '1.125rem',
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'color 0.3s ease',
@@ -428,17 +452,14 @@ const ProjectsPage = () => {
               bottom: 0;
               padding: 1rem;
               background-color: #f7fafc;
-              opacity: 1;
-              visibility: visible;
-              transition: opacity 0.5s ease, visibility 0.5s ease;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
               z-index: 99;
               width: 100vw;
               overflow-y: auto;
-            }
-            .show-slider .welcome-section {
-              opacity: 0;
-              visibility: hidden;
-              pointer-events: none;
+              opacity: 1;
+              transition: opacity 0.5s ease;
             }
             .welcome-heading {
               font-size: 1.5rem;
@@ -452,127 +473,25 @@ const ProjectsPage = () => {
               margin-top: 0.5rem;
               color: #4a5568;
             }
+            .arrow-container {
+              display: flex;
+              justify-content: center;
+              padding: 1rem;
+              margin-top: auto;
+            }
             .project-section, .footer {
               display: none !important;
             }
-            .mobile-projects-section {
-              position: fixed;
-              top: 60px;
-              left: 0;
-              right: 0;
-              bottom: 0;
-              background-color: #f7fafc;
-              opacity: 0;
-              visibility: hidden;
-              transition: opacity 0.5s ease, visibility 0.5s ease;
-              z-index: 100;
-              width: 100vw;
-              height: calc(100vh - 60px);
-              overflow: hidden;
-            }
-            .show-slider .mobile-projects-section {
-              opacity: 1;
-              visibility: visible;
-            }
-            .mobile-slider {
-              display: flex;
-              height: 100%;
-              width: 100%;
-              overflow-x: auto;
-              scroll-snap-type: x mandatory;
-              scroll-behavior: smooth;
-              -webkit-overflow-scrolling: touch;
-            }
-            .mobile-slider > div {
-              flex: 0 0 100%;
-              scroll-snap-align: center;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              min-width: 100vw;
-              height: 100%;
-              padding: 1rem;
-            }
-            .mobile-slider::-webkit-scrollbar {
-              display: none;
-            }
-            .mobile-slider {
-              -ms-overflow-style: none;
-              scrollbar-width: none;
-            }
-            .mobile-project-card {
-              background: linear-gradient(145deg, #ffffff, #e6e6e6);
-              border: none;
-              border-radius: 20px;
-              box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-              padding: 1.5rem;
-              width: calc(100% - 2rem);
-              height: calc(100% - 2rem);
-              max-width: 500px;
-              text-align: center;
-              transition: transform 0.3s ease;
-              display: flex;
-              flex-direction: column;
-              justify-content: space-between;
-            }
-            .mobile-project-card:hover {
-              transform: scale(1.03);
-            }
-            .mobile-project-details {
-              flex-grow: 1;
-              overflow-y: auto;
-              padding-bottom: 1rem;
-            }
-            .mobile-project-details h3 {
-              font-size: 1.25rem;
-              font-weight: 700;
-              color: #000000;
-              margin-bottom: 0.75rem;
-              transition: color 0.2s ease;
-            }
-            .mobile-project-details h3:hover {
-              color: #2563eb;
-            }
-            .mobile-project-details p {
-              font-size: 0.75rem;
-              color: #000000;
-              margin-bottom: 1rem;
-              line-height: 1.4;
-            }
-            .mobile-tech-stack {
-              display: flex;
-              flex-wrap: wrap;
-              gap: 0.5rem;
-              justify-content: center;
-              margin-bottom: 1rem;
-            }
-            .mobile-tech-stack img {
-              height: 1.25rem;
-              filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-            }
-            .mobile-button-container {
-              margin-top: auto;
-            }
-            .mobile-button-container button {
-              padding: 0.5rem 1rem;
-              font-size: 0.875rem;
-              height: 40px;
-              background-color: #1f2937;
-              border-color: #d1d5db;
-            }
-            .mobile-button-container button:hover {
-              background-color: #374151;
-              transform: scale(1.05);
-            }
           }
           @media (min-width: 768px) {
-            .mobile-nav, .mobile-projects-section {
+            .mobile-nav, .arrow-container {
               display: none !important;
             }
             .welcome-section {
               position: static;
               padding: 60px 1rem 4rem;
               width: 100vw;
+              display: block;
             }
             .project-section {
               display: block !important;
@@ -592,24 +511,18 @@ const ProjectsPage = () => {
             .mobile-nav {
               padding: 0.5rem;
             }
-            .mobile-project-card {
-              padding: 1rem;
-              width: calc(100% - 1.5rem);
-              height: calc(100% - 1.5rem);
+            .welcome-heading {
+              font-size: 1.25rem;
             }
-            .mobile-project-details h3 {
-              font-size: 1rem;
-            }
-            .mobile-project-details p {
-              font-size: 0.625rem;
-            }
-            .mobile-tech-stack img {
-              height: 1rem;
-            }
-            .mobile-button-container button {
+            .welcome-text {
               font-size: 0.75rem;
-              padding: 0.4rem 0.8rem;
-              height: 36px;
+            }
+            .arrow-container {
+              padding: 0.5rem;
+            }
+            .arrow-button {
+              width: 40px;
+              height: 40px;
             }
           }
         `}
@@ -678,25 +591,51 @@ const ProjectsPage = () => {
           </a>
         </div>
       </nav>
-      <section className={`welcome-section ${showSlider ? 'show-slider' : ''}`}>
-        <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center' }}>
-          <h1 className="welcome-heading">👋 Welcome to My Projects</h1>
+      <section className="welcome-section">
+        <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center', flex: 1 }}>
+          <h1 className="welcome-heading animate-fadeIn">👋 Welcome to My Projects</h1>
           <div style={{ fontSize: '1.25rem', color: '#4a5568', marginTop: '1.5rem', lineHeight: '1.75' }}>
-            <p className="welcome-text">
+            <p className="welcome-text animate-fadeIn" style={{ animationDelay: '0.2s' }}>
               Below you’ll find a curated selection of my personal and professional projects, spanning diverse domains such as Machine Learning, DevOps, AI, IoT, Web Development, and Automation.
             </p>
-            <p className="welcome-text" style={{ marginTop: '1.5rem' }}>
+            <p className="welcome-text animate-fadeIn" style={{ marginTop: '1.5rem', animationDelay: '0.4s' }}>
               Each project card provides a direct link to its GitHub repository. Click on a project to explore its source code in VS Code via GitHub’s web-based editor (vscode.dev).
             </p>
             <div style={{ textAlign: 'left', marginTop: '1.5rem' }}>
-              <p className="welcome-text" style={{ fontWeight: '600', marginBottom: '0.75rem' }}>🔹 How to Navigate:</p>
+              <p className="welcome-text animate-fadeIn" style={{ fontWeight: '600', marginBottom: '0.75rem', animationDelay: '0.6s' }}>
+                🔹 How to Navigate:
+              </p>
               <ul style={{ listStyleType: 'disc', paddingLeft: '2rem', marginTop: '0.75rem' }}>
-                <li className="welcome-text">Click a project title to view its code online in VS Code.</li>
-                <li className="welcome-text" style={{ marginTop: '0.75rem' }}>Descriptions outline each project’s purpose, features, and technologies.</li>
-                <li className="welcome-text" style={{ marginTop: '0.75rem' }}>Explore freely to see my work, coding style, and problem-solving approach.</li>
+                <li className="welcome-text animate-fadeIn" style={{ animationDelay: '0.8s' }}>
+                  Click a project title to view its code online in VS Code.
+                </li>
+                <li className="welcome-text animate-fadeIn" style={{ marginTop: '0.75rem', animationDelay: '1s' }}>
+                  Descriptions outline each project’s purpose, features, and technologies.
+                </li>
+                <li className="welcome-text animate-fadeIn" style={{ marginTop: '0.75rem', animationDelay: '1.2s' }}>
+                  Explore freely to see my work, coding style, and problem-solving approach.
+                </li>
               </ul>
             </div>
           </div>
+        </div>
+        <div className="arrow-container">
+          <button
+            style={styles.arrowButton}
+            onClick={handleArrowClick}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#4a5568';
+              e.target.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#2d3748';
+              e.target.style.transform = 'scale(1)';
+            }}
+            aria-label="View Projects"
+            className="arrow-button"
+          >
+            <FiArrowRight size={24} />
+          </button>
         </div>
       </section>
       <section className="project-section">
@@ -717,7 +656,7 @@ const ProjectsPage = () => {
                 </div>
                 <div className={`project-details p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 ${index % 2 === 0 ? 'project-details-odd' : 'project-details-even'}`}>
                   <h3 style={{ fontSize: '2.25rem', fontWeight: '700', color: '#1a202c', marginBottom: '1rem' }}>
-                    {project.title}
+                    Project {index + 1}: {project.title}
                   </h3>
                   <p style={{ fontSize: '1.125rem', color: '#4a5568', lineHeight: '1.75' }}>
                     {project.description}
@@ -758,52 +697,9 @@ const ProjectsPage = () => {
           </div>
         </div>
       </section>
-      <section className={`mobile-projects-section ${showSlider ? 'show-slider' : ''}`}>
-        <div className="mobile-slider">
-          {shuffledProjects.map((project, index) => (
-            <div key={index}>
-              <div className="mobile-project-card">
-                <div className="mobile-project-details">
-                  <h3> {project.title}</h3>
-                  <p>{project.description}</p>
-                </div>
-                <div className="mobile-tech-stack">
-                  {project.technologies.map((tech, idx) => (
-                    techBadges[tech] && (
-                      <img
-                        key={idx}
-                        src={techBadges[tech]}
-                        alt={`${tech} badge`}
-                      />
-                    )
-                  ))}
-                </div>
-                <div className="mobile-button-container">
-                  <button
-                    style={styles.actionButton}
-                    onClick={() => window.open(project.url, '_blank')}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#4a5568';
-                      e.target.style.transform = 'scale(1.05)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = '#2d3748';
-                      e.target.style.transform = 'scale(1)';
-                    }}
-                    aria-label="Explore Code"
-                  >
-                    <FiCode style={{ marginRight: '0.5rem' }} size={18} color="#edf2f7" />
-                    Explore Code
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-      <footer style={{ backgroundColor: '#404347', color: '#ffffff', padding: '0.2rem 0' }}>
+      <footer style={{ backgroundColor: '#1f2937', color: '#404347', padding: '0.1rem 0' }}>
         <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: '0.5rem', fontWeight: '400' }}>© 2025 Siddharamayya M. All rights reserved.</p>
+          <p style={{ fontSize: '1rem', fontWeight: '400' }}>© 2025 Siddharamayya M. All rights reserved.</p>
         </div>
       </footer>
     </div>
