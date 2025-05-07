@@ -454,7 +454,7 @@ const ProjectsViewPage = () => {
               height: 36px;
             }
             .footer {
-              padding: 0.5rem 0;
+              padding: 0.3rem 0;
               font-size: 0.875rem;
             }
           }
@@ -514,7 +514,7 @@ const ProjectsViewPage = () => {
                     }}
                     aria-label="Explore Code"
                   >
-                    <FiCode style={{ marginRight: '0.5rem' }} size={18} color="#edf2f7" />
+                    <FiCode style={{ marginRight: '0.5rem' }} size={19} color="#edf2f7" />
                     Explore Code
                   </button>
                 </div>
@@ -525,7 +525,7 @@ const ProjectsViewPage = () => {
       </section>
       <footer className="footer">
         <div style={{ maxWidth: '896px', margin: '0 auto' }}>
-          <p style={{ fontSize: '0.5rem', fontWeight: '300' }}>
+          <p style={{ fontSize: '0.4rem', fontWeight: '300' }}>
             © 2025 Siddharamayya M. All rights reserved.
           </p>
         </div>
