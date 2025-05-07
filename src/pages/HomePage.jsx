@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiMessageSquare, FiSearch, FiCpu, FiPaperclip, FiArrowUpRight, FiArrowDown, FiTrash2, FiHome } from 'react-icons/fi';
-import { FaBrain, FaCode, FaUser, FaBriefcase, FaGraduationCap, FaLanguage, FaEnvelope, FaProjectDiagram, FaGithub, FaGlobe, FaTools, FaRobot, FaDollarSign, FaFileDownload } from 'react-icons/fa';
+import { FiMessageSquare, FiSearch, FiCpu, FiPaperclip, FiArrowUpRight, FiArrowDown, FiTrash2, FiHome, FiBriefcase } from 'react-icons/fi';
+import { FaBrain, FaCode, FaUser, FaBriefcase, FaGraduationCap, FaLanguage, FaEnvelope, FaGithub, FaGlobe, FaTools, FaRobot, FaDollarSign, FaFileDownload } from 'react-icons/fa';
 import ChatContainer from './ChatContainer';
 
 const HomePage = () => {
@@ -58,7 +58,7 @@ const HomePage = () => {
     "When will Siddharamayya be available to join?": { icon: <FaBriefcase size={18} color="#ef4444" />, emoji: "📅" },
     "What is Siddharamayya great at technically?": { icon: <FaTools size={18} color="#10b981" />, emoji: "🛠️" },
     "How good is Siddharamayya in AI/ML?": { icon: <FaBrain size={18} color="#3b82f6" />, emoji: "🤖" },
-    "What are Siddharamayya's projects?": { icon: <FaProjectDiagram size={18} color="#8b5cf6" />, emoji: "🚀" },
+    "What are Siddharamayya's projects?": { icon: <FiBriefcase size={18} color="#8b5cf6" />, emoji: "🚀" },
     "What is Siddharamayya's GitHub page?": { icon: <FaGithub size={18} color="#1e293b" />, emoji: "🐙" },
     "What is Siddharamayya's portfolio page?": { icon: <FaGlobe size={18} color="#10b981" />, emoji: "🌐" },
     "What are Siddharamayya's key skills?": { icon: <FaTools size={18} color="#10b981" />, emoji: "🔧" },
@@ -484,7 +484,7 @@ const HomePage = () => {
       cursor: 'pointer',
       fontSize: '0.875rem',
       fontWeight: '500',
-      transition: 'background-color 0.2s ease',
+      transition: 'background Practices-color 0.2s ease',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -518,7 +518,7 @@ const HomePage = () => {
       textShadow: '0 0 3px rgba(255, 255, 255, 0.6)',
       whiteSpace: 'nowrap'
     },
-    profileLink: {
+    navLink: {
       color: '#ffffff',
       fontSize: '1rem',
       fontWeight: '700',
@@ -529,9 +529,12 @@ const HomePage = () => {
       alignItems: 'center',
       gap: '0.5rem',
       whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      maxWidth: '40%'
+      padding: '0.5rem 0.75rem',
+      borderRadius: '8px',
+      backgroundColor: 'transparent',
+      visibility: 'visible',
+      opacity: 1,
+      zIndex: 1
     },
     promptsContainer: {
       paddingTop: '85px',
@@ -821,6 +824,9 @@ const HomePage = () => {
           .marqueeContent:hover {
             animation-play-state: paused;
           }
+          .hide-on-mobile {
+            display: inline;
+          }
           @media (min-width: 1024px) {
             .container {
               width: 100vw;
@@ -877,9 +883,10 @@ const HomePage = () => {
               min-height: 60px;
               padding: 0.5rem;
               flex-direction: row;
-              flex-wrap: wrap;
+              flex-wrap: nowrap;
               gap: 0.5rem;
               justify-content: space-between;
+              align-items: center;
             }
             .hide-on-mobile {
               display: none;
@@ -887,9 +894,11 @@ const HomePage = () => {
             .appName {
               font-size: 1.25rem;
             }
-            .profileLink {
+            .navLink {
               font-size: 0.875rem;
-              max-width: 45%;
+              padding: 0.5rem;
+              max-width: 50px;
+              justify-content: center;
             }
             .newChatButton {
               font-size: 0.875rem;
@@ -1012,7 +1021,7 @@ const HomePage = () => {
               height: 40px;
               justify-content: center;
             }
-            .profileLink {
+            .navLink {
               font-size: 0;
               padding: 0.5rem;
               max-width: 40px;
@@ -1159,7 +1168,7 @@ const HomePage = () => {
       </div>
       <div style={{ flex: 1, width: '100vw', overflowY: 'auto' }}>
         <nav style={styles.navbar}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, maxWidth: isMobile ? 'auto' : '60%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
             <button
               style={styles.newChatButton}
               onClick={() => setSidebarVisible(!sidebarVisible)}
@@ -1195,10 +1204,19 @@ const HomePage = () => {
               )}
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, justifyContent: 'flex-end', maxWidth: isMobile ? 'auto' : '40%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, justifyContent: 'flex-end' }}>
+            <button
+              style={styles.navLink}
+              onClick={() => navigate('/projects')}
+              onMouseEnter={(e) => e.target.style.color = '#08d7fc'}
+              onMouseLeave={(e) => e.target.style.color = '#ffffff'}
+            >
+              <FiBriefcase size={16} />
+              <span className="hide-on-mobile">Projects</span>
+            </button>
             <a
               href="https://mtptisid.github.io"
-              style={styles.profileLink}
+              style={styles.navLink}
               onMouseEnter={(e) => e.target.style.color = '#08d7fc'}
               onMouseLeave={(e) => e.target.style.color = '#ffffff'}
             >
