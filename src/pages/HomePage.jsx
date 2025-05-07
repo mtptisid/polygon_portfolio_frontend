@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiMessageSquare, FiSearch, FiCpu, FiPaperclip, FiArrowUpRight, FiArrowDown } from 'react-icons/fi';
+import { FiMessageSquare, FiSearch, FiCpu, FiPaperclip, FiArrowUpRight, FiArrowDown, FiTrash2 } from 'react-icons/fi';
 import { FaBrain, FaCode, FaUser, FaBriefcase, FaGraduationCap, FaLanguage, FaEnvelope, FaProjectDiagram, FaGithub, FaGlobe, FaTools, FaRobot, FaDollarSign, FaFileDownload } from 'react-icons/fa';
 import ChatContainer from './ChatContainer';
 
@@ -16,9 +16,9 @@ const HomePage = () => {
   const [currentSessionId, setCurrentSessionId] = useState(null);
   const [displayedPrompts, setDisplayedPrompts] = useState([]);
   const [showScrollButton, setShowScrollButton] = useState(false);
-  const [promptCycleIndex, setPromptCycleIndex] = useState(0);
   const [tool, setTool] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
+  const [deleteChatId, setDeleteChatId] = useState(null);
   const textareaRef = useRef(null);
   const chatContainerRef = useRef(null);
   const bottomRef = useRef(null);
@@ -46,7 +46,11 @@ const HomePage = () => {
     "How does Siddharamayya use Docker and Kubernetes?",
     "What are Siddharamayya’s contributions to web development?",
     "Visit Siddharamayya's portfolio",
-    "Download Resume"
+    "Download Resume",
+    "Write an Ansible playbook to deploy a web server",
+    "Create a Bash script to monitor system resources",
+    "Design a machine learning model for image classification",
+    "Explain how to set up a CI/CD pipeline with Jenkins"
   ];
 
   const promptIcons = {
@@ -71,7 +75,11 @@ const HomePage = () => {
     "How does Siddharamayya use Docker and Kubernetes?": { icon: <FaTools size={18} color="#1e293b" />, emoji: "☁️" },
     "What are Siddharamayya’s contributions to web development?": { icon: <FaCode size={18} color="#10b981" />, emoji: "🌐" },
     "Visit Siddharamayya's portfolio": { icon: <FaGlobe size={18} color="#d91a89" />, emoji: "🌐" },
-    "Download Resume": { icon: <FaFileDownload size={18} color="#f59e0b" />, emoji: "📄" }
+    "Download Resume": { icon: <FaFileDownload size={18} color="#f59e0b" />, emoji: "📄" },
+    "Write an Ansible playbook to deploy a web server": { icon: <FaTools size={18} color="#ef4444" />, emoji: "📜" },
+    "Create a Bash script to monitor system resources": { icon: <FaCode size={18} color="#3b82f6" />, emoji: "🖥️" },
+    "Design a machine learning model for image classification": { icon: <FaBrain size={18} color="#8b5cf6" />, emoji: "🧠" },
+    "Explain how to set up a CI/CD pipeline with Jenkins": { icon: <FaTools size={18} color="#10b981" />, emoji: "🔄" }
   };
 
   // Detect mobile view
@@ -100,12 +108,11 @@ const HomePage = () => {
     const otherPrompts = examplePrompts.filter(prompt => !fixedPrompts.includes(prompt));
     const getRandomPrompts = () => {
       const shuffled = shuffleArray(otherPrompts);
-      const selected = shuffled.slice(0, 2);
-      return shuffleArray([...fixedPrompts, ...selected]);
+      const selected = shuffled.slice(0, 4);
+      return [...fixedPrompts, ...selected];
     };
     setDisplayedPrompts(getRandomPrompts());
     const interval = setInterval(() => {
-      setPromptCycleIndex((prevIndex) => prevIndex + 1);
       setDisplayedPrompts(getRandomPrompts());
     }, 15000);
     return () => clearInterval(interval);
@@ -145,6 +152,23 @@ const HomePage = () => {
       isUser: !msg.is_bot
     })));
     setTool(null);
+    setDeleteChatId(null);
+  };
+
+  const handleLongPress = (sessionId) => {
+    setDeleteChatId(sessionId);
+  };
+
+  const handleDeleteChat = (sessionId) => {
+    const updatedHistory = chatHistory.filter(session => session.session_id !== sessionId);
+    setChatHistory(updatedHistory);
+    localStorage.setItem('chatHistory', JSON.stringify(updatedHistory));
+    if (selectedChatId === sessionId) {
+      setSelectedChatId(null);
+      setMessages([]);
+      setCurrentSessionId(null);
+    }
+    setDeleteChatId(null);
   };
 
   const handleSendMessage = async (content, selectedTool = null) => {
@@ -153,7 +177,7 @@ const HomePage = () => {
     const userMessage = { content, isUser: true, is_bot: false };
     setMessages(prev => [...prev, userMessage]);
     setMessage('');
-    setTool(null); // Reset tool after sending
+    setTool(null);
 
     const sessionId = currentSessionId || generateSessionId();
     if (!currentSessionId) {
@@ -166,8 +190,6 @@ const HomePage = () => {
       session_id: sessionId,
       tool: selectedTool
     };
-
-    console.log('Sending payload:', JSON.stringify(payload, null, 2));
 
     try {
       const response = await fetch('https://portpoliosid.onrender.com/api/ai_chat/request', {
@@ -187,7 +209,6 @@ const HomePage = () => {
       const botMessage = { content: data.content, isUser: false, is_bot: true };
       setMessages(prev => [...prev, botMessage]);
 
-      // Update chat history in local storage
       const updatedHistory = chatHistory.map(session => {
         if (session.session_id === sessionId) {
           return {
@@ -269,7 +290,6 @@ const HomePage = () => {
     };
   }, [messages.length]);
 
-  // Render header with animations
   const renderHeader = () => {
     const prefix = 'Welcome to my digital workspace.';
     const name = 'Siddharamayya M';
@@ -292,7 +312,7 @@ const HomePage = () => {
             </span>
           ))}
         </div>
-        <div style={{ fontSize: '2.5rem', fontWeight: '600' }}>
+        <div style={{ fontSize: '2.7rem', fontWeight: '700' }}>
           <a
             href="https://mtptisid.github.io"
             style={{
@@ -347,47 +367,34 @@ const HomePage = () => {
   };
 
   const renderExamplePrompts = () => (
-    <div className="example-prompts">
-      {[...Array(Math.ceil(displayedPrompts.length / 2))].map((_, rowIndex) => (
-        <div key={rowIndex} style={styles.promptRow} className="prompt-row">
-          {displayedPrompts.slice(rowIndex * 2, rowIndex * 2 + 2).map((prompt, idx) => (
-            <div
-              key={`${promptCycleIndex}-${idx}`}
-              style={styles.examplePrompt}
-              className="example-prompt"
-              onClick={() => handleExamplePrompt(prompt)}
-              onMouseDown={(e) => e.preventDefault()}
-              onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#f3f4f6';
-                e.target.style.transform = 'translateY(-4px)';
-                e.target.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#ffffff';
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
-              }}
-            >
-              {promptIcons[prompt]?.icon || null}
-              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {prompt.split('').map((char, charIndex) => (
-                  <span
-                    key={`${promptCycleIndex}-${idx}-${charIndex}`}
-                    style={{
-                      animation: `fadeInScale 0.5s ease-in-out ${charIndex * 0.05}s forwards`,
-                      opacity: 0,
-                      display: char === ' ' ? 'inline' : 'inline-block'
-                    }}
-                  >
-                    {char}
-                  </span>
-                ))}
-              </span>
-              <span>{promptIcons[prompt]?.emoji}</span>
-            </div>
-          ))}
-        </div>
-      ))}
+    <div style={styles.promptsMarquee}>
+      <div style={styles.marqueeContent}>
+        {[...displayedPrompts, ...displayedPrompts].map((prompt, idx) => (
+          <div
+            key={`${prompt}-${idx}`}
+            style={styles.examplePrompt}
+            className="example-prompt"
+            onClick={() => handleExamplePrompt(prompt)}
+            onMouseDown={(e) => e.preventDefault()}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#f3f4f6';
+              e.target.style.transform = 'translateY(-4px)';
+              e.target.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#ffffff';
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
+            }}
+          >
+            {promptIcons[prompt]?.icon || null}
+            <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {prompt}
+            </span>
+            <span>{promptIcons[prompt]?.emoji}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 
@@ -436,7 +443,21 @@ const HomePage = () => {
       fontSize: '0.875rem',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap'
+      whiteSpace: 'nowrap',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    },
+    deleteButton: {
+      padding: '0.5rem',
+      borderRadius: '50%',
+      backgroundColor: '#ef4444',
+      color: '#ffffff',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      transition: 'background-color 0.2s ease'
     },
     newChatButton: {
       backgroundColor: '#404347',
@@ -501,7 +522,6 @@ const HomePage = () => {
       paddingTop: '80px',
       paddingLeft: '1rem',
       paddingRight: '1rem',
-      marginBottom: '200px',
       height: '100vh',
       display: 'flex',
       flexDirection: 'column',
@@ -526,7 +546,7 @@ const HomePage = () => {
       height: '100%',
       boxSizing: 'border-box',
       paddingBottom: '80px',
-      position: 'relative',
+      position: 'relative'
     },
     inputContainer: {
       display: 'flex',
@@ -684,7 +704,7 @@ const HomePage = () => {
     },
     dropdownItem: {
       padding: '0.5rem 1rem',
-      cursor: 'pointer',
+      cursor: "pointer",
       color: '#1e293b',
       borderRadius: '4px',
       transition: 'background-color 0.2s ease',
@@ -730,29 +750,33 @@ const HomePage = () => {
       color: '#1e293b',
       borderRadius: '16px',
       cursor: 'pointer',
-      flex: '1 1 200px',
-      maxWidth: 'calc(33.33% - 0.5rem)',
-      minWidth: '200px',
-      fontSize: '0.875rem',
-      fontWeight: '600',
-      transition: 'all 0.3s ease',
+      flex: '0 0 200px',
+      width: '200px',
+      height: '90px',
+      fontSize: '0.675rem',
+      fontWeight: '550',
+      transition: 'all 0.6s ease',
       border: '1px solid #e5e7eb',
       boxShadow: '0 6px 12px rgba(0,0,0,0.1)',
       display: 'flex',
       alignItems: 'center',
       gap: '0.5rem',
       overflow: 'hidden',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis'
     },
-    promptRow: {
-      display: 'flex',
-      gap: '0.5rem',
-      marginBottom: '0.5rem',
-      justifyContent: 'center',
-      flexWrap: 'wrap',
+    promptsMarquee: {
       width: '100%',
-      maxWidth: '1200px',
-      boxSizing: 'border-box'
+      maxWidth: '1300px',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      marginBottom: '2rem'
+    },
+    marqueeContent: {
+      display: 'inline-flex',
+      animation: 'marquee 20s linear infinite',
+      gap: '0.7rem'
     }
   };
 
@@ -778,6 +802,13 @@ const HomePage = () => {
             0%, 100% { text-shadow: 0 0 1px currentColor, 0 0 4px currentColor; }
             50% { text-shadow: 0 0 4px currentColor, 0 0 8px currentColor; }
           }
+          @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .marqueeContent:hover {
+            animation-play-state: paused;
+          }
           @media (min-width: 1024px) {
             .container {
               width: 100vw;
@@ -793,20 +824,14 @@ const HomePage = () => {
               width: 100%;
               margin: 0 auto;
             }
-            .promptRow {
-              max-width: 1200px;
-              width: 100%;
-              margin: 0 auto;
-              justify-content: center;
-            }
             .header {
               max-width: 1200px;
               width: 100%;
               margin: 1.5rem auto;
             }
             .example-prompt {
-              font-size: 1rem !important;
-              padding: 1rem !important;
+              font-size: 0.875rem !important;
+              padding: 0.7rem !important;
             }
           }
           @media (min-width: 768px) and (max-width: 1023px) {
@@ -824,20 +849,15 @@ const HomePage = () => {
               width: 100%;
               margin: 0 auto;
             }
-            .promptRow {
-              max-width: 90%;
-              width: 100%;
-              margin: 0 auto;
-              justify-content: center;
-            }
             .header {
               max-width: 90%;
               width: 100%;
               margin: 1.5rem auto;
             }
             .examplePrompt {
-              max-width: calc(50% - 0.5rem);
-              flex: 1 1 calc(50% - 0.5rem);
+              flex: 0 0 200px;
+              width: 200px;
+              height: 50px;
             }
           }
           @media (max-width: 767px) {
@@ -889,18 +909,17 @@ const HomePage = () => {
               padding: 0.3rem;
             }
             .examplePrompt {
-              max-width: 100%;
-              min-width: 100%;
+              flex: 0 0 180px;
+              width: 180px;
+              height: 40px;
               padding: 0.5rem;
               font-size: 0.75rem;
               box-shadow: 0 2px 4px rgba(0,0,0,0.05);
               border-radius: 12px;
               gap: 0.3rem;
             }
-            .promptRow {
-              flex-direction: column;
-              gap: 0.3rem;
-              margin-bottom: 1rem;
+            .promptsMarquee {
+              margin-bottom: 0.5rem;
             }
             .inputContainer {
               padding: 0.5rem;
@@ -943,6 +962,11 @@ const HomePage = () => {
             .controlsRow {
               gap: 0.2rem;
               flex-wrap: nowrap;
+            }
+            .deleteButton {
+              padding: 0.3rem;
+              width: 28px;
+              height: 28px;
             }
           }
           @media (max-width: 480px) {
@@ -998,18 +1022,17 @@ const HomePage = () => {
               padding: 0.25rem;
             }
             .examplePrompt {
-              max-width: 100%;
-              min-width: 100%;
+              flex: 0 0 160px;
+              width: 160px;
+              height: 36px;
               padding: 0.4rem;
               font-size: 0.7rem;
               box-shadow: 0 2px 4px rgba(0,0,0,0.05);
               border-radius: 10px;
               gap: 0.2rem;
             }
-            .promptRow {
-              flex-direction: column;
-              gap: 0.2rem;
-              margin-bottom: 0.8rem;
+            .promptsMarquee {
+              margin-bottom: 0.4rem;
             }
             .inputContainer {
               padding: 0.25rem;
@@ -1043,8 +1066,8 @@ const HomePage = () => {
             }
             .userMessage, .botMessage {
               max-width: 90%;
-              font-size: 0.75rem;
-              padding: 0.5rem;
+              fontSize: '0.75rem',
+              padding: '0.5rem'
             }
             .inputRow {
               gap: 0.15rem;
@@ -1052,6 +1075,11 @@ const HomePage = () => {
             .controlsRow {
               gap: 0.15rem;
               flex-wrap: nowrap;
+            }
+            .deleteButton {
+              padding: 0.2rem;
+              width: 24px;
+              height: 24px;
             }
           }
         `}
@@ -1080,9 +1108,26 @@ const HomePage = () => {
               onClick={() => handleSelectChat(session)}
               onMouseEnter={(e) => e.target.style.backgroundColor = '#e2e8f0'}
               onMouseLeave={(e) => e.target.style.backgroundColor = session.session_id === selectedChatId ? '#e2e8f0' : '#f3f4f6'}
+              onTouchStart={() => handleLongPress(session.session_id)}
+              onMouseDown={() => handleLongPress(session.session_id)}
               title={session.messages[0]?.content || 'Empty session'}
             >
-              {session.messages[0]?.content.slice(0, 30) || 'Session ' + session.session_id}
+              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {session.messages[0]?.content.slice(0, 30) || 'Session ' + session.session_id}
+              </span>
+              {deleteChatId === session.session_id && (
+                <button
+                  style={styles.deleteButton}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteChat(session.session_id);
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#dc2626'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#ef4444'}
+                >
+                  <FiTrash2 size={16} />
+                </button>
+              )}
             </div>
           ))}
         </div>
