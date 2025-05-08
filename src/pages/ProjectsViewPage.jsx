@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FiHome, FiCode } from 'react-icons/fi';
+import { FiHome, FiCode, FiArrowLeft } from 'react-icons/fi';
 import { FaUser } from 'react-icons/fa';
 
 const techBadges = {
@@ -232,12 +232,6 @@ const projects = [
     {
         "title": "Workout-and-fitness-tracker-Model",
         "url": "https://github1s.com/mtptisid/Workout-and-fitness-tracker-Model",
-        "description": "A machine learning model designed to track and analyze workout and fitness activities. The application can monitor various exercises, provide feedback, and help users maintain their fitness goals through intelligent tracking and recommendations.",
-        "technologies": ["Python", "Machine Learning", "Fitness Tracking", "Data Analysis"]
-    },
-    {
-        "title": "Workout-and-fitness-tracker-Model",
-        "url": "https://github1s.com/mtptisid/Workout-and-fitness-tracker-Model",
         "description": "This repository features a machine learning model designed to analyze workout efficiency based on various health metrics. Utilizing a dataset of over 10,000 records, the model identifies patterns in fitness progress and provides personalized insights. The application is deployed using Streamlit, offering an interactive UI for real-time analysis. Users can input their workout data to receive feedback and suggestions for improvement.",
         "technologies": ["Python", "Machine Learning", "Streamlit", "Pandas", "Scikit-learn"]
     },
@@ -254,6 +248,15 @@ const ProjectsViewPage = () => {
     const shuffled = [...projects].sort(() => Math.random() - 0.5);
     return shuffled;
   });
+  const [selectedProject, setSelectedProject] = useState(null);
+
+  const handleExploreClick = (project) => {
+    setSelectedProject(project);
+  };
+
+  const handleBackClick = () => {
+    setSelectedProject(null);
+  };
 
   const styles = {
     navbar: {
@@ -295,6 +298,15 @@ const ProjectsViewPage = () => {
       display: 'flex',
       alignItems: 'center',
       padding: '0.5rem'
+    },
+    backNavLink: {
+      color: '#edf2f7',
+      backgroundColor: '#404347',
+      cursor: 'pointer',
+      transition: 'color 0.3s ease',
+      display: 'flex',
+      alignItems: 'center',
+      padding: '0.5rem'
     }
   };
 
@@ -319,7 +331,7 @@ const ProjectsViewPage = () => {
             right: 0;
             bottom: 80px;
             background-color: #f7fafc;
-            z-index: 100;
+            zIndex: 100;
             width: 100vw;
             height: calc(100vh - 60px - 80px);
             overflow: hidden;
@@ -378,7 +390,7 @@ const ProjectsViewPage = () => {
           }
           .project-details h3 {
             font-size: 1.25rem;
-            font-weight: 700;
+            fontWeight: 700;
             color: #000000;
             margin-bottom: 0.75rem;
             transition: color 0.2s ease;
@@ -421,14 +433,28 @@ const ProjectsViewPage = () => {
             transform: scale(1.05);
           }
           .footer {
-            background-color: #404347;
+            background-color: #1f2937;
             color: #ffffff;
             padding: 0.1rem 0;
             width: 100vw;
             position: fixed;
             bottom: 0;
-            z-index: 101;
+            zIndex: 101;
             text-align: center;
+          }
+          .preview-container {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 100vw;
+            height: calc(100vh - 60px);
+            background-color: #f7fafc;
+            zIndex: 100;
+          }
+          .preview-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
           }
           @media (max-width: 480px) {
             .navbar {
@@ -454,22 +480,49 @@ const ProjectsViewPage = () => {
               height: 36px;
             }
             .footer {
-              padding: 0.3rem 0;
+              padding: 1rem 0;
               font-size: 0.875rem;
+            }
+            .preview-container {
+              top: 60px;
+              width: 100vw;
+              height: calc(100vh - 60px);
+            }
+            .preview-iframe {
+              width: 100%;
+              height: 100%;
+            }
+            .projects-section {
+              display: ${selectedProject ? 'none' : 'block'};
+            }
+            .footer {
+              display: ${selectedProject ? 'none' : 'block'};
             }
           }
         `}
       </style>
       <nav style={styles.navbar}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <a
-            href="/"
-            style={styles.mobileNavLink}
-            onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
-            onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
-          >
-            <FiHome size={24} />
-          </a>
+          {selectedProject ? (
+            <button
+              style={styles.backNavLink}
+              onClick={handleBackClick}
+              onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
+              onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+              aria-label="Back to Projects"
+            >
+              <FiArrowLeft size={24} />
+            </button>
+          ) : (
+            <a
+              href="/"
+              style={styles.mobileNavLink}
+              onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
+              onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+            >
+              <FiHome size={24} />
+            </a>
+          )}
           <a
             href="https://mtptisid.github.io"
             style={styles.mobileNavLink}
@@ -480,56 +533,70 @@ const ProjectsViewPage = () => {
           </a>
         </div>
       </nav>
-      <section className="projects-section">
-        <div className="slider">
-          {shuffledProjects.map((project, index) => (
-            <div key={index}>
-              <div className="project-card animate-fadeIn" style={{ animationDelay: `${0.2 * index}s` }}>
-                <div className="project-details">
-                  <h3>Project {index + 1}: {project.title}</h3>
-                  <p>{project.description}</p>
+      {selectedProject ? (
+        <div className="preview-container">
+          <iframe
+            src={selectedProject.url}
+            className="preview-iframe"
+            title={`${selectedProject.title} Code Preview`}
+            allow="clipboard-write"
+            sandbox="allow-same-origin allow-scripts allow-popups"
+          />
+        </div>
+      ) : (
+        <>
+          <section className="projects-section">
+            <div className="slider">
+              {shuffledProjects.map((project, index) => (
+                <div key={index}>
+                  <div className="project-card animate-fadeIn" style={{ animationDelay: `${0.2 * index}s` }}>
+                    <div className="project-details">
+                      <h3>Project {index + 1}: {project.title}</h3>
+                      <p>{project.description}</p>
+                    </div>
+                    <div className="tech-stack">
+                      {project.technologies.map((tech, idx) => (
+                        techBadges[tech] && (
+                          <img
+                            key={idx}
+                            src={techBadges[tech]}
+                            alt={`${tech} badge`}
+                          />
+                        )
+                      ))}
+                    </div>
+                    <div className="button-container">
+                      <button
+                        style={styles.actionButton}
+                        onClick={() => handleExploreClick(project)}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = '#4a5568';
+                          e.target.style.transform = 'scale(1.05)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = '#2d3748';
+                          e.target.style.transform = 'scale(1)';
+                        }}
+                        aria-label="Explore Code"
+                      >
+                        <FiCode style={{ marginRight: '0.5rem' }} size={18} color="#edf2f7" />
+                        Explore Code
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="tech-stack">
-                  {project.technologies.map((tech, idx) => (
-                    techBadges[tech] && (
-                      <img
-                        key={idx}
-                        src={techBadges[tech]}
-                        alt={`${tech} badge`}
-                      />
-                    )
-                  ))}
-                </div>
-                <div className="button-container">
-                  <button
-                    style={styles.actionButton}
-                    onClick={() => window.open(project.url, '_blank')}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#4a5568';
-                      e.target.style.transform = 'scale(1.05)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = '#2d3748';
-                      e.target.style.transform = 'scale(1)';
-                    }}
-                    aria-label="Explore Code"
-                  >
-                    <FiCode style={{ marginRight: '0.5rem' }} size={19} color="#edf2f7" />
-                    Explore Code
-                  </button>
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
-      <footer className="footer">
-        <div style={{ maxWidth: '896px', margin: '0 auto' }}>
-          <p style={{ fontSize: '0.4rem', fontWeight: '300' }}>
-            © 2025 Siddharamayya M. All rights reserved.
-          </p>
-        </div>
-      </footer>
+          </section>
+          <footer className="footer">
+            <div style={{ maxWidth: '896px', margin: '0 auto' }}>
+              <p style={{ fontSize: '1rem', fontWeight: '300' }}>
+                © 2025 Siddharamayya M. All rights reserved.
+              </p>
+            </div>
+          </footer>
+        </>
+      )}
     </div>
   );
 };
