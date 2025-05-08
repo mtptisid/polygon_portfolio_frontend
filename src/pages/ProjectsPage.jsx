@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiHome, FiCode, FiArrowRight } from 'react-icons/fi';
+import { FiHome, FiCode, FiArrowRight, FiArrowLeft } from 'react-icons/fi';
 import { FaUser } from 'react-icons/fa';
 
 const techBadges = {
@@ -75,7 +75,7 @@ const projects = [
         "technologies": ["Ansible", "YAML", "Linux", "Automation"]
     },
     {
-        "title": "Automating Ansible Automation Platform",
+        "title": "Automating-Ansible-Automation-Platform",
         "url": "https://github1s.com/mtptisid/Automating-Ansible-Automation-Platform",
         "description": "This repository focuses on automating AWX and Ansible Automation Platform (AAP) through APIs. It contains scripts to launch jobs, capture logs, and manage templates programmatically. Ideal for DevOps pipelines or CI/CD scenarios where manual Ansible operations need to be converted into API-based automation.",
         "technologies": ["Python", "Ansible", "REST API", "AWX", "Automation"]
@@ -99,13 +99,13 @@ const projects = [
         "technologies": ["Arduino", "RFID", "Embedded Systems", "C++"]
     },
     {
-        "title": "CodeSage AI-Powered Documentation Driven Development Suite",
+        "title": "CodeSage-AI-Powered-Documentation-Driven-Development-Suite",
         "url": "https://github1s.com/mtptisid/CodeSage-AI-Powered-Documentation-Driven-Development-Suite",
         "description": "CodeSage is an AI-powered system that reads software documentation and generates implementation code. Built for developers who prefer doc-driven development, this project integrates LLMs with software scaffolding. It speeds up coding tasks and improves documentation adherence.",
         "technologies": ["Python", "LLMs", "LangChain", "OpenAI API", "FastAPI"]
     },
     {
-        "title": "Credit Risk Analysis with CatBoostClassifier",
+        "title": "Credit-Risk-Analysis-with-CatBoostClassifier",
         "url": "https://github1s.com/mtptisid/Credit-Risk-Analysis-with-CatBoostClassifier",
         "description": "A machine learning pipeline for credit risk analysis using CatBoost, a high-performance gradient boosting library. The model classifies customers into risk categories based on financial features. The project includes EDA, model training, and evaluation using real-world datasets.",
         "technologies": ["Python", "CatBoost", "Pandas", "Seaborn", "Scikit-learn"]
@@ -159,7 +159,7 @@ const projects = [
         "technologies": ["Python", "Flask", "OpenCV", "Bootstrap"]
     },
     {
-        "title": "Personal Voice Assistant with OpenAI",
+        "title": "Personal_Voice_Assistant_with_OpenAI",
         "url": "https://github1s.com/mtptisid/Personal_Voice_Assistant_with_OpenAI",
         "description": "A personal voice assistant application that leverages OpenAI's API to process voice commands and provide intelligent responses. The assistant can perform tasks such as fetching information, setting reminders, and more, demonstrating the integration of speech recognition with AI-powered text generation.",
         "technologies": ["Python", "OpenAI API", "SpeechRecognition", "Text-to-Speech"]
@@ -183,7 +183,7 @@ const projects = [
         "technologies": ["Python", "Scrapy", "Linux", "Data Preprocessing"]
     },
     {
-        "title": "SIMPLE SQL WITH GOOGLE GEMINI AI",
+        "title": "SIMPLE_SQL_WITH_GOOGLE_GEMINI_AI",
         "url": "https://github1s.com/mtptisid/SIMPLE_SQL_WITH_GOOGLE_GEMINI_AI",
         "description": "This project demonstrates how to integrate Google Gemini LLM with a MySQL database using LangChain for natural language queries. It uses semantic similarity-based few-shot learning to generate accurate SQL queries and fetch results from the database. The application supports text-to-SQL conversion and dynamic prompting for enhanced query generation.",
         "technologies": ["Python", "LangChain", "Google Gemini", "MySQL", "Chroma"]
@@ -207,7 +207,7 @@ const projects = [
         "technologies": ["Python", "Streamlit", "Plotly", "yfinance", "AI Agents"]
     },
     {
-        "title": "STUDENT STUDY HELPER AI WITH GOOGLE GEMINI",
+        "title": "STUDENT_STUDY_HELPER_AI_WITH_GOOGLE_GEMINI",
         "url": "https://github1s.com/mtptisid/STUDENT_STUDY_HELPER_AI_WITH_GOOGLE_GEMINI",
         "description": "An AI-powered study assistant that utilizes Google's Gemini LLM to help students with their studies. The application can answer questions, provide explanations, and assist with various academic tasks, enhancing the learning experience through intelligent interactions.",
         "technologies": ["Python", "Google Gemini", "LangChain", "Streamlit"]
@@ -233,17 +233,11 @@ const projects = [
     {
         "title": "Workout-and-fitness-tracker-Model",
         "url": "https://github1s.com/mtptisid/Workout-and-fitness-tracker-Model",
-        "description": "A machine learning model designed to track and analyze workout and fitness activities. The application can monitor various exercises, provide feedback, and help users maintain their fitness goals through intelligent tracking and recommendations.",
-        "technologies": ["Python", "Machine Learning", "Fitness Tracking", "Data Analysis"]
-    },
-    {
-        "title": "Workout-and-fitness-tracker-Model",
-        "url": "https://github1s.com/mtptisid/Workout-and-fitness-tracker-Model",
         "description": "This repository features a machine learning model designed to analyze workout efficiency based on various health metrics. Utilizing a dataset of over 10,000 records, the model identifies patterns in fitness progress and provides personalized insights. The application is deployed using Streamlit, offering an interactive UI for real-time analysis. Users can input their workout data to receive feedback and suggestions for improvement.",
         "technologies": ["Python", "Machine Learning", "Streamlit", "Pandas", "Scikit-learn"]
     },
     {
-        "title": "Youtube Video Transcribe Summarizer with whisper OPENAI App",
+        "title": "Youtube_Video_Transcribe_Summarizer_with_whisper_OPENAI_App",
         "url": "https://github1s.com/mtptisid/Youtube_Video_Transcribe_Summarizer_with_whisper_OPENAI_App",
         "description": "This application allows users to summarize YouTube videos by transcribing and processing their audio. Built with state-of-the-art technologies like LangChain, Google Gemini, OpenAI Whisper, and Streamlit, it provides a seamless experience to extract meaningful insights from video content. Users can input a YouTube URL, and the app transcribes the audio, summarizes the content, and enables question-answering based on the summarized text.",
         "technologies": ["Python", "OpenAI Whisper", "LangChain", "Google Gemini", "Streamlit"]
@@ -256,10 +250,11 @@ const ProjectsPage = () => {
     return shuffled;
   });
   const [hasClicked, setHasClicked] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (hasClicked) return;
+    if (hasClicked || selectedProject) return;
 
     const mediaQuery = window.matchMedia("(max-width: 767px)");
     let timer;
@@ -289,11 +284,19 @@ const ProjectsPage = () => {
       clearTimeout(timer);
       mediaQuery.removeEventListener('change', handleMediaChange);
     };
-  }, [hasClicked, navigate]);
+  }, [hasClicked, navigate, selectedProject]);
 
   const handleArrowClick = () => {
     setHasClicked(true);
     navigate('/projects-view');
+  };
+
+  const handleExploreClick = (project) => {
+    setSelectedProject(project);
+  };
+
+  const handleBackClick = () => {
+    setSelectedProject(null);
   };
 
   const styles = {
@@ -359,6 +362,29 @@ const ProjectsPage = () => {
     },
     mobileNavLink: {
       color: '#edf2f7',
+      cursor: 'pointer',
+      transition: 'color 0.3s ease',
+      display: 'flex',
+      alignItems: 'center',
+      padding: '0.5rem'
+    },
+    backNavLink: {
+      color: '#edf2f7',
+      backgroundColor: '#404347',
+      fontSize: '1.125rem',
+      fontWeight: '600',
+      cursor: 'pointer',
+      transition: 'color 0.3s ease',
+      textDecoration: 'none',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.75rem',
+      padding: '0.75rem 1rem',
+      borderRadius: '8px'
+    },
+    mobileBackNavLink: {
+      color: '#edf2f7',
+      backgroundColor: '#404347',
       cursor: 'pointer',
       transition: 'color 0.3s ease',
       display: 'flex',
@@ -457,6 +483,20 @@ const ProjectsPage = () => {
             display: flex;
             justify-content: center;
           }
+          .preview-container {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 100vw;
+            height: calc(100vh - 60px);
+            background-color: #f7fafc;
+            z-index: 100;
+          }
+          .preview-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+          }
           @media (max-width: 767px) {
             .navbar {
               padding: 0.75rem;
@@ -512,6 +552,10 @@ const ProjectsPage = () => {
             .project-image-container {
               height: 150px;
             }
+            .preview-iframe {
+              width: 100%;
+              height: 100%;
+            }
           }
           @media (min-width: 768px) {
             .mobile-nav, .arrow-container {
@@ -535,6 +579,10 @@ const ProjectsPage = () => {
             .footer {
               display: block !important;
               width: 100vw;
+            }
+            .preview-iframe {
+              width: 100%;
+              height: 100%;
             }
           }
           @media (max-width: 480px) {
@@ -583,6 +631,19 @@ const ProjectsPage = () => {
             PolyGenAI - MultiModal AI
           </h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {selectedProject && (
+              <button
+                style={styles.backNavLink}
+                onClick={handleBackClick}
+                onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
+                onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+                className="navLink"
+                aria-label="Back to Projects"
+              >
+                <FiArrowLeft size={18} />
+                <span>Back to Projects</span>
+              </button>
+            )}
             <a
               href="/"
               style={styles.navLink}
@@ -606,14 +667,26 @@ const ProjectsPage = () => {
           </div>
         </div>
         <div className="mobile-nav">
-          <a
-            href="/"
-            style={styles.mobileNavLink}
-            onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
-            onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
-          >
-            <FiHome size={24} />
-          </a>
+          {selectedProject ? (
+            <button
+              style={styles.mobileBackNavLink}
+              onClick={handleBackClick}
+              onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
+              onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+              aria-label="Back to Projects"
+            >
+              <FiArrowLeft size={24} />
+            </button>
+          ) : (
+            <a
+              href="/"
+              style={styles.mobileNavLink}
+              onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
+              onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+            >
+              <FiHome size={24} />
+            </a>
+          )}
           <a
             href="https://mtptisid.github.io"
             style={styles.mobileNavLink}
@@ -624,125 +697,139 @@ const ProjectsPage = () => {
           </a>
         </div>
       </nav>
-      <section className="welcome-section">
-        <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center', flex: 1 }}>
-          <h1 className="welcome-heading animate-fadeIn">👋 Welcome to My Projects</h1>
-          <div style={{ fontSize: '1.25rem', color: '#4a5568', marginTop: '1.5rem', lineHeight: '1.75' }}>
-            <p className="welcome-text animate-fadeIn" style={{ animationDelay: '0.2s' }}>
-              Below you’ll find a curated selection of my personal and professional projects, spanning diverse domains such as Machine Learning, DevOps, AI, IoT, Web Development, and Automation.
-            </p>
-            <p className="welcome-text animate-fadeIn" style={{ marginTop: '1.5rem', animationDelay: '0.4s' }}>
-              Each project card provides a direct link to its GitHub repository. Click on a project to explore its source code in VS Code via GitHub’s web-based editor (vscode.dev).
-            </p>
-            <div style={{ textAlign: 'left', marginTop: '1.5rem' }}>
-              <p className="welcome-text animate-fadeIn" style={{ fontWeight: '600', marginBottom: '0.75rem', animationDelay: '0.6s' }}>
-                🔹 How to Navigate:
-              </p>
-              <ul style={{ listStyleType: 'disc', paddingLeft: '2rem', marginTop: '0.75rem' }}>
-                <li className="welcome-text animate-fadeIn" style={{ animationDelay: '0.8s' }}>
-                  Click a project title to view its code online in VS Code.
-                </li>
-                <li className="welcome-text animate-fadeIn" style={{ marginTop: '0.75rem', animationDelay: '1s' }}>
-                  Descriptions outline each project’s purpose, features, and technologies.
-                </li>
-                <li className="welcome-text animate-fadeIn" style={{ marginTop: '0.75rem', animationDelay: '1.2s' }}>
-                  Explore freely to see my work, coding style, and problem-solving approach.
-                </li>
-              </ul>
-            </div>
-          </div>
+      {selectedProject ? (
+        <div className="preview-container">
+          <iframe
+            src={selectedProject.url}
+            className="preview-iframe"
+            title={`${selectedProject.title} Code Preview`}
+            allow="clipboard-write"
+            sandbox="allow-same-origin allow-scripts allow-popups"
+          />
         </div>
-        <div className="arrow-container">
-          <button
-            style={styles.arrowButton}
-            onClick={handleArrowClick}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#4a5568';
-              e.target.style.transform = 'scale(1.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#2d3748';
-              e.target.style.transform = 'scale(1)';
-            }}
-            aria-label="View Projects"
-            className="arrow-button"
-          >
-            <FiArrowRight size={24} />
-          </button>
-        </div>
-      </section>
-      <section className="project-section">
-        <div style={{ width: '100%' }}>
-          <div className="project-list">
-            {shuffledProjects.map((project, index) => (
-              <div
-                key={index}
-                className={`project-card ${index % 2 === 0 ? 'project-card-odd' : 'project-card-even'} animate-fadeIn`}
-                style={{ animationDelay: `${0.8 + index * 0.2}s` }}
-              >
-                <div className={`project-image-container ${index % 2 === 0 ? 'project-image-container-odd' : 'project-image-container-even'}`}>
-                  <img
-                    src={index % 2 === 0 ? '/aiimage1.png' : '/aiimage2.png'}
-                    alt={`${project.title} preview`}
-                    className="project-image"
-                  />
-                </div>
-                <div className={`project-details p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 ${index % 2 === 0 ? 'project-details-odd' : 'project-details-even'}`}>
-                  <h3 style={{ 
-                    fontSize: '2.25rem', 
-                    fontWeight: '700', 
-                    color: '#1a202c', 
-                    marginBottom: '1rem',
-                    wordWrap: 'break-word',
-                    overflowWrap: 'break-word',
-                    maxWidth: '100%'
-                  }}>
-                    Project {index + 1}: {project.title}
-                  </h3>
-                  <p style={{ fontSize: '1.125rem', color: '#4a5568', lineHeight: '1.75' }}>
-                    {project.description}
+      ) : (
+        <>
+          <section className="welcome-section">
+            <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center', flex: 1 }}>
+              <h1 className="welcome-heading animate-fadeIn">👋 Welcome to My Projects</h1>
+              <div style={{ fontSize: '1.25rem', color: '#4a5568', marginTop: '1.5rem', lineHeight: '1.75' }}>
+                <p className="welcome-text animate-fadeIn" style={{ animationDelay: '0.2s' }}>
+                  Below you’ll find a curated selection of my personal and professional projects, spanning diverse domains such as Machine Learning, DevOps, AI, IoT, Web Development, and Automation.
+                </p>
+                <p className="welcome-text animate-fadeIn" style={{ marginTop: '1.5rem', animationDelay: '0.4s' }}>
+                  Each project card provides a preview of the code repository. Click "Explore Code" to view the source code within this page using a web-based editor.
+                </p>
+                <div style={{ textAlign: 'left', marginTop: '1.5rem' }}>
+                  <p className="welcome-text animate-fadeIn" style={{ fontWeight: '600', marginBottom: '0.75rem', animationDelay: '0.6s' }}>
+                    🔹 How to Navigate:
                   </p>
-                </div>
-                <div className="tech-stack">
-                  {project.technologies.map((tech, idx) => (
-                    techBadges[tech] && (
-                      <img
-                        key={idx}
-                        src={techBadges[tech]}
-                        alt={`${tech} badge`}
-                        style={{ height: '1.5rem' }}
-                      />
-                    )
-                  ))}
-                </div>
-                <div className="button-container">
-                  <button
-                    style={styles.actionButton}
-                    onClick={() => window.open(project.url, '_blank')}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#4a5568';
-                      e.target.style.transform = 'scale(1.05)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = '#2d3748';
-                      e.target.style.transform = 'scale(1)';
-                    }}
-                    aria-label="Explore Code"
-                  >
-                    <FiCode style={{ marginRight: '0.5rem' }} size={18} color="#edf2f7" />
-                    Explore Code
-                  </button>
+                  <ul style={{ listStyleType: 'disc', paddingLeft: '2rem', marginTop: '0.75rem' }}>
+                    <li className="welcome-text animate-fadeIn" style={{ animationDelay: '0.8s' }}>
+                      Click "Explore Code" to preview the source code in an embedded viewer.
+                    </li>
+                    <li className="welcome-text animate-fadeIn" style={{ marginTop: '0.75rem', animationDelay: '1s' }}>
+                      Descriptions outline each project’s purpose, features, and technologies.
+                    </li>
+                    <li className="welcome-text animate-fadeIn" style={{ marginTop: '0.75rem', animationDelay: '1.2s' }}>
+                      Explore freely to see my work, coding style, and problem-solving approach.
+                    </li>
+                  </ul>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-      <footer style={{ backgroundColor: '#daebdd', color: '#000000', padding: '0.1rem 0' }}>
-        <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: '1rem', fontWeight: '500' }}>© 2025 Siddharamayya M. All rights reserved.</p>
-        </div>
-      </footer>
+            </div>
+            <div className="arrow-container">
+              <button
+                style={styles.arrowButton}
+                onClick={handleArrowClick}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#4a5568';
+                  e.target.style.transform = 'scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = '#2d3748';
+                  e.target.style.transform = 'scale(1)';
+                }}
+                aria-label="View Projects"
+                className="arrow-button"
+              >
+                <FiArrowRight size={24} />
+              </button>
+            </div>
+          </section>
+          <section className="project-section">
+            <div style={{ width: '100%' }}>
+              <div className="project-list">
+                {shuffledProjects.map((project, index) => (
+                  <div
+                    key={index}
+                    className={`project-card ${index % 2 === 0 ? 'project-card-odd' : 'project-card-even'} animate-fadeIn`}
+                    style={{ animationDelay: `${0.8 + index * 0.2}s` }}
+                  >
+                    <div className={`project-image-container ${index % 2 === 0 ? 'project-image-container-odd' : 'project-image-container-even'}`}>
+                      <img
+                        src={index % 2 === 0 ? '/aiimage1.png' : '/aiimage2.png'}
+                        alt={`${project.title} preview`}
+                        className="project-image"
+                      />
+                    </div>
+                    <div className={`project-details p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 ${index % 2 === 0 ? 'project-details-odd' : 'project-details-even'}`}>
+                      <h3 style={{ 
+                        fontSize: '2.25rem', 
+                        fontWeight: '700', 
+                        color: '#1a202c', 
+                        marginBottom: '1rem',
+                        wordWrap: 'break-word',
+                        overflowWrap: 'break-word',
+                        maxWidth: '100%'
+                      }}>
+                        Project {index + 1}: {project.title}
+                      </h3>
+                      <p style={{ fontSize: '1.125rem', color: '#4a5568', lineHeight: '1.75' }}>
+                        {project.description}
+                      </p>
+                    </div>
+                    <div className="tech-stack">
+                      {project.technologies.map((tech, idx) => (
+                        techBadges[tech] && (
+                          <img
+                            key={idx}
+                            src={techBadges[tech]}
+                            alt={`${tech} badge`}
+                            style={{ height: '1.5rem' }}
+                          />
+                        )
+                      ))}
+                    </div>
+                    <div className="button-container">
+                      <button
+                        style={styles.actionButton}
+                        onClick={() => handleExploreClick(project)}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = '#4a5568';
+                          e.target.style.transform = 'scale(1.05)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = '#2d3748';
+                          e.target.style.transform = 'scale(1)';
+                        }}
+                        aria-label="Explore Code"
+                      >
+                        <FiCode style={{ marginRight: '0.5rem' }} size={18} color="#edf2f7" />
+                        Explore Code
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+          <footer style={{ backgroundColor: '#daebdd', color: '#000000', padding: '0.1rem 0' }}>
+            <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center' }}>
+              <p style={{ fontSize: '1rem', fontWeight: '500' }}>© 2025 Siddharamayya M. All rights reserved.</p>
+            </div>
+          </footer>
+        </>
+      )}
     </div>
   );
 };
