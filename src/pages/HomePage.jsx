@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FiMessageSquare, FiSearch, FiCpu, FiPaperclip, FiArrowUpRight, FiArrowDown, FiTrash2, FiHome, FiBriefcase } from 'react-icons/fi';
 import { FaBrain, FaCode, FaUser, FaBriefcase, FaGraduationCap, FaLanguage, FaEnvelope, FaGithub, FaGlobe, FaTools, FaRobot, FaDollarSign, FaFileDownload } from 'react-icons/fa';
 import ChatContainer from './ChatContainer';
+import { formatRelative, isToday, isYesterday, startOfDay } from 'date-fns';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -18,10 +19,12 @@ const HomePage = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [tool, setTool] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
-  const [deleteChatId, setDeleteChatId] = useState(null);
+  const [slideChatId, setSlideChatId] = useState(null);
   const textareaRef = useRef(null);
   const chatContainerRef = useRef(null);
   const bottomRef = useRef(null);
+  const longPressTimerRef = useRef(null);
+  const slideRef = useRef({ startX: 0, deltaX: 0, isSliding: false, sessionId: null, longPressTriggered: false });
 
   const models = ['DeepSeek R1', 'Gemini', 'Groq', 'OpenAI', 'Claude Sonet'];
   const examplePrompts = [
@@ -122,7 +125,12 @@ const HomePage = () => {
   useEffect(() => {
     const storedHistory = localStorage.getItem('chatHistory');
     if (storedHistory) {
-      setChatHistory(JSON.parse(storedHistory));
+      const parsedHistory = JSON.parse(storedHistory);
+      const historyWithTimestamps = parsedHistory.map(session => ({
+        ...session,
+        timestamp: Number(session.timestamp) || Date.now(),
+      }));
+      setChatHistory(historyWithTimestamps.sort((a, b) => b.timestamp - a.timestamp));
     }
   }, []);
 
@@ -133,6 +141,19 @@ const HomePage = () => {
     }
   }, [chatHistory]);
 
+  // Global click handler to hide delete button and reset slide
+  useEffect(() => {
+    const handleGlobalClick = (e) => {
+      if (slideChatId && !e.target.closest('.delete-button') && !e.target.closest('.chat-history-item')) {
+        setSlideChatId(null);
+        slideRef.current.longPressTriggered = false;
+      }
+    };
+
+    document.addEventListener('click', handleGlobalClick);
+    return () => document.removeEventListener('click', handleGlobalClick);
+  }, [slideChatId]);
+
   const generateSessionId = () => {
     return Math.floor(10000 + Math.random() * 90000);
   };
@@ -142,6 +163,8 @@ const HomePage = () => {
     setMessages([]);
     setCurrentSessionId(generateSessionId());
     setTool(null);
+    setSlideChatId(null);
+    slideRef.current.longPressTriggered = false;
   };
 
   const handleSelectChat = (session) => {
@@ -152,23 +175,70 @@ const HomePage = () => {
       isUser: !msg.is_bot
     })));
     setTool(null);
-    setDeleteChatId(null);
+    setSlideChatId(null);
+    slideRef.current.longPressTriggered = false;
   };
 
-  const handleLongPress = (sessionId) => {
-    setDeleteChatId(sessionId);
+  const startLongPress = (sessionId) => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+    }
+    slideRef.current.longPressTriggered = true;
+    longPressTimerRef.current = setTimeout(() => {
+      setSlideChatId(sessionId);
+      slideRef.current.deltaX = -48; // Lock at -48px
+    }, 500);
+  };
+
+  const cancelLongPress = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+      slideRef.current.longPressTriggered = false;
+    }
+  };
+
+  const handleSlideStart = (sessionId, clientX) => {
+    slideRef.current = {
+      startX: clientX,
+      deltaX: 0,
+      isSliding: true,
+      sessionId,
+      longPressTriggered: slideRef.current.longPressTriggered
+    };
+  };
+
+  const handleSlideMove = (clientX) => {
+    if (slideRef.current.isSliding) {
+      const deltaX = clientX - slideRef.current.startX;
+      slideRef.current.deltaX = Math.max(-48, Math.min(0, deltaX));
+    }
+  };
+
+  const handleSlideEnd = () => {
+    if (slideRef.current.isSliding) {
+      const { deltaX, sessionId } = slideRef.current;
+      slideRef.current.isSliding = false;
+      if (deltaX < -40 && !slideRef.current.longPressTriggered) {
+        setSlideChatId(sessionId);
+        slideRef.current.deltaX = -48;
+      } else if (!slideRef.current.longPressTriggered) {
+        slideRef.current.deltaX = 0;
+        setSlideChatId(null);
+      }
+    }
   };
 
   const handleDeleteChat = (sessionId) => {
     const updatedHistory = chatHistory.filter(session => session.session_id !== sessionId);
-    setChatHistory(updatedHistory);
-    localStorage.setItem('chatHistory', JSON.stringify(updatedHistory));
+    setChatHistory(updatedHistory.sort((a, b) => b.timestamp - a.timestamp));
     if (selectedChatId === sessionId) {
       setSelectedChatId(null);
       setMessages([]);
       setCurrentSessionId(null);
     }
-    setDeleteChatId(null);
+    setSlideChatId(null);
+    slideRef.current.longPressTriggered = false;
   };
 
   const handleSendMessage = async (content, selectedTool = null) => {
@@ -209,11 +279,13 @@ const HomePage = () => {
       const botMessage = { content: data.content, isUser: false, is_bot: true };
       setMessages(prev => [...prev, botMessage]);
 
+      const currentTimestamp = Date.now();
       const updatedHistory = chatHistory.map(session => {
         if (session.session_id === sessionId) {
           return {
             ...session,
-            messages: [...session.messages, userMessage, botMessage]
+            messages: [...session.messages, userMessage, botMessage],
+            timestamp: currentTimestamp
           };
         }
         return session;
@@ -222,11 +294,12 @@ const HomePage = () => {
       if (!updatedHistory.some(session => session.session_id === sessionId)) {
         updatedHistory.push({
           session_id: sessionId,
-          messages: [userMessage, botMessage]
+          messages: [userMessage, botMessage],
+          timestamp: currentTimestamp
         });
       }
 
-      setChatHistory(updatedHistory);
+      setChatHistory(updatedHistory.sort((a, b) => b.timestamp - a.timestamp));
     } catch (error) {
       console.error('Error sending message:', error);
       setMessages(prev => [...prev, { content: `Error: ${error.message}`, isUser: false }]);
@@ -400,6 +473,151 @@ const HomePage = () => {
     </div>
   );
 
+  const groupChatsByDate = () => {
+    const grouped = {};
+    const now = new Date();
+
+    chatHistory.forEach(session => {
+      const date = new Date(session.timestamp);
+      let key;
+
+      if (isToday(date)) {
+        key = 'Today';
+      } else if (isYesterday(date)) {
+        key = 'Yesterday';
+      } else {
+        key = startOfDay(date).toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        });
+      }
+
+      if (!grouped[key]) {
+        grouped[key] = [];
+      }
+      grouped[key].push(session);
+    });
+
+    Object.keys(grouped).forEach(key => {
+      grouped[key].sort((a, b) => b.timestamp - a.timestamp);
+    });
+
+    return grouped;
+  };
+
+  const renderChatHistory = () => {
+    const groupedChats = groupChatsByDate();
+    return (
+      <div style={styles.chatHistoryContainer}>
+        {Object.entries(groupedChats).map(([date, sessions]) => (
+          <div key={date}>
+            <div style={{
+              fontSize: '0.75rem',
+              fontWeight: '600',
+              color: '#4b5563',
+              margin: '0.5rem 0',
+              paddingLeft: '0.5rem'
+            }}>
+              {date}
+            </div>
+            {sessions.map(session => (
+              <div
+                key={session.session_id}
+                style={{
+                  position: 'relative',
+                  display: 'flex',
+                  alignItems: 'center',
+                  overflow: 'visible'
+                }}
+              >
+                <div
+                  className="chat-history-item"
+                  style={{
+                    ...styles.chatHistoryItem,
+                    backgroundColor: session.session_id === selectedChatId ? '#e2e8f0' : '#f3f4f6',
+                    transform: slideChatId === session.session_id ? 'translateX(-48px)' : `translateX(${slideRef.current.sessionId === session.session_id && slideRef.current.isSliding ? slideRef.current.deltaX : 0}px)`,
+                    transition: slideRef.current.isSliding ? 'none' : 'transform 0.3s ease'
+                  }}
+                  onClick={() => {
+                    if (!slideChatId) {
+                      handleSelectChat(session);
+                    }
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!slideChatId) {
+                      e.target.style.backgroundColor = '#e2e8f0';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!slideChatId) {
+                      e.target.style.backgroundColor = session.session_id === selectedChatId ? '#e2e8f0' : '#f3f4f6';
+                    }
+                  }}
+                  onTouchStart={(e) => {
+                    handleSlideStart(session.session_id, e.touches[0].clientX);
+                    startLongPress(session.session_id);
+                  }}
+                  onTouchMove={(e) => handleSlideMove(e.touches[0].clientX)}
+                  onTouchEnd={() => {
+                    cancelLongPress();
+                    handleSlideEnd();
+                  }}
+                  onMouseDown={(e) => {
+                    if (e.button === 0) { // Left click
+                      handleSlideStart(session.session_id, e.clientX);
+                      startLongPress(session.session_id);
+                    }
+                  }}
+                  onMouseMove={(e) => handleSlideMove(e.clientX)}
+                  onMouseUp={() => {
+                    cancelLongPress();
+                    handleSlideEnd();
+                  }}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    startLongPress(session.session_id);
+                  }}
+                  title={session.messages[0]?.content || 'Empty session'}
+                >
+                  <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {session.messages[0]?.content.slice(0, 30) || 'Session ' + session.session_id}
+                  </span>
+                </div>
+                <button
+                  className="delete-button"
+                  style={{
+                    ...styles.deleteButton,
+                    opacity: slideChatId === session.session_id ? 1 : 0,
+                    transform: slideChatId === session.session_id ? 'translateX(0)' : 'translateX(48px)',
+                    transition: 'transform 0.3s ease, opacity 0.3s ease',
+                    position: 'absolute',
+                    right: '0',
+                    top: '0',
+                    width: '48px',
+                    height: '40px',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteChat(session.session_id);
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#dc2626'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#ef4444'}
+                >
+                  <FiTrash2 size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   const styles = {
     container: {
       display: 'flex',
@@ -448,18 +666,15 @@ const HomePage = () => {
       whiteSpace: 'nowrap',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
+      width: '100%'
     },
     deleteButton: {
-      padding: '0.5rem',
-      borderRadius: '50%',
+      padding: '0',
       backgroundColor: '#ef4444',
       color: '#ffffff',
       cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      transition: 'background-color 0.2s ease'
+      transition: 'background-color 0.2s ease, transform 0.3s ease, opacity 0.3s ease'
     },
     newChatButton: {
       backgroundColor: '#404347',
@@ -484,7 +699,7 @@ const HomePage = () => {
       cursor: 'pointer',
       fontSize: '0.875rem',
       fontWeight: '500',
-      transition: 'background Practices-color 0.2s ease',
+      transition: 'background-color 0.2s ease',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -991,9 +1206,9 @@ const HomePage = () => {
               flex-wrap: nowrap;
             }
             .deleteButton {
-              padding: 0.3rem;
-              width: 28px;
-              height: 28px;
+              width: 36px;
+              height: 36px;
+              borderRadius: '6px';
             }
           }
           @media (max-width: 480px) {
@@ -1111,9 +1326,9 @@ const HomePage = () => {
               flex-wrap: nowrap;
             }
             .deleteButton {
-              padding: 0.2rem;
-              width: 24px;
-              height: 24px;
+              width: 36px;
+              height: 38px;
+              borderRadius: '6px';
             }
           }
         `}
@@ -1131,40 +1346,7 @@ const HomePage = () => {
           <FiMessageSquare size={16} />
           New Chat
         </button>
-        <div style={styles.chatHistoryContainer}>
-          {chatHistory.map(session => (
-            <div
-              key={session.session_id}
-              style={{
-                ...styles.chatHistoryItem,
-                backgroundColor: session.session_id === selectedChatId ? '#e2e8f0' : '#f3f4f6',
-              }}
-              onClick={() => handleSelectChat(session)}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#e2e8f0'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = session.session_id === selectedChatId ? '#e2e8f0' : '#f3f4f6'}
-              onTouchStart={() => handleLongPress(session.session_id)}
-              onMouseDown={() => handleLongPress(session.session_id)}
-              title={session.messages[0]?.content || 'Empty session'}
-            >
-              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {session.messages[0]?.content.slice(0, 30) || 'Session ' + session.session_id}
-              </span>
-              {deleteChatId === session.session_id && (
-                <button
-                  style={styles.deleteButton}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteChat(session.session_id);
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#dc2626'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = '#ef4444'}
-                >
-                  <FiTrash2 size={16} />
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
+        {renderChatHistory()}
       </div>
       <div style={{ flex: 1, width: '100vw', overflowY: 'auto' }}>
         <nav style={styles.navbar}>
