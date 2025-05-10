@@ -605,7 +605,7 @@ const HomePage = () => {
                     right: '0',
                     top: '0',
                     width: '48px',
-                    height: '40px',
+                    height: '46px',
                     borderRadius: '8px',
                     display: 'flex',
                     alignItems: 'center',
@@ -1336,8 +1336,8 @@ const HomePage = () => {
               flex-wrap: nowrap;
             }
             .deleteButton {
-              width: 32px;
-              height: 32px;
+              width: 38px;
+              height: 38px;
               borderRadius: '6px';
             }
           }
