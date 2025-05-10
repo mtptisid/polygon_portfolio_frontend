@@ -1327,7 +1327,7 @@ const HomePage = () => {
             }
             .deleteButton {
               width: 36px;
-              height: 38px;
+              height: 42px;
               borderRadius: '6px';
             }
           }
