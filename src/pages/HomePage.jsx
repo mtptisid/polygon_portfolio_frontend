@@ -235,10 +235,10 @@ const HomePage = () => {
 
   const handleExamplePrompt = async (prompt) => {
     if (prompt === "Visit Siddharamayya's portfolio") {
-      window.location.href = 'https://mtptisid.github.io';
+      window.location.href = 'https://portfolio.siddharamayya.in';
     } else if (prompt === "Download Resume") {
       const link = document.createElement('a');
-      link.href = '/portfolio/images/Mathapati_Siddharamayya_2025.pdf';
+      link.href = 'https://portfolio.siddharamayya.in/#resume';
       link.download = 'Mathapati_Siddharamayya_2025.pdf';
       document.body.appendChild(link);
       link.click();
