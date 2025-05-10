@@ -8,16 +8,6 @@ import { formatRelative, isToday, isYesterday, startOfDay } from 'date-fns';
 const HomePage = () => {
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FiMessageSquare, FiSearch, FiCpu, FiPaperclip, FiArrowUpRight, FiArrowDown, FiTrash2, FiHome, FiBriefcase } from 'react-icons/fi';
-import { FaBrain, FaCode, FaUser, FaBriefcase, FaGraduationCap, FaLanguage, FaEnvelope, FaGithub, FaGlobe, FaTools, FaRobot, FaDollarSign, FaFileDownload } from 'react-icons/fa';
-import ChatContainer from './ChatContainer';
-import { formatRelative, isToday, isYesterday, startOfDay, differenceInDays, startOfMonth } from 'date-fns';
-
-const HomePage = () => {
-  const navigate = useNavigate();
-  const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [selectedModel, setSelectedModel] = useState('Gemini');
   const [hoveredModel, setHoveredModel] = useState(false);
