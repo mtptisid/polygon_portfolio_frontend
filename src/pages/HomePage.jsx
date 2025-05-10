@@ -620,7 +620,7 @@ seven_days_ago = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
                     right: '0',
                     top: '0',
                     width: '48px',
-                    height: '40px',
+                    height: '46px',
                     borderRadius: '8px',
                     display: 'flex',
                     alignItems: 'center',
