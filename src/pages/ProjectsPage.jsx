@@ -1383,7 +1383,7 @@ const ProjectsPage = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="https://medium.com/">
+                  <a href="https://medium.com/@msidrm455">
                     <FaMedium size={30} />
                   </a>
                 </li>
