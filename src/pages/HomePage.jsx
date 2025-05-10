@@ -508,7 +508,6 @@ const HomePage = () => {
     // Sort chats within each group by timestamp (newest first)
     Object.keys(grouped).forEach(key => {
       grouped[key].sort((a, b) => b.timestamp - a.timestamp);
-seven_days_ago = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     });
 
     // Define fixed group order and sort older months
