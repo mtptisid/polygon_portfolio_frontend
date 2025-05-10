@@ -595,7 +595,7 @@ const HomePage = () => {
                     right: '0',
                     top: '0',
                     width: '48px',
-                    height: '40px',
+                    height: '46px',
                     borderRadius: '8px',
                     display: 'flex',
                     alignItems: 'center',
@@ -608,7 +608,7 @@ const HomePage = () => {
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#dc2626'}
                   onMouseLeave={(e) => e.target.style.backgroundColor = '#ef4444'}
                 >
-                  <FiTrash2 size={16} />
+                  <FiTrash2 size={18} />
                 </button>
               </div>
             ))}
