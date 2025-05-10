@@ -128,7 +128,7 @@ const HomePage = () => {
       const parsedHistory = JSON.parse(storedHistory);
       const historyWithTimestamps = parsedHistory.map(session => ({
         ...session,
-        timestamp: Number(session.timestamp) || Date.now(),
+        timestamp: isFinite(Number(session.timestamp)) && session.timestamp > 0 ? Number(session.timestamp) : Date.now(),
       }));
       setChatHistory(historyWithTimestamps.sort((a, b) => b.timestamp - a.timestamp));
     }
@@ -280,24 +280,11 @@ const HomePage = () => {
       setMessages(prev => [...prev, botMessage]);
 
       const currentTimestamp = Date.now();
-      const updatedHistory = chatHistory.map(session => {
-        if (session.session_id === sessionId) {
-          return {
-            ...session,
-            messages: [...session.messages, userMessage, botMessage],
-            timestamp: currentTimestamp
-          };
-        }
-        return session;
+      const updatedHistory = chatHistory.filter(session => session.session_id !== sessionId).concat({
+        session_id: sessionId,
+        messages: [...(chatHistory.find(s => s.session_id === sessionId)?.messages || []), userMessage, botMessage],
+        timestamp: currentTimestamp
       });
-
-      if (!updatedHistory.some(session => session.session_id === sessionId)) {
-        updatedHistory.push({
-          session_id: sessionId,
-          messages: [userMessage, botMessage],
-          timestamp: currentTimestamp
-        });
-      }
 
       setChatHistory(updatedHistory.sort((a, b) => b.timestamp - a.timestamp));
     } catch (error) {
@@ -551,8 +538,7 @@ const HomePage = () => {
                 style={{
                   position: 'relative',
                   display: 'flex',
-                  alignItems: 'center',
-                  overflow: 'visible'
+                  alignItems: 'center'
                 }}
               >
                 <div
@@ -619,7 +605,7 @@ const HomePage = () => {
                     right: '0',
                     top: '0',
                     width: '48px',
-                    height: '46px',
+                    height: '40px',
                     borderRadius: '8px',
                     display: 'flex',
                     alignItems: 'center',
