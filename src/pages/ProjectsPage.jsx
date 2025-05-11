@@ -396,7 +396,11 @@ const ProjectsPage = () => {
   };
 
   const handleContactClick = () => {
-    navigate('/contact');
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      navigate('/contact');
+    } else {
+      document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const styles = {
