@@ -95,6 +95,19 @@ const HomePage = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Wake up the backend on component mount
+  useEffect(() => {
+    fetch('https://portpoliosid.onrender.com/api/ai_chat/')
+      .then(response => {
+        if (!response.ok) {
+          console.error('Failed to wake up backend:', response.status);
+        }
+      })
+      .catch(error => {
+        console.error('Error waking up backend:', error);
+      });
+  }, []);
+
   // Shuffle array for random prompt positions
   const shuffleArray = (array) => {
     const newArray = [...array];
