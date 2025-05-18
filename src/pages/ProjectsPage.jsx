@@ -74,7 +74,7 @@ const techBadges = {
   "Cron": "https://img.shields.io/badge/cron-%23121011.svg?style=flat&logo=linux&logoColor=white",
   "RandomForest": "https://img.shields.io/badge/randomforest-%23F7931E.svg?style=flat&logo=scikit-learn&logoColor=white",
   "Embedded Systems": "https://img.shields.io/badge/embedded_systems-%23121011.svg?style=flat&logo=arduino&logoColor=white",
-  "C++": "https://img.shields.io/badge/c++-%2300599C.svg?style=flat&logo=c%2B%2B&logoColor=white",
+  "C++": "https://img.shields.io/badge/c++-%2300599C.svg?style=flat&amp;logo=c%2B%2B&amp;logoColor=white",
   "LLMs": "https://img.shields.io/badge/llms-%23121011.svg?style=flat&logo=python&logoColor=white",
   "LangChain": "https://img.shields.io/badge/langchain-%23121011.svg?style=flat&logo=python&logoColor=white",
   "CatBoost": "https://img.shields.io/badge/catboost-%23FF6F00.svg?style=flat&logo=catboost&logoColor=white",
@@ -403,6 +403,10 @@ const ProjectsPage = () => {
     }
   };
 
+  const handleMailPageClick = () => {
+    navigate('/sendmail');
+  };
+
   const styles = {
     navbar: {
       position: 'fixed',
@@ -428,6 +432,24 @@ const ProjectsPage = () => {
       border: 'none',
       backgroundColor: '#2d3748',
       color: '#edf2f7',
+      cursor: 'pointer',
+      transition: 'background-color 0.3s ease, transform 0.3s ease',
+      fontSize: '1rem',
+      fontWeight: '600',
+      height: '45px',
+      boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
+      transform: 'scale(1)'
+    },
+    mailButton: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '0.5rem',
+      padding: '0.75rem 1.5rem',
+      borderRadius: '9999px',
+      border: 'none',
+      backgroundColor: '#07b1d0',
+      color: '#ffffff',
       cursor: 'pointer',
       transition: 'background-color 0.3s ease, transform 0.3s ease',
       fontSize: '1rem',
@@ -856,6 +878,7 @@ const ProjectsPage = () => {
             flex-wrap: wrap;
             justify-content: space-between;
             max-width: 1200px;
+            position: relative;
           }
           .contact-info .col-four {
             flex: 0 0 33.333333%;
@@ -880,6 +903,12 @@ const ProjectsPage = () => {
             color: rgba(255, 255, 255, 0.7);
             font-family: "poppins-regular", sans-serif;
             font-size: 1.2rem;
+          }
+          .mail-button-container {
+            position: absolute;
+            bottom: 0;
+            right: 1rem;
+            margin-bottom: 1rem;
           }
           @media (max-width: 767px) {
             .navbar {
@@ -1003,6 +1032,12 @@ const ProjectsPage = () => {
             }
             .contact-info p {
               font-size: 1rem;
+            }
+            .mail-button-container {
+              position: static;
+              display: flex;
+              justify-content: center;
+              margin-top: 1rem;
             }
           }
           @media (min-width: 768px) {
@@ -1425,8 +1460,26 @@ const ProjectsPage = () => {
                 <h5>Call Me At</h5>
                 <p>Phone: (+91) 97406 71620</p>
               </div>
+              <div className="mail-button-container">
+                <button
+                  style={styles.mailButton}
+                  onClick={handleMailPageClick}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = '#0cd2e8';
+                    e.target.style.transform = 'scale(1.05)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = '#07b1d0';
+                    e.target.style.transform = 'scale(1)';
+                  }}
+                  aria-label="Go to My Mail Page"
+                >
+                  <FiMail style={{ marginRight: '0.5rem' }} size={18} color="#ffffff" />
+                  MyMailPage
+                </button>
+              </div>
             </div>
-            </section>
+          </section>
           <footer style={{ backgroundColor: '#daebdd', color: '#000000', padding: '0.1rem 0' }}>
             <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center' }}>
               <p style={{ fontSize: '1rem', fontWeight: '500' }}>© 2025 Siddharamayya M. All rights reserved.</p>
