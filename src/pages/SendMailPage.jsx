@@ -1,153 +1,173 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiHome, FiArrowLeft } from 'react-icons/fi';
+import { FiArrowLeft, FiHome } from 'react-icons/fi';
 import { FaUser, FaLinkedin, FaMedium, FaGithub, FaInstagram, FaExclamationTriangle, FaCheck } from 'react-icons/fa';
-import $ from 'jquery';
 
 const SendMailPage = () => {
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+    cc: '',
+    bcc: '',
+    honeypot: '',
+  });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPasswordPrompt, setShowPasswordPrompt] = useState(true);
   const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
-  // Prompt for admin password on mount
-  useEffect(() => {
-    const adminPassword = prompt('Please enter the admin password:');
-    if (adminPassword) {
-      setPassword(adminPassword);
-      setIsAuthenticated(true);
-    } else {
-      navigate('/projects'); // Redirect if no password provided
-    }
-  }, [navigate]);
+  // Handle password submission
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setPasswordError('');
+    setIsLoading(true);
 
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    $('#message-warning').hide();
-    $('#message-success').hide();
-
-    const handleSubmit = (event) => {
-      event.preventDefault();
-      $('#message-warning').hide();
-      $('#message-success').hide();
-      $('#submit-loader').show();
-
-      const formData = {
-        name: $('#contactName').val().trim(),
-        email: $('#contactEmail').val().trim(),
-        subject: $('#contactSubject').val().trim() || 'Contact Form Submission',
-        message: $('#contactMessage').val().trim(),
-        honeypot: $('#honeypot').val(),
-        cc: $('#contactCc').val().trim() || null,
-        bcc: $('#contactBcc').val().trim() || null
-      };
-
-      if (!formData.name || formData.name.length < 2) {
-        $('#submit-loader').hide();
-        $('#message-warning').find('span').text('Please enter a valid name (at least 2 characters)');
-        $('#message-warning').show();
-        setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
-        return;
-      }
-      if (!formData.email.match(/^\S+@\S+\.\S+$/)) {
-        $('#submit-loader').hide();
-        $('#message-warning').find('span').text('Please enter a valid email address');
-        $('#message-warning').show();
-        setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
-        return;
-      }
-      if (!formData.message) {
-        $('#submit-loader').hide();
-        $('#message-warning').find('span').text('Please enter a message');
-        $('#message-warning').show();
-        setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
-        return;
-      }
-      if (formData.cc && !formData.cc.match(/^\S+@\S+\.\S+$/)) {
-        $('#submit-loader').hide();
-        $('#message-warning').find('span').text('Please enter a valid CC email address');
-        $('#message-warning').show();
-        setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
-        return;
-      }
-      if (formData.bcc && !formData.bcc.match(/^\S+@\S+\.\S+$/)) {
-        $('#submit-loader').hide();
-        $('#message-warning').find('span').text('Please enter a valid BCC email address');
-        $('#message-warning').show();
-        setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
-        return;
-      }
-
-      // Encode admin credentials for HTTP Basic Auth using btoa
-      const authHeader = 'Basic ' + btoa(`admin:${password}`);
-
-      $.ajax({
-        url: 'https://portpoliosid.onrender.com/sendmail',
-        type: 'POST',
-        contentType: 'application/json',
+    try {
+      const response = await fetch('https://portpoliosid.onrender.com/sendmail/login', {
+        method: 'POST',
         headers: {
-          Authorization: authHeader
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        data: JSON.stringify(formData),
-        success: () => {
-          $('#submit-loader').hide();
-          $('#message-success').show();
-          $('#contactForm')[0].reset();
-          setTimeout(() => $('#message-success').fadeOut('slow'), 5000);
-        },
-        error: (xhr) => {
-          $('#submit-loader').hide();
-          const errorMessage = xhr.responseJSON?.detail || 'Failed to send message. Please try again later.';
-          $('#message-warning').find('span').text(errorMessage);
-          $('#message-warning').show();
-          setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
-        }
+        body: JSON.stringify({ password }),
       });
-    };
 
-    $('#contactForm').on('submit', handleSubmit);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Invalid password');
+      }
 
-    return () => {
-      $('#contactForm').off('submit', handleSubmit);
-    };
-  }, [isAuthenticated, password]);
+      const data = await response.json();
+      localStorage.setItem('access_token', data.access_token);
+      setShowPasswordPrompt(false);
+    } catch (err) {
+      setPasswordError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Check for JWT
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      setShowPasswordPrompt(false);
+    } else {
+      setShowPasswordPrompt(true);
+    }
+  }, []);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    setIsLoading(true);
+
+    // Client-side validation
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!formData.email || !emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      setIsLoading(false);
+      return;
+    }
+    if (!formData.message) {
+      setError('Message is required');
+      setIsLoading(false);
+      return;
+    }
+    if (formData.cc && !emailRegex.test(formData.cc)) {
+      setError('Please enter a valid CC email address');
+      setIsLoading(false);
+      return;
+    }
+    if (formData.bcc && !emailRegex.test(formData.bcc)) {
+      setError('Please enter a valid BCC email address');
+      setIsLoading(false);
+      return;
+    }
+    if (formData.honeypot) {
+      setError('Spam detected');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch('https://portpoliosid.onrender.com/sendmail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: formData.name || 'Unknown',
+          email: formData.email,
+          subject: formData.subject || 'Message from Siddharamayya',
+          message: formData.message,
+          honeypot: formData.honeypot,
+          cc: formData.cc || null,
+          bcc: formData.bcc || null,
+        }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('access_token');
+          setShowPasswordPrompt(true);
+          setIsLoading(false);
+          return;
+        }
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to send email');
+      }
+
+      const data = await response.json();
+      setSuccess(data.message);
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+        cc: '',
+        bcc: '',
+        honeypot: '',
+      });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleBackClick = () => {
     navigate('/projects');
   };
 
-  const styles = {
-    navbar: {
-      position: 'fixed',
-      width: '100vw',
-      height: '60px',
-      backgroundColor: '#404347',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: '0 0.75rem',
-      top: 0,
-      zIndex: 101,
-      boxSizing: 'border-box'
-    },
-    mobileNavLink: {
-      color: '#edf2f7',
-      cursor: 'pointer',
-      transition: 'color 0.3s ease',
-      display: 'flex',
-      alignItems: 'center',
-      padding: '0.5rem',
-      backgroundColor: '#404347'
-    }
-  };
-
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f7fafc', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#151515',
+      fontFamily: '"Poppins", sans-serif',
+      color: '#ffffff',
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
       <style>
         {`
           * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
           }
           @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
@@ -156,557 +176,518 @@ const SendMailPage = () => {
           .animate-slideUp {
             animation: slideUp 0.5s ease-out forwards;
           }
-          /* Contact Section Styles */
-          #contact {
-            background: #151515;
-            padding: 12rem 1rem 7.2rem;
-            position: relative;
-            zIndex: 1;
-          }
-          .row.section-intro {
-            display: flex;
-            justify-content: center;
-            text-align: center;
-            max-width: 740px;
-            margin: 0 auto 3rem;
-          }
-          .row.section-intro h1 {
-            color: #FFFFFF;
-            font-family: "poppins-bold", sans-serif;
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            animation: slideUp 0.5s ease-out;
-          }
-          .row.section-intro h5 {
-            color: #07b1d0;
-            font-family: "poppins-bold", sans-serif;
-            font-size: 1.5rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-            animation: slideUp 0.5s ease-out 0.2s;
-            animation-fill-mode: both;
-          }
-          .row.section-intro p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.2rem;
-            margin: 0;
-          }
-          .row.contact-form {
-            display: flex;
-            justify-content: center;
-            max-width: 740px;
-            margin: 0 auto;
-            background: transparent;
-            border: none !important;
-          }
-          .contact-form {
-            width: 100%;
-            background: transparent;
-            border: none !important;
-            animation: slideUp 0.5s ease-out;
-          }
-          .contact-form form {
-            margin: 0;
-            background: transparent;
-            border: none !important;
-          }
-          .contact-form fieldset {
-            border: none !important;
-            padding: 0;
-          }
-          .contact-form .form-field {
-            position: relative;
-            margin-bottom: 0;
-            padding-bottom: 0.5rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            background: transparent;
-            border: none !important;
-          }
-          .contact-form .form-field.submit-field {
-            margin-top: 1rem;
-            padding-bottom: 0;
-            box-shadow: none;
-          }
-          .contact-form input[type="text"],
-          .contact-form input[type="email"],
-          .contact-form textarea {
-            width: 100%;
-            height: 4rem;
-            padding: 0;
-            font-family: "poppins-regular", sans-serif;
-            font-size: 1.4rem;
-            color: rgba(255, 255, 255, 0.7);
+          .form-container {
             background: rgba(255, 255, 255, 0.05);
-            border: none !important;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+          }
+          .form-field {
+            margin-bottom: 1.5rem;
+            width: 100%;
+          }
+          input[type="text"],
+          input[type="email"],
+          input[type="password"],
+          textarea {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            font-family: "Poppins", sans-serif;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
             border-radius: 4px;
             transition: all 0.3s ease;
             outline: none;
-            line-height: 4rem;
-            vertical-align: middle;
           }
-          .contact-form textarea {
-            height: auto;
-            min-height: 10rem;
+          textarea {
+            min-height: 120px;
             resize: vertical;
-            line-height: 1.5;
           }
-          .contact-form input[type="text"]:focus,
-          .contact-form input[type="email"]:focus,
-          .contact-form textarea:focus {
-            background: rgba(255, 255, 255, 0.1);
-            color: #FFFFFF;
+          input:focus,
+          textarea:focus {
+            background: rgba(255, 255, 255, 0.15);
             box-shadow: 0 0 8px rgba(7, 177, 208, 0.3);
           }
-          .contact-form input[type="text"]::placeholder,
-          .contact-form input[type="email"]::placeholder,
-          .contact-form textarea::placeholder {
-            color: rgba(255, 255, 255, 0.3);
+          input::placeholder,
+          textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
             font-style: italic;
           }
-          .contact-form button.submitform {
-            font-family: "poppins-bold", sans-serif;
-            font-size: 1.4rem;
-            letter-spacing: 0.2rem;
-            height: 4rem;
-            line-height: 4rem;
-            padding: 0;
-            margin: 0;
+          button {
             width: 100%;
-            max-width: none;
+            padding: 1rem;
+            font-size: 1rem;
+            font-family: "Poppins", sans-serif;
+            font-weight: 600;
             background: #07b1d0;
-            color: #FFFFFF;
-            border: none !important;
+            color: #ffffff;
+            border: none;
             border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            transition: background 0.3s ease, transform 0.3s ease;
           }
-          .contact-form button.submitform:hover,
-          .contact-form button.submitform:focus {
+          button:hover {
             background: #0cd2e8;
             transform: scale(1.02);
           }
-          .row.message-row {
-            display: flex;
-            justify-content: center;
-            max-width: 740px;
-            margin: 0.5rem auto;
+          button:disabled {
+            background: #06a2c0;
+            cursor: not-allowed;
+            opacity: 0.7;
           }
-          #message-warning,
-          #message-success {
+          .loader {
             display: none;
-            width: 100%;
-            max-width: 300px;
-            margin: 0 auto;
-            font-size: 1.5rem;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: slideUp 0.5s ease-out;
-          }
-          #message-warning {
-            color: #fa0003;
-            text-shadow: 0 0 8px rgba(250, 0, 3, 0.5);
-          }
-          #message-success {
-            color: #07b1d0;
-            text-shadow: 0 0 8px rgba(7, 177, 208, 0.5);
-          }
-          #message-warning i,
-          #message-success i {
-            margin-right: 0.5rem;
-            font-size: 1.5rem;
-          }
-          #submit-loader {
-            display: none;
-            position: relative;
-            width: 100%;
-            text-align: center;
-            margin-top: 1rem;
-          }
-          #submit-loader .text-loader {
-            display: none;
-            font-family: "poppins-bold", sans-serif;
-            color: #FFFFFF;
-            letter-spacing: 0.3rem;
-            text-transform: uppercase;
-          }
-          .s-loader {
-            margin: 1.2rem auto;
+            margin: 1rem auto;
             width: 70px;
             text-align: center;
-            transform: translateX(0.45rem);
           }
-          .s-loader > div {
+          .loader.active {
+            display: block;
+          }
+          .loader div {
             width: 1rem;
             height: 1rem;
-            background-color: #FFFFFF;
-            border-radius: 100%;
+            background: #ffffff;
+            border-radius: 50%;
             display: inline-block;
-            margin-right: 0.9rem;
+            margin: 0 0.2rem;
             animation: sk-bouncedelay 1.4s infinite ease-in-out both;
           }
-          .s-loader .bounce1 {
+          .loader .bounce1 {
             animation-delay: -0.32s;
           }
-          .s-loader .bounce2 {
+          .loader .bounce2 {
             animation-delay: -0.16s;
           }
           @keyframes sk-bouncedelay {
-            0%, 80%, 100% {
-              transform: scale(0);
-            }
-            40% {
-              transform: scale(1);
-            }
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
           }
-          .row.social {
+          .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
-            justify-content: center;
             align-items: center;
-            margin: 2rem auto;
-            max-width: 740px;
+            justify-content: center;
+            z-index: 200;
+          }
+          .password-modal-content {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
             text-align: center;
+            animation: slideUp 0.5s ease-out;
           }
-          .footer-social {
+          .social-links {
             display: flex;
-            flex-direction: row;
+            justify-content: center;
             gap: 1.5rem;
-            justify-content: center;
-            align-items: center;
-            list-style: none;
-            padding: 0;
-            margin: 0;
+            margin: 2rem 0;
           }
-          .footer-social li a {
-            color: #FFFFFF;
-            background: rgba(255, 255, 255, 0.05);
+          .social-links a {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
             width: 3rem;
             height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
           }
-          .footer-social li a:hover {
+          .social-links a:hover {
             color: #07b1d0;
             transform: scale(1.1);
           }
-          .row.contact-info {
-            margin: 4.8rem auto 0;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
+          .contact-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
             max-width: 1200px;
-          }
-          .contact-info .col-four {
-            flex: 0 0 33.333333%;
-            max-width: 33.333333%;
+            margin: 4rem auto;
             padding: 0 1rem;
+          }
+          .contact-info div {
             text-align: center;
-          }
-          .contact-info .icon {
-            margin-bottom: 2.1rem;
-          }
-          .contact-info .icon i {
-            font-size: 4.2rem;
-            color: #FFFFFF;
           }
           .contact-info h5 {
             color: #07b1d0;
-            font-family: "poppins-bold", sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
             margin-bottom: 1rem;
           }
           .contact-info p {
             color: rgba(255, 255, 255, 0.7);
-            font-family: "poppins-regular", sans-serif;
-            font-size: 1.2rem;
+            font-size: 1rem;
           }
-          @media (max-width: 767px) {
-            .navbar {
-              padding: 0.75rem;
-              justify-content: space-between;
+          @media (max-width: 1024px) {
+            .contact-info {
+              grid-template-columns: repeat(2, 1fr);
             }
-            .row.section-intro {
-              max-width: 90%;
+          }
+          @media (max-width: 768px) {
+            .form-container {
+              padding: 1.5rem;
+              margin: 1rem;
             }
-            .row.section-intro h1 {
+            .contact-info {
+              grid-template-columns: 1fr;
+              gap: 1.5rem;
+            }
+            .form-field {
+              margin-bottom: 1rem;
+            }
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            textarea {
+              font-size: 0.9rem;
+              padding: 0.8rem;
+            }
+            button {
+              font-size: 0.9rem;
+              padding: 0.8rem;
+            }
+            h1 {
               font-size: 2rem;
             }
-            .row.section-intro h5 {
-              font-size: 1.2rem;
-            }
-            .row.contact-form {
-              max-width: 90%;
-            }
-            .row.message-row {
-              max-width: 90%;
-            }
-            .contact-form input[type="text"],
-            .contact-form input[type="email"] {
-              height: 3.6rem;
-              font-size: 1.2rem;
-              line-height: 3.6rem;
-            }
-            .contact-form textarea {
-              min-height: 8rem;
-              font-size: 1.2rem;
-            }
-            .contact-form button.submitform {
-              height: 3.6rem;
-              line-height: 3.6rem;
-              font-size: 1.2rem;
-            }
-            #message-warning,
-            #message-success {
-              font-size: 1.2rem;
-              max-width: 280px;
-              text-shadow: 0 0 6px rgba(250, 0, 3, 0.5);
-            }
-            #message-success {
-              text-shadow: 0 0 6px rgba(7, 177, 208, 0.5);
-            }
-            #message-warning i,
-            #message-success i {
-              font-size: 1.2rem;
-            }
-            .row.social {
-              margin: 1.5rem auto;
-            }
-            .footer-social {
-              gap: 1rem;
-            }
-            .footer-social li a {
+            .social-links a {
               width: 2.5rem;
               height: 2.5rem;
             }
-            .row.contact-info {
-              margin: 3rem auto 0;
-            }
-            .contact-info .col-four {
-              flex: 0 0 100%;
-              max-width: 100%;
-              margin-bottom: 2rem;
-            }
-            .contact-info .icon i {
-              font-size: 3rem;
-            }
             .contact-info h5 {
-              font-size: 1.2rem;
+              font-size: 1rem;
             }
             .contact-info p {
-              font-size: 1rem;
+              font-size: 0.9rem;
+            }
+            .password-modal-content {
+              padding: 1.5rem;
             }
           }
           @media (max-width: 480px) {
-            .navbar {
-              padding: 0.5rem;
+            .form-container {
+              padding: 1rem;
+              margin: 0.5rem;
             }
-            .row.section-intro h1 {
-              font-size: 1.5rem;
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            textarea {
+              font-size: 0.8rem;
+              padding: 0.7rem;
             }
-            .row.section-intro h5 {
-              font-size: 0.9rem;
+            button {
+              font-size: 0.8rem;
+              padding: 0.7rem;
             }
-            .contact-info .icon i {
-              font-size: 2.5rem;
+            h1 {
+              font-size: 1.8rem;
             }
-            .row.social {
-              margin: 1rem auto;
-            }
-            .footer-social li a {
+            .social-links a {
               width: 2rem;
               height: 2rem;
+            }
+            .password-modal-content {
+              padding: 1rem;
+              max-width: 300px;
             }
           }
         `}
       </style>
-      <nav style={styles.navbar}>
-        <div className="mobile-nav" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <button
-            style={styles.mobileNavLink}
-            onClick={handleBackClick}
+      <nav style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '70px',
+        backgroundColor: '#404347',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 2rem',
+        zIndex: 100,
+        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+      }}>
+        <button
+          onClick={handleBackClick}
+          style={{
+            color: '#edf2f7',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: '1.8rem',
+          }}
+          onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
+          onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+          aria-label="Back to Projects"
+        >
+          <FiArrowLeft />
+        </button>
+        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+          <a
+            href="https://siddharamayya.in"
+            style={{
+              color: '#edf2f7',
+              textDecoration: 'none',
+              fontSize: '1.2rem',
+              fontWeight: 600,
+            }}
             onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
             onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
-            aria-label="Back to Projects"
+            aria-label="Home"
           >
-            <FiArrowLeft size={24} />
-          </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <a
-              href="/"
-              style={styles.mobileNavLink}
-              onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
-              onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
-              aria-label="Home"
-            >
-              <FiHome size={24} />
-            </a>
-            <a
-              href="https://mtptisid.github.io"
-              style={styles.mobileNavLink}
-              onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
-              onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
-              aria-label="Profile"
-            >
-              <FaUser size={24} />
-            </a>
-          </div>
+            <FiHome size={24} />
+          </a>
+          <a
+            href="https://mtptisid.github.io"
+            style={{
+              color: '#edf2f7',
+              textDecoration: 'none',
+              fontSize: '1.2rem',
+              fontWeight: 600,
+            }}
+            onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
+            onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+            aria-label="Profile"
+          >
+            <FaUser size={24} />
+          </a>
         </div>
       </nav>
-      <section id="contact">
-        <div className="row section-intro">
-          <h1>Admin Email Sender</h1>
-          <p className="lead"></p>
+      {showPasswordPrompt && (
+        <div className="password-modal">
+          <div className="password-modal-content">
+            <h2 style={{
+              color: '#333333',
+              fontSize: '1.5rem',
+              marginBottom: '1rem',
+            }}>
+              Enter Admin Password
+            </h2>
+            <form onSubmit={handlePasswordSubmit}>
+              <div style={{ marginBottom: '1rem' }}>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.8rem',
+                    fontSize: '1rem',
+                    color: '#333333',
+                    background: '#f7fafc',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '4px',
+                  }}
+                />
+              </div>
+              {passwordError && (
+                <p style={{
+                  color: '#e53e3e',
+                  fontSize: '0.9rem',
+                  marginBottom: '1rem',
+                }}>
+                  {passwordError}
+                </p>
+              )}
+              <button
+                type="submit"
+                disabled={isLoading}
+                style={{
+                  background: '#07b1d0',
+                  color: '#ffffff',
+                  padding: '0.8rem',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  borderRadius: '4px',
+                  width: '100%',
+                }}
+              >
+                {isLoading ? 'Verifying...' : 'Submit'}
+              </button>
+            </form>
+          </div>
         </div>
-        <div className="row contact-form">
-          <form name="contactForm" id="contactForm" method="post" className="contact-form">
-            <fieldset>
+      )}
+      {!showPasswordPrompt && (
+        <main style={{
+          padding: '90px 1rem 2rem',
+          maxWidth: '1200px',
+          margin: '0 auto',
+          flex: 1,
+        }}>
+          <section className="form-container animate-slideUp">
+            <h1 style={{
+              color: '#ffffff',
+              fontSize: '2.5rem',
+              fontWeight: 700,
+              textAlign: 'center',
+              marginBottom: '1.5rem',
+            }}>
+              Admin Email Sender
+            </h1>
+            <form onSubmit={handleSubmit}>
               <div className="form-field">
                 <input
-                  name="contactName"
                   type="text"
-                  id="contactName"
-                  placeholder="Name"
-                  defaultValue=""
-                  minLength="2"
-                  required
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Name (optional)"
                 />
               </div>
               <div className="form-field">
                 <input
-                  name="contactEmail"
                   type="email"
-                  id="contactEmail"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   placeholder="Recipient Email"
-                  defaultValue=""
                   required
                 />
               </div>
               <div className="form-field">
                 <input
-                  name="contactCc"
                   type="email"
-                  id="contactCc"
+                  name="cc"
+                  value={formData.cc}
+                  onChange={handleChange}
                   placeholder="CC Email (optional)"
-                  defaultValue=""
                 />
               </div>
               <div className="form-field">
                 <input
-                  name="contactBcc"
                   type="email"
-                  id="contactBcc"
+                  name="bcc"
+                  value={formData.bcc}
+                  onChange={handleChange}
                   placeholder="BCC Email (optional)"
-                  defaultValue=""
                 />
               </div>
               <div className="form-field">
                 <input
-                  name="contactSubject"
                   type="text"
-                  id="contactSubject"
-                  placeholder="Subject"
-                  defaultValue=""
+                  name="subject"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Subject (optional)"
                 />
               </div>
               <div className="form-field">
                 <textarea
-                  name="contactMessage"
-                  id="contactMessage"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
                   placeholder="Message"
-                  rows="5"
                   required
-                ></textarea>
+                />
               </div>
-              <div className="form-field" style={{ display: 'none' }}>
-                <input name="honeypot" type="text" id="honeypot" />
+              <div style={{ display: 'none' }}>
+                <input
+                  type="text"
+                  name="honeypot"
+                  value={formData.honeypot}
+                  onChange={handleChange}
+                />
               </div>
-              <div className="form-field submit-field">
-                <button className="submitform">Send Email</button>
-                <div id="submit-loader">
-                  <div className="text-loader">Sending...</div>
-                  <div className="s-loader">
-                    <div className="bounce1"></div>
-                    <div className="bounce2"></div>
-                    <div className="bounce3"></div>
-                  </div>
+              {error && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fa0003',
+                  margin: '1rem 0',
+                  fontSize: '1rem',
+                  textShadow: '0 0 8px rgba(250, 0, 3, 0.5)',
+                }}>
+                  <FaExclamationTriangle style={{ marginRight: '0.5rem' }} />
+                  <span>{error}</span>
                 </div>
+              )}
+              {success && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#07b1d0',
+                  margin: '1rem 0',
+                  fontSize: '1rem',
+                  textShadow: '0 0 8px rgba(7, 177, 208, 0.5)',
+                }}>
+                  <FaCheck style={{ marginRight: '0.5rem' }} />
+                  <span>{success}</span>
+                </div>
+              )}
+              <button type="submit" disabled={isLoading}>
+                {isLoading ? 'Sending...' : 'Send Email'}
+              </button>
+              <div className={`loader ${isLoading ? 'active' : ''}`}>
+                <div className="bounce1"></div>
+                <div className="bounce2"></div>
+                <div className="bounce3"></div>
               </div>
-            </fieldset>
-          </form>
-        </div>
-        <div className="row message-row">
-          <div id="message-warning">
-            <FaExclamationTriangle />
-            <span></span>
-          </div>
-          <div id="message-success">
-            <FaCheck />
-            Email sent successfully!
-          </div>
-        </div>
-        <div className="row social">
-          <ul className="footer-social">
-            <li>
-              <a href="https://www.linkedin.com/in/siddharamayya-mathapati">
-                <FaLinkedin size={30} />
-              </a>
-            </li>
-            <li>
-              <a href="https://medium.com/@msidrm455">
-                <FaMedium size={30} />
-              </a>
-            </li>
-            <li>
-              <a href="https://github.com/mtptisid">
-                <FaGithub size={30} />
-              </a>
-            </li>
-            <li>
-              <a href="https://www.instagram.com/its_5id">
-                <FaInstagram size={30} />
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div className="row contact-info">
-          <div className="col-four">
-            <div className="icon">
-              <i className="fa fa-map-marker"></i>
+            </form>
+          </section>
+          <section className="social-links animate-slideUp">
+            <a href="https://www.linkedin.com/in/siddharamayya-mathapati">
+              <FaLinkedin size={24} />
+            </a>
+            <a href="https://medium.com/@msidrm455">
+              <FaMedium size={24} />
+            </a>
+            <a href="https://github.com/mtptisid">
+              <FaGithub size={24} />
+            </a>
+            <a href="https://www.instagram.com/its_5id">
+              <FaInstagram size={24} />
+            </a>
+          </section>
+          <section className="contact-info animate-slideUp">
+            <div>
+              <h5>Where to find me</h5>
+              <p>
+                #372, Ward no 3<br />
+                Yadur, Chikodi<br />
+                Belagavi, Karnataka, India
+              </p>
             </div>
-            <h5>Where to find me</h5>
-            <p>
-              #372, Ward no 3<br />
-              Yadur, Chikodi<br />
-              Belagavi, Karnataka, India
-            </p>
-          </div>
-          <div className="col-four">
-            <div className="icon">
-              <i className="fa fa-envelope"></i>
+            <div>
+              <h5>Email Me At</h5>
+              <p>msidrm455@gmail.com</p>
             </div>
-            <h5>Email Me At</h5>
-            <p>msidrm455@gmail.com</p>
-          </div>
-          <div className="col-four">
-            <div className="icon">
-              <i className="fa fa-phone"></i>
+            <div>
+              <h5>Call Me At</h5>
+              <p>Phone: (+91) 97406 71620</p>
             </div>
-            <h5>Call Me At</h5>
-            <p>Phone: (+91) 97406 71620</p>
-          </div>
-        </div>
-      </section>
-      <footer style={{ backgroundColor: '#daebdd', color: '#000000', padding: '0.1rem 0' }}>
-        <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: '1rem', fontWeight: '500' }}>© 2025 Siddharamayya M. All rights reserved.</p>
-        </div>
+          </section>
+        </main>
+      )}
+      <footer style={{
+        backgroundColor: '#daebdd',
+        color: '#000000',
+        padding: '1.5rem',
+        textAlign: 'center',
+        width: '100%',
+      }}>
+        <p style={{ fontSize: '1rem', fontWeight: 500 }}>
+          © 2025 Siddharamayya M. All rights reserved.
+        </p>
       </footer>
     </div>
   );
