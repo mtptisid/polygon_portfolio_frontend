@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FiHome, FiCode, FiArrowLeft } from 'react-icons/fi';
+import { FiHome, FiCode, FiArrowLeft, FiMail } from 'react-icons/fi';
 import { FaUser } from 'react-icons/fa';
 
 const techBadges = {
@@ -63,37 +63,7 @@ const techBadges = {
   "Microservices": "https://img.shields.io/badge/microservices-%23121011.svg?style=flat&logo=google-cloud&logoColor=white",
   "LLAMA": "https://img.shields.io/badge/llama-%23121011.svg?style=flat&logo=meta-ai&logoColor=white",
   "NLP": "https://img.shields.io/badge/nlp-%23121011.svg?style=flat&logo=python&logoColor=white",
-  "Streamlit": "https://img.shields.io/badge/streamlit-%23FF4B4B.svg?style=flat&logo=streamlit&logoColor=white",
-  "YAML": "https://img.shields.io/badge/yaml-%23121011.svg?style=flat&logo=yaml&logoColor=white",
-  "Linux": "https://img.shields.io/badge/linux-%23FCC624.svg?style=flat&logo=linux&logoColor=black",
-  "Automation": "https://img.shields.io/badge/automation-%23121011.svg?style=flat&logo=ansible&logoColor=white",
-  "AWX": "https://img.shields.io/badge/awx-%23EE0000.svg?style=flat&logo=ansible&logoColor=white",
-  "Shell Scripting": "https://img.shields.io/badge/shell_scripting-%23121011.svg?style=flat&logo=gnu-bash&logoColor=white",
-  "Cron": "https://img.shields.io/badge/cron-%23121011.svg?style=flat&logo=linux&logoColor=white",
-  "RandomForest": "https://img.shields.io/badge/randomforest-%23F7931E.svg?style=flat&logo=scikit-learn&logoColor=white",
-  "Embedded Systems": "https://img.shields.io/badge/embedded_systems-%23121011.svg?style=flat&logo=arduino&logoColor=white",
-  "C++": "https://img.shields.io/badge/c++-%2300599C.svg?style=flat&logo=c%2B%2B&logoColor=white",
-  "LLMs": "https://img.shields.io/badge/llms-%23121011.svg?style=flat&logo=python&logoColor=white",
-  "LangChain": "https://img.shields.io/badge/langchain-%23121011.svg?style=flat&logo=python&logoColor=white",
-  "CatBoost": "https://img.shields.io/badge/catboost-%23FF6F00.svg?style=flat&logo=catboost&logoColor=white",
-  "Seaborn": "https://img.shields.io/badge/seaborn-%23121011.svg?style=flat&logo=python&logoColor=white",
-  "Machine Learning": "https://img.shields.io/badge/machine_learning-%23121011.svg?style=flat&logo=python&logoColor=white",
-  "ETL": "https://img.shields.io/badge/etl-%23121011.svg?style=flat&logo=apache-spark&logoColor=white",
-  "Data Mining": "https://img.shields.io/badge/data_mining-%23121011.svg?style=flat&logo=python&logoColor=white",
-  "OLAP": "https://img.shields.io/badge/olap-%23121011.svg?style=flat&logo=apache-spark&logoColor=white",
-  "Clustering": "https://img.shields.io/badge/clustering-%23121011.svg?style=flat&logo=python&logoColor=white",
-  "Data Preprocessing": "https://img.shields.io/badge/data_preprocessing-%23121011.svg?style=flat&logo=python&logoColor=white",
-  "Chroma": "https://img.shields.io/badge/chroma-%23121011.svg?style=flat&logo=python&logoColor=white",
-  "NewsAPI": "https://img.shields.io/badge/newsapi-%23121011.svg?style=flat&logo=newsapi&logoColor=white",
-  "Backtesting": "https://img.shields.io/badge/backtesting-%23121011.svg?style=flat&logo=python&logoColor=white",
-  "AI Agents": "https://img.shields.io/badge/ai_agents-%23121011.svg?style=flat&logo=python&logoColor=white",
-  "GPT": "https://img.shields.io/badge/gpt-%23121011.svg?style=flat&logo=openai&logoColor=white",
-  "System Administration": "https://img.shields.io/badge/system_administration-%23121011.svg?style=flat&logo=linux&logoColor=white",
-  "Systemd": "https://img.shields.io/badge/systemd-%23121011.svg?style=flat&logo=linux&logoColor=white",
-  "Sensors": "https://img.shields.io/badge/sensors-%23121011.svg?style=flat&logo=arduino&logoColor=white",
-  "OpenAI Whisper": "https://img.shields.io/badge/openai_whisper-%23412991.svg?style=flat&logo=openai&logoColor=white",
-  "Scrapy": "https://img.shields.io/badge/scrapy-%23121011.svg?style=flat&logo=scrapy&logoColor=white",
-  "Google Gemini": "https://img.shields.io/badge/google_gemini-%238AB4F8.svg?style=flat&logo=google&logoColor=white"
+  "Streamlit": "https://img.shields.io/badge/streamlit-%23FF4B4B.svg?style=flat&logo=streamlit&logoColor=white"
 };
 
 const projects = [
@@ -111,7 +81,7 @@ const projects = [
     },
     {
         "title": "Bash-Projects",
-        "url": "https://github1s.com/mtptisid/Bash-Projects",
+        "url": "https://github savo1s.com/mtptisid/Bash-Projects",
         "description": "A curated collection of Bash scripts used for system administration and automation. These include user management, system monitoring, and resource optimization. This repo is great for Linux users and sysadmins who frequently work in CLI environments. Scripts are modular and reusable.",
         "technologies": ["Bash", "Linux", "Shell Scripting", "Cron"]
     },
@@ -298,7 +268,7 @@ const ProjectsViewPage = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 1rem',
+      padding: '0 0.75rem',
       top: 0,
       zIndex: 101,
       boxSizing: 'border-box'
@@ -327,7 +297,8 @@ const ProjectsViewPage = () => {
       transition: 'color 0.3s ease',
       display: 'flex',
       alignItems: 'center',
-      padding: '0.5rem'
+      padding: '0.5rem',
+      backgroundColor: '#404347'
     },
     backNavLink: {
       color: '#edf2f7',
@@ -510,7 +481,7 @@ const ProjectsViewPage = () => {
               height: 36px;
             }
             .footer {
-              padding: 0.2rem 0;
+              padding: 1rem 0;
               font-size: 0.875rem;
             }
             .preview-container {
@@ -532,7 +503,7 @@ const ProjectsViewPage = () => {
         `}
       </style>
       <nav style={styles.navbar}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+        <div className="mobile-nav" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           {selectedProject ? (
             <button
               style={styles.backNavLink}
@@ -549,18 +520,31 @@ const ProjectsViewPage = () => {
               style={styles.mobileNavLink}
               onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
               onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+              aria-label="Home"
             >
               <FiHome size={24} />
             </a>
           )}
-          <a
-            href="https://mtptisid.github.io"
-            style={styles.mobileNavLink}
-            onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
-            onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
-          >
-            <FaUser size={24} />
-          </a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <a
+              href="/contact"
+              style={styles.mobileNavLink}
+              onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
+              onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+              aria-label="Contact"
+            >
+              <FiMail size={24} />
+            </a>
+            <a
+              href="https://mtptisid.github.io"
+              style={styles.mobileNavLink}
+              onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
+              onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+              aria-label="Profile"
+            >
+              <FaUser size={24} />
+            </a>
+          </div>
         </div>
       </nav>
       {selectedProject ? (
@@ -620,7 +604,7 @@ const ProjectsViewPage = () => {
           </section>
           <footer className="footer">
             <div style={{ maxWidth: '896px', margin: '0 auto' }}>
-              <p style={{ fontSize: '0.3rem', fontWeight: '300' }}>
+              <p style={{ fontSize: '1rem', fontWeight: '300' }}>
                 © 2025 Siddharamayya M. All rights reserved.
               </p>
             </div>
