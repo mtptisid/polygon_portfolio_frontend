@@ -161,6 +161,8 @@ const SendMailPage = () => {
       color: '#ffffff',
       display: 'flex',
       flexDirection: 'column',
+      width: '100vw',
+      overflowX: 'hidden'
     }}>
       <style>
         {`
@@ -168,6 +170,11 @@ const SendMailPage = () => {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+          }
+          body, html, #root {
+            width: 100vw;
+            min-height: 100vh;
+            background: #151515;
           }
           @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
@@ -272,8 +279,8 @@ const SendMailPage = () => {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background: rgba(0, 0, 0, 0.8);
             display: flex;
             align-items: center;
@@ -310,19 +317,17 @@ const SendMailPage = () => {
             color: #07b1d0;
             transform: scale(1.1);
           }
-
-          /* DESKTOP: Full-width, centered, 3 columns row layout for contact-info */
+          /* FULL-WIDTH contact-info */
           .contact-info {
             display: flex;
             flex-direction: row;
             align-items: stretch;
             justify-content: center;
-            width: 100%;
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
+            width: 100vw;
+            margin: 2rem 0;
+            padding: 2rem 0;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
+            border-radius: 0;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
             gap: 2.5rem;
           }
@@ -332,10 +337,10 @@ const SendMailPage = () => {
             flex-direction: column;
             justify-content: center;
             text-align: left;
-            max-width: 260px;
-            padding: 0 1rem;
+            max-width: 400px;
+            width: 100%;
+            padding: 0 2vw;
             margin-bottom: 0;
-            background: none;
           }
           .contact-info h5 {
             color: #07b1d0;
@@ -353,16 +358,15 @@ const SendMailPage = () => {
           }
 
           @media (max-width: 900px) {
-            .form-container,
-            .contact-info {
+            .form-container {
               max-width: 98vw;
             }
             .contact-info {
               gap: 1.2rem;
-              padding: 1.5rem 0.5rem;
+              padding: 1.5rem 0;
             }
             .contact-info > div {
-              padding: 0 0.5rem;
+              padding: 0 1vw;
               max-width: 100vw;
             }
           }
@@ -375,10 +379,11 @@ const SendMailPage = () => {
             .contact-info {
               flex-direction: column;
               align-items: center;
-              padding: 1.2rem 0.5rem;
-              margin: 1rem auto;
+              padding: 1.2rem 0.3rem;
+              margin: 1rem 0;
               gap: 1rem;
               min-height: unset;
+              border-radius: 12px;
             }
             .contact-info > div {
               text-align: center;
@@ -424,10 +429,11 @@ const SendMailPage = () => {
             .contact-info {
               flex-direction: column;
               align-items: center;
-              padding: 1rem 0.2rem;
-              margin: 0.5rem auto;
+              padding: 1rem 0.1rem;
+              margin: 0.5rem 0;
               min-height: unset;
               gap: 0.5rem;
+              border-radius: 12px;
             }
             .contact-info > div {
               margin-bottom: 0.6rem;
@@ -470,7 +476,7 @@ const SendMailPage = () => {
         position: 'fixed',
         top: 0,
         left: 0,
-        width: '100%',
+        width: '100vw',
         height: '70px',
         backgroundColor: '#404347',
         display: 'flex',
@@ -588,10 +594,10 @@ const SendMailPage = () => {
       {!showPasswordPrompt && (
         <main style={{
           padding: '90px 1rem 2rem',
-          maxWidth: '1200px',
+          width: '100vw',
           margin: '0 auto',
           flex: 1,
-          width: '100%',
+          boxSizing: 'border-box',
         }}>
           <section className="form-container animate-slideUp">
             <h1 style={{
@@ -744,7 +750,7 @@ const SendMailPage = () => {
         color: '#000000',
         padding: '1.5rem',
         textAlign: 'center',
-        width: '100%',
+        width: '100vw',
       }}>
         <p style={{ fontSize: '1rem', fontWeight: 500 }}>
           © 2025 Siddharamayya M. All rights reserved.
