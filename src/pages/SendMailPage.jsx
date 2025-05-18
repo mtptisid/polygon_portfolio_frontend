@@ -310,30 +310,62 @@ const SendMailPage = () => {
             color: #07b1d0;
             transform: scale(1.1);
           }
+
+          /* New contact-info styles for desktop */
           .contact-info {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: center;
+            min-height: 340px;
+            width: 100%;
             max-width: 1200px;
-            margin: 4rem auto;
-            padding: 0 1rem;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            gap: 2rem;
           }
-          .contact-info div {
-            text-align: center;
+          .contact-info > div {
+            text-align: left;
+            margin-bottom: 0;
+            width: 100%;
+            max-width: 320px;
+            flex: 1 1 0;
+            background: none;
           }
           .contact-info h5 {
             color: #07b1d0;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             font-weight: 600;
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
+            text-align: left;
           }
           .contact-info p {
             color: rgba(255, 255, 255, 0.7);
-            font-size: 1rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-align: left;
           }
+
           @media (max-width: 1024px) {
             .contact-info {
-              grid-template-columns: repeat(2, 1fr);
+              flex-direction: column;
+              align-items: center;
+              padding: 1.5rem;
+              gap: 1.5rem;
+              min-height: unset;
+            }
+            .contact-info > div {
+              text-align: center;
+              margin-bottom: 1rem;
+              max-width: 400px;
+              width: 100%;
+            }
+            .contact-info h5,
+            .contact-info p {
+              text-align: center;
             }
           }
           @media (max-width: 768px) {
@@ -342,8 +374,21 @@ const SendMailPage = () => {
               margin: 1rem;
             }
             .contact-info {
-              grid-template-columns: 1fr;
-              gap: 1.5rem;
+              flex-direction: column;
+              align-items: center;
+              padding: 1.5rem;
+              margin: 1rem;
+              min-height: unset;
+            }
+            .contact-info > div {
+              text-align: center;
+              margin-bottom: 1.5rem;
+              max-width: 400px;
+              width: 100%;
+            }
+            .contact-info h5,
+            .contact-info p {
+              text-align: center;
             }
             .form-field {
               margin-bottom: 1rem;
@@ -366,12 +411,6 @@ const SendMailPage = () => {
               width: 2.5rem;
               height: 2.5rem;
             }
-            .contact-info h5 {
-              font-size: 1rem;
-            }
-            .contact-info p {
-              font-size: 0.9rem;
-            }
             .password-modal-content {
               padding: 1.5rem;
             }
@@ -380,6 +419,25 @@ const SendMailPage = () => {
             .form-container {
               padding: 1rem;
               margin: 0.5rem;
+            }
+            .contact-info {
+              flex-direction: column;
+              align-items: center;
+              padding: 1rem;
+              margin: 0.5rem;
+              min-height: unset;
+              gap: 1rem;
+            }
+            .contact-info > div {
+              margin-bottom: 1.2rem;
+              max-width: 300px;
+              width: 100%;
+            }
+            .contact-info h5 {
+              font-size: 1rem;
+            }
+            .contact-info p {
+              font-size: 0.9rem;
             }
             input[type="text"],
             input[type="email"],
@@ -584,7 +642,7 @@ const SendMailPage = () => {
                 <input
                   type="text"
                   name="subject"
-                  value={formData.name}
+                  value={formData.subject}
                   onChange={handleChange}
                   placeholder="Subject (optional)"
                 />
@@ -645,16 +703,16 @@ const SendMailPage = () => {
             </form>
           </section>
           <section className="social-links animate-slideUp">
-            <a href="https://www.linkedin.com/in/siddharamayya-mathapati">
+            <a href="https://www.linkedin.com/in/siddharamayya-mathapati" target="_blank" rel="noopener noreferrer">
               <FaLinkedin size={24} />
             </a>
-            <a href="https://medium.com/@msidrm455">
+            <a href="https://medium.com/@msidrm455" target="_blank" rel="noopener noreferrer">
               <FaMedium size={24} />
             </a>
-            <a href="https://github.com/mtptisid">
+            <a href="https://github.com/mtptisid" target="_blank" rel="noopener noreferrer">
               <FaGithub size={24} />
             </a>
-            <a href="https://www.instagram.com/its_5id">
+            <a href="https://www.instagram.com/its_5id" target="_blank" rel="noopener noreferrer">
               <FaInstagram size={24} />
             </a>
           </section>
