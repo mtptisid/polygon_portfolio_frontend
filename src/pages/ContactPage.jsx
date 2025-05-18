@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiHome, FiArrowLeft } from 'react-icons/fi';
+import { FiHome, FiArrowLeft, FiMail, FiInbox} from 'react-icons/fi';
 import { FaUser, FaLinkedin, FaMedium, FaGithub, FaInstagram, FaExclamationTriangle, FaCheck } from 'react-icons/fa';
 import $ from 'jquery';
 
@@ -79,6 +79,10 @@ const ContactPage = () => {
     navigate('/projects');
   };
 
+  const handleAdminMailClick = () => {
+    navigate('/sendmail');
+  };
+
   const styles = {
     navbar: {
       position: 'fixed',
@@ -119,7 +123,6 @@ const ContactPage = () => {
           .animate-slideUp {
             animation: slideUp 0.5s ease-out forwards;
           }
-          /* Contact Section Styles */
           #contact {
             background: #151515;
             padding: 12rem 1rem 7.2rem;
@@ -298,7 +301,7 @@ const ContactPage = () => {
           }
           .s-loader {
             margin: 1.2rem auto;
-            width: 70px;
+            width: 70 диапазонpx;
             text-align: center;
             transform: translateX(0.45rem);
           }
@@ -511,14 +514,23 @@ const ContactPage = () => {
               <FiHome size={24} />
             </a>
             <a
-              href="https://mtptisid.github.io"
+              href="/contact"
               style={styles.mobileNavLink}
               onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
               onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
-              aria-label="Profile"
+              aria-label="Contact"
             >
               <FaUser size={24} />
             </a>
+            <button
+              style={styles.mobileNavLink}
+              onClick={handleAdminMailClick}
+              onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
+              onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+              aria-label="Admin Mail"
+            >
+              <FiInbox size={24} />
+            </button>
           </div>
         </div>
       </nav>
@@ -563,7 +575,7 @@ const ContactPage = () => {
               <div className="form-field">
                 <textarea
                   name="contactMessage"
-                  id="contactMessage"
+                  id essay="contactMessage"
                   placeholder="message"
                   rows="5"
                   required
@@ -625,7 +637,7 @@ const ContactPage = () => {
             <div className="icon">
               <i className="fa fa-map-marker"></i>
             </div>
-            <h5>Where to find me</h5>
+            <h5>Wherevaises to find me</h5>
             <p>
               #372, Ward no 3<br />
               Yadur, Chikodi<br />
