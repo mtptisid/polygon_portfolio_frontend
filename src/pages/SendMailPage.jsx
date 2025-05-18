@@ -311,28 +311,30 @@ const SendMailPage = () => {
             transform: scale(1.1);
           }
 
-          /* New contact-info styles for desktop */
+          /* DESKTOP: Full-width, centered, 3 columns row layout for contact-info */
           .contact-info {
             display: flex;
             flex-direction: row;
-            align-items: flex-start;
+            align-items: stretch;
             justify-content: center;
-            min-height: 340px;
             width: 100%;
-            max-width: 1200px;
+            max-width: 800px;
             margin: 2rem auto;
             padding: 2rem;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-            gap: 2rem;
+            gap: 2.5rem;
           }
           .contact-info > div {
-            text-align: left;
-            margin-bottom: 0;
-            width: 100%;
-            max-width: 320px;
             flex: 1 1 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: left;
+            max-width: 260px;
+            padding: 0 1rem;
+            margin-bottom: 0;
             background: none;
           }
           .contact-info h5 {
@@ -347,27 +349,24 @@ const SendMailPage = () => {
             font-size: 1.1rem;
             line-height: 1.6;
             text-align: left;
+            word-break: break-word;
           }
 
-          @media (max-width: 1024px) {
+          @media (max-width: 900px) {
+            .form-container,
             .contact-info {
-              flex-direction: column;
-              align-items: center;
-              padding: 1.5rem;
-              gap: 1.5rem;
-              min-height: unset;
+              max-width: 98vw;
+            }
+            .contact-info {
+              gap: 1.2rem;
+              padding: 1.5rem 0.5rem;
             }
             .contact-info > div {
-              text-align: center;
-              margin-bottom: 1rem;
-              max-width: 400px;
-              width: 100%;
-            }
-            .contact-info h5,
-            .contact-info p {
-              text-align: center;
+              padding: 0 0.5rem;
+              max-width: 100vw;
             }
           }
+
           @media (max-width: 768px) {
             .form-container {
               padding: 1.5rem;
@@ -376,13 +375,15 @@ const SendMailPage = () => {
             .contact-info {
               flex-direction: column;
               align-items: center;
-              padding: 1.5rem;
-              margin: 1rem;
+              padding: 1.2rem 0.5rem;
+              margin: 1rem auto;
+              gap: 1rem;
               min-height: unset;
             }
             .contact-info > div {
               text-align: center;
-              margin-bottom: 1.5rem;
+              padding: 0 0.5rem;
+              margin-bottom: 0.6rem;
               max-width: 400px;
               width: 100%;
             }
@@ -423,15 +424,16 @@ const SendMailPage = () => {
             .contact-info {
               flex-direction: column;
               align-items: center;
-              padding: 1rem;
-              margin: 0.5rem;
+              padding: 1rem 0.2rem;
+              margin: 0.5rem auto;
               min-height: unset;
-              gap: 1rem;
+              gap: 0.5rem;
             }
             .contact-info > div {
-              margin-bottom: 1.2rem;
+              margin-bottom: 0.6rem;
               max-width: 300px;
               width: 100%;
+              padding: 0 0.1rem;
             }
             .contact-info h5 {
               font-size: 1rem;
@@ -589,6 +591,7 @@ const SendMailPage = () => {
           maxWidth: '1200px',
           margin: '0 auto',
           flex: 1,
+          width: '100%',
         }}>
           <section className="form-container animate-slideUp">
             <h1 style={{
