@@ -514,7 +514,7 @@ const ContactPage = () => {
               <FiHome size={24} />
             </a>
             <a
-              href="https://portpolio.siddharamayya.in"
+              href="https://portfolio.siddharamayya.in/"
               style={styles.mobileNavLink}
               onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
               onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
