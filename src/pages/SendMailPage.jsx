@@ -333,23 +333,23 @@ const SendMailPage = () => {
             white-space: nowrap;
           }
           .file-list .remove-button {
-            background: #e53e3e; /* Softer red */
+            background: #07b1d0; /* Same as submit button */
             color: #ffffff;
             border: none;
             border-radius: 50%;
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.9rem; /* Adjusted for icon visibility */
             transition: background 0.3s ease, transform 0.2s ease;
             flex-shrink: 0;
             margin-left: 0.5rem;
           }
           .file-list .remove-button:hover {
-            background: #f56565; /* Lighter red on hover */
+            background: #0cd2e8; /* Same as submit button hover */
             transform: scale(1.1);
           }
           button {
@@ -549,9 +549,9 @@ const SendMailPage = () => {
               font-size: 0.8rem;
             }
             .file-list .remove-button {
-              width: 20px;
-              height: 20px;
-              font-size: 0.7rem;
+              width: 22px;
+              height: 22px;
+              font-size: 0.8rem;
             }
           }
           @media (max-width: 480px) {
@@ -606,9 +606,9 @@ const SendMailPage = () => {
               font-size: 0.7rem;
             }
             .file-list .remove-button {
-              width: 18px;
-              height: 18px;
-              font-size: 0.6rem;
+              width: 20px;
+              height: 20px;
+              font-size: 0.7rem;
             }
           }
         `}
@@ -783,7 +783,7 @@ const SendMailPage = () => {
                 <input
                   type="email"
                   name="bcc"
-                  value={formData.bcc}
+                  value={formData.cc}
                   onChange={handleChange}
                   placeholder="BCC Email (optional)"
                 />
