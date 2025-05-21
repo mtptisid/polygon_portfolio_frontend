@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiHome } from 'react-icons/fi';
-import { FaUser, FaLinkedin, FaMedium, FaGithub, FaInstagram, FaExclamationTriangle, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaUser, FaLinkedin, FaMedium, FaGithub, FaInstagram, FaExclamationTriangle, FaCheck, FaTrash } from 'react-icons/fa';
 
 const SendMailPage = () => {
   const navigate = useNavigate();
@@ -24,8 +24,8 @@ const SendMailPage = () => {
 
   // Token expiration time: 20 minutes (in milliseconds)
   const TOKEN_EXPIRY_TIME = 20 * 60 * 1000;
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const MAX_FILES = 8;
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB total
+  const MAX_FILES = 8; // Increased to 8
   const ALLOWED_FILE_TYPES = [
     'application/pdf',
     'image/jpeg',
@@ -99,17 +99,21 @@ const SendMailPage = () => {
     let valid = true;
     let errorMsg = '';
 
+    // Check number of files
     if (selectedFiles.length + files.length > MAX_FILES) {
       errorMsg = `Maximum ${MAX_FILES} files allowed`;
       valid = false;
     }
 
+    // Check total file size
+    const totalSize = [...files, ...selectedFiles].reduce((sum, file) => sum + file.size, 0);
+    if (totalSize > MAX_FILE_SIZE) {
+      errorMsg = `Total file size exceeds 5MB limit`;
+      valid = false;
+    }
+
+    // Check individual file types
     for (const file of selectedFiles) {
-      if (file.size > MAX_FILE_SIZE) {
-        errorMsg = `File ${file.name} exceeds 5MB limit`;
-        valid = false;
-        break;
-      }
       if (!ALLOWED_FILE_TYPES.includes(file.type)) {
         errorMsg = `File ${file.name} has unsupported type: ${file.type}`;
         valid = false;
@@ -118,7 +122,7 @@ const SendMailPage = () => {
     }
 
     if (valid) {
-      setFiles([...files, ...selectedFiles].slice(0, MAX_FILES)); // Append new files, respect max limit
+      setFiles([...files, ...selectedFiles].slice(0, MAX_FILES));
       setError('');
     } else {
       setError(errorMsg);
@@ -294,9 +298,10 @@ const SendMailPage = () => {
             outline: none;
           }
           input[type="file"] {
-            width: 100%;
-            padding: 0.5rem; /* Smaller padding to keep button small */
-            font-size: 0.9rem; /* Smaller font size */
+            width: auto; /* Only as wide as content */
+            display: inline-block;
+            padding: 0.5rem 1rem; /* Compact padding */
+            font-size: 0.9rem;
             font-family: "Poppins", sans-serif;
             color: #ffffff;
             background: #07b1d0; /* Match submit button color */
@@ -373,22 +378,22 @@ const SendMailPage = () => {
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 1.1rem; /* Increased for icon visibility */
+            font-size: 1.2rem; /* Increased for icon visibility */
             line-height: 1; /* Ensure icon centering */
             transition: background 0.3s ease, transform 0.2s ease;
             flex-shrink: 0;
             margin-left: 0.5rem;
-            position: relative; /* For debugging */
-            z-index: 1; /* Ensure visibility */
+            position: relative;
+            z-index: 10; /* Ensure visibility */
           }
           .file-list .remove-button:hover {
             background: #f56565; /* Lighter red on hover */
             transform: scale(1.1);
           }
           .file-list .remove-button svg {
-            fill: #ffffff; /* Explicitly set SVG fill */
-            width: 14px; /* Fixed size for consistency */
-            height: 14px;
+            fill: #ffffff !important; /* Explicit SVG fill */
+            width: 16px; /* Larger for visibility */
+            height: 16px;
           }
           button {
             width: 100%;
@@ -520,6 +525,14 @@ const SendMailPage = () => {
             text-align: left;
             word-break: break-word;
           }
+          .debug-icon {
+            position: fixed;
+            top: 80px;
+            left: 10px;
+            background: #000;
+            padding: 10px;
+            z-index: 1000;
+          }
           @media (max-width: 900px) {
             .form-container {
               max-width: 98vw;
@@ -570,7 +583,7 @@ const SendMailPage = () => {
               padding: 0.8rem;
             }
             input[type="file"] {
-              padding: 0.4rem; /* Smaller for mobile */
+              padding: 0.4rem 0.8rem;
               font-size: 0.8rem;
             }
             button {
@@ -593,11 +606,11 @@ const SendMailPage = () => {
             .file-list .remove-button {
               width: 22px;
               height: 22px;
-              font-size: 1rem;
+              font-size: 1.1rem;
             }
             .file-list .remove-button svg {
-              width: 12px;
-              height: 12px;
+              width: 14px;
+              height: 14px;
             }
           }
           @media (max-width: 480px) {
@@ -634,7 +647,7 @@ const SendMailPage = () => {
               padding: 0.7rem;
             }
             input[type="file"] {
-              padding: 0.3rem;
+              padding: 0.3rem 0.6rem;
               font-size: 0.7rem;
             }
             button {
@@ -658,11 +671,11 @@ const SendMailPage = () => {
             .file-list .remove-button {
               width: 20px;
               height: 20px;
-              font-size: 0.9rem;
+              font-size: 1rem;
             }
             .file-list .remove-button svg {
-              width: 10px;
-              height: 10px;
+              width: 12px;
+              height: 12px;
             }
           }
         `}
@@ -729,6 +742,10 @@ const SendMailPage = () => {
           </a>
         </div>
       </nav>
+      {/* Debug element to test icon rendering */}
+      <div className="debug-icon">
+        <FaTrash style={{ color: '#ffffff', fontSize: '1.2rem' }} />
+      </div>
       {showPasswordPrompt && (
         <div className="password-modal">
           <div className="password-modal-content">
@@ -880,7 +897,7 @@ const SendMailPage = () => {
                           onClick={() => handleRemoveFile(index)}
                           aria-label={`Remove ${file.name}`}
                         >
-                          <FaTimes />
+                          <FaTrash />
                         </button>
                       </li>
                     ))}
