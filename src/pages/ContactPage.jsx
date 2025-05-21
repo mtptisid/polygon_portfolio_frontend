@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiHome, FiArrowLeft, FiInbox } from 'react-icons/fi';
 import { FaUser, FaLinkedin, FaMedium, FaGithub, FaInstagram, FaExclamationTriangle, FaCheck } from 'react-icons/fa';
+import $ from 'jquery';
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -13,7 +14,9 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      return <div>Something went wrong. Please refresh the page.</div>;
+      return <div style={{ color: '#fff', textAlign: 'center', padding: '2rem' }}>
+        Something went wrong. Please refresh the page or try again later.
+      </div>;
     }
     return this.props.children;
   }
@@ -21,86 +24,95 @@ class ErrorBoundary extends React.Component {
 
 const ContactPage = () => {
   const navigate = useNavigate();
-  const [messageWarning, setMessageWarning] = useState('');
-  const [showWarning, setShowWarning] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Ensure messages are hidden on mount
-    setShowWarning(false);
-    setShowSuccess(false);
-    setIsLoading(false);
-  }, []);
+    // Check if jQuery is loaded
+    if (!window.jQuery) {
+      console.error('jQuery is not loaded. Please ensure it is included in your project.');
+      return;
+    }
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setShowWarning(false);
-    setShowSuccess(false);
-    setIsLoading(true);
+    // Hide messages and loader on mount
+    $('#message-warning').hide();
+    $('#message-success').hide();
+    $('#submit-loader').hide();
 
-    const formData = {
-      name: event.target.contactName.value.trim(),
-      email: event.target.contactEmail.value.trim(),
-      subject: event.target.contactSubject.value.trim() || 'Contact Form Submission',
-      message: event.target.contactMessage.value.trim(),
-      honeypot: event.target.honeypot.value
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      $('#message-warning').hide();
+      $('#message-success').hide();
+      $('#submit-loader').show();
+
+      const formData = {
+        name: $('#contactName').val().trim(),
+        email: $('#contactEmail').val().trim(),
+        subject: $('#contactSubject').val().trim() || 'Contact Form Submission',
+        message: $('#contactMessage').val().trim(),
+        honeypot: $('#honeypot').val()
+      };
+
+      // Client-side validation
+      if (!formData.name || formData.name.length < 2) {
+        $('#submit-loader').hide();
+        $('#message-warning').find('span').text('Please enter a valid name (at least 2 characters)');
+        $('#message-warning').show();
+        setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
+        return;
+      }
+      if (!formData.email.match(/^\S+@\S+\.\S+$/)) {
+        $('#submit-loader').hide();
+        $('#message-warning').find('span').text('Please enter a valid email address');
+        $('#message-warning').show();
+        setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
+        return;
+      }
+      if (!formData.message) {
+        $('#submit-loader').hide();
+        $('#message-warning').find('span').text('Please enter a message');
+        $('#message-warning').show();
+        setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
+        return;
+      }
+      if (formData.honeypot) {
+        $('#submit-loader').hide();
+        $('#message-warning').find('span').text('Bot detected. Please try again.');
+        $('#message-warning').show();
+        setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
+        return;
+      }
+
+      // AJAX request with timeout
+      $.ajax({
+        url: 'https://portpoliosid.onrender.com/contact',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        timeout: 10000, // 10-second timeout
+        success: () => {
+          $('#submit-loader').hide();
+          $('#message-success').show();
+          $('#contactForm')[0].reset();
+          setTimeout(() => $('#message-success').fadeOut('slow'), 5000);
+        },
+        error: (xhr, status, error) => {
+          $('#submit-loader').hide();
+          console.error('AJAX Error:', { status, error, xhr });
+          const errorMessage =
+            xhr.responseJSON?.detail ||
+            (status === 'timeout' ? 'Request timed out. Please try again.' : 'Failed to send message. Please try again later.');
+          $('#message-warning').find('span').text(errorMessage);
+          $('#message-warning').show();
+          setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
+        }
+      });
     };
 
-    // Client-side validation
-    if (!formData.name || formData.name.length < 2) {
-      setIsLoading(false);
-      setMessageWarning('Please enter a valid name (at least 2 characters)');
-      setShowWarning(true);
-      setTimeout(() => setShowWarning(false), 5000);
-      return;
-    }
-    if (!formData.email.match(/^\S+@\S+\.\S+$/)) {
-      setIsLoading(false);
-      setMessageWarning('Please enter a valid email address');
-      setShowWarning(true);
-      setTimeout(() => setShowWarning(false), 5000);
-      return;
-    }
-    if (!formData.message) {
-      setIsLoading(false);
-      setMessageWarning('Please enter a message');
-      setShowWarning(true);
-      setTimeout(() => setShowWarning(false), 5000);
-      return;
-    }
-    if (formData.honeypot) {
-      setIsLoading(false);
-      setMessageWarning('Bot detected. Please try again.');
-      setShowWarning(true);
-      setTimeout(() => setShowWarning(false), 5000);
-      return;
-    }
+    $('#contactForm').on('submit', handleSubmit);
 
-    try {
-      const response = await fetch('https://portpoliosid.onrender.com/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        setIsLoading(false);
-        setShowSuccess(true);
-        event.target.reset();
-        setTimeout(() => setShowSuccess(false), 5000);
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Failed to send message');
-      }
-    } catch (error) {
-      setIsLoading(false);
-      setMessageWarning(error.message || 'Failed to send message. Please try again later.');
-      setShowWarning(true);
-      console.error('Form submission error:', error);
-      setTimeout(() => setShowWarning(false), 5000);
-    }
-  };
+    return () => {
+      $('#contactForm').off('submit', handleSubmit);
+    };
+  }, []);
 
   const handleBackClick = () => {
     navigate('/projects');
@@ -120,7 +132,7 @@ const ContactPage = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 1.5rem',
+      padding: '0 0.75rem',
       top: 0,
       zIndex: 101,
       boxSizing: 'border-box'
@@ -153,46 +165,45 @@ const ContactPage = () => {
             }
             #contact {
               background: #151515;
-              padding: 10rem 2rem 6rem;
+              padding: 12rem 1rem 7.2rem;
               position: relative;
               zIndex: 1;
               min-height: calc(100vh - 60px);
             }
             .row.section-intro {
               display: flex;
-              flex-direction: column;
               justify-content: center;
               text-align: center;
-              max-width: 800px;
+              max-width: 740px;
               margin: 0 auto 3rem;
             }
             .row.section-intro h1 {
               color: #FFFFFF;
               font-family: "poppins-bold", sans-serif;
-              font-size: 3.5rem;
+              font-size: 3rem;
               font-weight: 700;
-              margin-bottom: 1.5rem;
+              margin-bottom: 1rem;
               animation: slideUp 0.5s ease-out;
             }
             .row.section-intro h5 {
               color: #07b1d0;
               font-family: "poppins-bold", sans-serif;
-              font-size: 1.8rem;
+              font-size: 1.5rem;
               font-weight: 600;
               text-transform: uppercase;
-              margin-bottom: 0.75rem;
+              margin-bottom: 0.5rem;
               animation: slideUp 0.5s ease-out 0.2s;
               animation-fill-mode: both;
             }
             .row.section-intro p {
               color: rgba(255, 255, 255, 0.7);
-              font-size: 1.3rem;
+              font-size: 1.2rem;
               margin: 0;
             }
             .row.contact-form {
               display: flex;
               justify-content: center;
-              max-width: 800px;
+              max-width: 740px;
               margin: 0 auto;
               background: transparent;
               border: none !important;
@@ -214,14 +225,14 @@ const ContactPage = () => {
             }
             .contact-form .form-field {
               position: relative;
-              margin-bottom: 1rem;
+              margin-bottom: 0;
               padding-bottom: 0.5rem;
               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
               background: transparent;
               border: none !important;
             }
             .contact-form .form-field.submit-field {
-              margin-top: 1.5rem;
+              margin-top: 1rem;
               padding-bottom: 0;
               box-shadow: none;
             }
@@ -229,22 +240,22 @@ const ContactPage = () => {
             .contact-form input[type="email"],
             .contact-form textarea {
               width: 100%;
-              height: 4.5rem;
+              height: 4rem;
               padding: 0 1rem;
               font-family: "poppins-regular", sans-serif;
-              font-size: 1.5rem;
+              font-size: 1.4rem;
               color: rgba(255, 255, 255, 0.7);
               background: rgba(255, 255, 255, 0.05);
               border: none !important;
               border-radius: 4px;
               transition: all 0.3s ease;
               outline: none;
-              line-height: 4.5rem;
+              line-height: 4rem;
               vertical-align: middle;
             }
             .contact-form textarea {
               height: auto;
-              min-height: 12rem;
+              min-height: 10rem;
               resize: vertical;
               line-height: 1.5;
               padding: 1rem;
@@ -264,10 +275,10 @@ const ContactPage = () => {
             }
             .contact-form button.submitform {
               font-family: "poppins-bold", sans-serif;
-              font-size: 1.5rem;
+              font-size: 1.4rem;
               letter-spacing: 0.2rem;
-              height: 4.5rem;
-              line-height: 4.5rem;
+              height: 4rem;
+              line-height: 4rem;
               padding: 0;
               margin: 0;
               width: 100%;
@@ -287,25 +298,20 @@ const ContactPage = () => {
             .row.message-row {
               display: flex;
               justify-content: center;
-              max-width: 800px;
-              margin: 1rem auto;
+              max-width: 740px;
+              margin: 0.5rem auto;
             }
             #message-warning,
             #message-success {
-              display: none;
+              display: none !important; /* Ensure hidden by default */
               width: 100%;
-              max-width: 400px;
+              max-width: 300px;
               margin: 0 auto;
-              font-size: 1.6rem;
+              font-size: 1.5rem;
               text-align: center;
-              display: flex;
               align-items: center;
               justify-content: center;
               animation: slideUp 0.5s ease-out;
-            }
-            #message-warning.show,
-            #message-success.show {
-              display: flex;
             }
             #message-warning {
               color: #fa0003;
@@ -317,39 +323,38 @@ const ContactPage = () => {
             }
             #message-warning i,
             #message-success i {
-              margin-right: 0.75rem;
-              font-size: 1.6rem;
+              margin-right: 0.5rem;
+              font-size: 1.5rem;
             }
             #submit-loader {
               display: none;
               position: relative;
               width: 100%;
               text-align: center;
-              margin-top: 1.5rem;
+              margin-top: 1rem;
             }
             #submit-loader.show {
-              display: block;
+              display: block !important;
             }
             #submit-loader .text-loader {
-              display: none;
               font-family: "poppins-bold", sans-serif;
               color: #FFFFFF;
               letter-spacing: 0.3rem;
               text-transform: uppercase;
             }
             .s-loader {
-              margin: 1.5rem auto;
-              width: 80px;
+              margin: 1.2rem auto;
+              width: 70px;
               text-align: center;
               transform: translateX(0.45rem);
             }
             .s-loader > div {
-              width: 1.2rem;
-              height: 1.2rem;
+              width: 1rem;
+              height: 1rem;
               background-color: #FFFFFF;
               border-radius: 100%;
               display: inline-block;
-              margin-right: 1rem;
+              margin-right: 0.9rem;
               animation: sk-bouncedelay 1.4s infinite ease-in-out both;
             }
             .s-loader .bounce1 {
@@ -370,14 +375,14 @@ const ContactPage = () => {
               display: flex;
               justify-content: center;
               align-items: center;
-              margin: 3rem auto;
-              max-width: 800px;
+              margin: 2rem auto;
+              max-width: 740px;
               text-align: center;
             }
             .footer-social {
               display: flex;
               flex-direction: row;
-              gap: 2rem;
+              gap: 1.5rem;
               justify-content: center;
               align-items: center;
               list-style: none;
@@ -393,15 +398,15 @@ const ContactPage = () => {
               display: inline-flex;
               align-items: center;
               justify-content: center;
-              width: 3.5rem;
-              height: 3.5rem;
+              width: 3rem;
+              height: 3rem;
             }
             .footer-social li a:hover {
               color: #07b1d0;
               transform: scale(1.1);
             }
             .row.contact-info {
-              margin: 5rem auto 0;
+              margin: 4.8rem auto 0;
               display: flex;
               flex-wrap: wrap;
               justify-content: space-between;
@@ -410,46 +415,35 @@ const ContactPage = () => {
             .contact-info .col-four {
               flex: 0 0 33.333333%;
               max-width: 33.333333%;
-              padding: 0 1.5rem;
+              padding: 0 1rem;
               text-align: center;
             }
             .contact-info .icon {
-              margin-bottom: 2.5rem;
+              margin-bottom: 2.1rem;
             }
             .contact-info .icon i {
-              font-size: 4.5rem;
+              font-size: 4.2rem;
               color: #FFFFFF;
             }
             .contact-info h5 {
               color: #07b1d0;
               font-family: "poppins-bold", sans-serif;
-              font-size: 1.8rem;
-              margin-bottom: 1.2rem;
+              font-size: 1.5rem;
+              margin-bottom: 1rem;
             }
             .contact-info p {
               color: rgba(255, 255, 255, 0.7);
               font-family: "poppins-regular", sans-serif;
-              font-size: 1.3rem;
+              font-size: 1.2rem;
             }
             @media (max-width: 767px) {
               .navbar {
-                padding: 0.5rem;
+                padding: 0.75rem;
                 height: 50px;
                 justify-content: space-between;
               }
-              .mobile-nav {
-                flex-direction: row;
-                gap: 0.25rem;
-              }
-              .mobile-nav-link {
-                padding: 0.25rem;
-              }
-              #contact {
-                padding: 6rem 1rem 4rem;
-                min-height: calc(100vh - 50px);
-              }
               .row.section-intro {
-                max-width: 95%;
+                max-width: 90%;
               }
               .row.section-intro h1 {
                 font-size: 2rem;
@@ -457,36 +451,33 @@ const ContactPage = () => {
               .row.section-intro h5 {
                 font-size: 1.2rem;
               }
-              .row.section-intro p {
-                font-size: 1rem;
-              }
               .row.contact-form {
-                max-width: 95%;
+                max-width: 90%;
+              }
+              .row.message-row {
+                max-width: 90%;
               }
               .contact-form input[type="text"],
               .contact-form input[type="email"] {
-                height: 3.2rem;
-                font-size: 1.1rem;
-                line-height: 3.2rem;
+                height: 3.6rem;
+                font-size: 1.2rem;
+                line-height: 3.6rem;
                 padding: 0 0.75rem;
               }
               .contact-form textarea {
                 min-height: 8rem;
-                font-size: 1.1rem;
+                font-size: 1.2rem;
                 padding: 0.75rem;
               }
               .contact-form button.submitform {
-                height: 3.2rem;
-                line-height: 3.2rem;
-                font-size: 1.1rem;
-              }
-              .row.message-row {
-                max-width: 95%;
+                height: 3.6rem;
+                line-height: 3.6rem;
+                font-size: 1.2rem;
               }
               #message-warning,
               #message-success {
-                font-size: 1.1rem;
-                max-width: 90%;
+                font-size: 1.2rem;
+                max-width: 280px;
                 text-shadow: 0 0 6px rgba(250, 0, 3, 0.5);
               }
               #message-success {
@@ -494,8 +485,7 @@ const ContactPage = () => {
               }
               #message-warning i,
               #message-success i {
-                font-size: 1.1rem;
-                margin-right: 0.5rem;
+                font-size: 1.2rem;
               }
               .row.social {
                 margin: 1.5rem auto;
@@ -509,7 +499,7 @@ const ContactPage = () => {
                 height: 2.5rem;
               }
               .row.contact-info {
-                margin: 2.5rem auto 0;
+                margin: 3rem auto 0;
                 flex-direction: column;
               }
               .contact-info .col-four {
@@ -530,7 +520,7 @@ const ContactPage = () => {
             }
             @media (max-width: 480px) {
               .navbar {
-                padding: 0.3rem;
+                padding: 0.5rem;
                 height: 48px;
               }
               .row.section-intro h1 {
@@ -541,18 +531,18 @@ const ContactPage = () => {
               }
               .contact-form input[type="text"],
               .contact-form input[type="email"] {
-                height: 3rem;
-                font-size: 1rem;
-                line-height: 3rem;
+                height: 3.2rem;
+                font-size: 1.1rem;
+                line-height: 3.2rem;
               }
               .contact-form textarea {
                 min-height: 7rem;
-                font-size: 1rem;
+                font-size: 1.1rem;
               }
               .contact-form button.submitform {
-                height: 3rem;
-                line-height: 3rem;
-                font-size: 1rem;
+                height: 3.2rem;
+                line-height: 3.2rem;
+                font-size: 1.1rem;
               }
               .contact-info .icon i {
                 font-size: 2.5rem;
@@ -615,7 +605,7 @@ const ContactPage = () => {
             <p className="lead"></p>
           </div>
           <div className="row contact-form">
-            <form name="contactForm" id="contactForm" method="post" className="contact-form" onSubmit={handleSubmit}>
+            <form name="contactForm" id="contactForm" method="post" className="contact-form">
               <fieldset>
                 <div className="form-field">
                   <input
@@ -660,10 +650,8 @@ const ContactPage = () => {
                   <input name="honeypot" type="text" id="honeypot" />
                 </div>
                 <div className="form-field submit-field">
-                  <button className="submitform" disabled={isLoading}>
-                    {isLoading ? 'Sending...' : 'Submit'}
-                  </button>
-                  <div id="submit-loader" className={isLoading ? 'show' : ''}>
+                  <button className="submitform">Submit</button>
+                  <div id="submit-loader">
                     <div className="text-loader">Sending...</div>
                     <div className="s-loader">
                       <div className="bounce1"></div>
@@ -676,11 +664,11 @@ const ContactPage = () => {
             </form>
           </div>
           <div className="row message-row">
-            <div id="message-warning" className={showWarning ? 'show' : ''}>
+            <div id="message-warning">
               <FaExclamationTriangle />
-              <span>{messageWarning}</span>
+              <span></span>
             </div>
-            <div id="message-success" className={showSuccess ? 'show' : ''}>
+            <div id="message-success">
               <FaCheck />
               <span>Your message was sent, thank you!</span>
             </div>
@@ -737,7 +725,7 @@ const ContactPage = () => {
             </div>
           </div>
         </section>
-        <footer style={{ backgroundColor: '#daebdd', color: '#000000', padding: '0.5rem 0' }}>
+        <footer style={{ backgroundColor: '#daebdd', color: '#000000', padding: '0.1rem 0' }}>
           <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center' }}>
             <p style={{ fontSize: '1rem', fontWeight: '500' }}>© 2025 Siddharamayya M. All rights reserved.</p>
           </div>
