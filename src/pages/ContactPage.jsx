@@ -10,6 +10,7 @@ const ContactPage = () => {
   useEffect(() => {
     $('#message-warning').hide();
     $('#message-success').hide();
+    $('#submit-loader').hide();
 
     const handleSubmit = (event) => {
       event.preventDefault();
@@ -18,13 +19,17 @@ const ContactPage = () => {
       $('#submit-loader').show();
 
       const formData = {
-        name: $('#contactName').val().trim(),
-        email: $('#contactEmail').val().trim(),
-        subject: $('#contactSubject').val().trim() || 'Contact Form Submission',
-        message: $('#contactMessage').val().trim(),
-        honeypot: $('#honeypot').val()
+        name: $('#contactName').val()?.trim() || '',
+        email: $('#contactEmail').val()?.trim() || '',
+        subject: $('#contactSubject').val()?.trim() || 'Contact Form Submission',
+        message: $('#contactMessage').val()?.trim() || '',
+        honeypot: $('#honeypot').val()?.trim() || '' // Reverted to match server expectation
       };
 
+      // Log payload for debugging
+      console.log('Sending payload:', formData);
+
+      // Client-side validation
       if (!formData.name || formData.name.length < 2) {
         $('#submit-loader').hide();
         $('#message-warning').find('span').text('Please enter a valid name (at least 2 characters)');
@@ -46,6 +51,13 @@ const ContactPage = () => {
         setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
         return;
       }
+      if (formData.honeypot) {
+        $('#submit-loader').hide();
+        $('#message-warning').find('span').text('Spam detected. Please try again.');
+        $('#message-warning').show();
+        setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
+        return;
+      }
 
       $.ajax({
         url: 'https://portpoliosid.onrender.com/contact',
@@ -58,12 +70,25 @@ const ContactPage = () => {
           $('#contactForm')[0].reset();
           setTimeout(() => $('#message-success').fadeOut('slow'), 5000);
         },
-        error: (xhr) => {
+        error: (xhr, status, error) => {
           $('#submit-loader').hide();
-          const errorMessage = xhr.responseJSON?.detail || 'Failed to send message. Please try again later.';
+          // Enhanced error handling
+          let errorMessage = 'Failed to send message. Please try again later.';
+          if (xhr.status === 400) {
+            errorMessage = xhr.responseJSON?.detail || 'Invalid input. Please check your form data.';
+          } else if (xhr.status === 500) {
+            errorMessage = 'Server error. Please try again later or contact support.';
+          }
           $('#message-warning').find('span').text(errorMessage);
           $('#message-warning').show();
           setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
+          // Log error details for debugging
+          console.error('AJAX Error:', {
+            status: xhr.status,
+            error,
+            response: xhr.responseJSON,
+            responseText: xhr.responseText
+          });
         }
       });
     };
@@ -642,7 +667,12 @@ const ContactPage = () => {
                 ></textarea>
               </div>
               <div className="form-field" style={{ display: 'none' }}>
-                <input name="honeypot" type="text" id="honeypot" aria-hidden="true" />
+                <input
+                  name="honeypot"
+                  type="text"
+                  id="honeypot"
+                  aria-hidden="true"
+                />
               </div>
               <div className="form-field submit-field">
                 <button className="submitform">Submit</button>
