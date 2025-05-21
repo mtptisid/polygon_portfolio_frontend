@@ -21,6 +21,31 @@ const SendMailPage = () => {
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
+  // Token expiration time: 20 minutes (in milliseconds)
+  const TOKEN_EXPIRY_TIME = 20 * 60 * 1000;
+
+  // Check if token is valid (not expired)
+  const isTokenValid = () => {
+    const token = localStorage.getItem('access_token');
+    const tokenTimestamp = localStorage.getItem('token_timestamp');
+    if (!token || !tokenTimestamp) return false;
+
+    const currentTime = new Date().getTime();
+    const tokenTime = parseInt(tokenTimestamp, 10);
+    return currentTime - tokenTime < TOKEN_EXPIRY_TIME;
+  };
+
+  // Check for JWT and its validity on mount
+  useEffect(() => {
+    if (isTokenValid()) {
+      setShowPasswordPrompt(false);
+    } else {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('token_timestamp');
+      setShowPasswordPrompt(true);
+    }
+  }, []);
+
   // Handle password submission
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
@@ -44,23 +69,15 @@ const SendMailPage = () => {
 
       const data = await response.json();
       localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('token_timestamp', new Date().getTime().toString());
       setShowPasswordPrompt(false);
+      setPassword('');
     } catch (err) {
       setPasswordError(err.message);
     } finally {
       setIsLoading(false);
     }
   };
-
-  // Check for JWT
-  useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      setShowPasswordPrompt(false);
-    } else {
-      setShowPasswordPrompt(true);
-    }
-  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -71,6 +88,15 @@ const SendMailPage = () => {
     setError('');
     setSuccess('');
     setIsLoading(true);
+
+    // Check token validity before submitting
+    if (!isTokenValid()) {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('token_timestamp');
+      setShowPasswordPrompt(true);
+      setIsLoading(false);
+      return;
+    }
 
     // Client-side validation
     const emailRegex = /^\S+@\S+\.\S+$/;
@@ -123,6 +149,7 @@ const SendMailPage = () => {
       if (!response.ok) {
         if (response.status === 401) {
           localStorage.removeItem('access_token');
+          localStorage.removeItem('token_timestamp');
           setShowPasswordPrompt(true);
           setIsLoading(false);
           return;
@@ -317,7 +344,6 @@ const SendMailPage = () => {
             color: #07b1d0;
             transform: scale(1.1);
           }
-          /* FULL-WIDTH contact-info */
           .contact-info {
             display: flex;
             flex-direction: row;
@@ -356,7 +382,6 @@ const SendMailPage = () => {
             text-align: left;
             word-break: break-word;
           }
-
           @media (max-width: 900px) {
             .form-container {
               max-width: 98vw;
@@ -370,7 +395,6 @@ const SendMailPage = () => {
               max-width: 100vw;
             }
           }
-
           @media (max-width: 768px) {
             .form-container {
               padding: 1.5rem;
@@ -431,7 +455,6 @@ const SendMailPage = () => {
               align-items: center;
               padding: 1rem 0.1rem;
               margin: 0.5rem 0;
-              min-height: unset;
               gap: 0.5rem;
               border-radius: 12px;
             }
