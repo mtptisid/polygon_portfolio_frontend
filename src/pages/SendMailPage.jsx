@@ -99,7 +99,7 @@ const SendMailPage = () => {
     let valid = true;
     let errorMsg = '';
 
-    if (selectedFiles.length > MAX_FILES) {
+    if (selectedFiles.length + files.length > MAX_FILES) {
       errorMsg = `Maximum ${MAX_FILES} files allowed`;
       valid = false;
     }
@@ -121,7 +121,6 @@ const SendMailPage = () => {
       setFiles([...files, ...selectedFiles].slice(0, MAX_FILES)); // Append new files, respect max limit
       setError('');
     } else {
-      setFiles([]);
       setError(errorMsg);
       e.target.value = ''; // Reset file input
     }
@@ -334,23 +333,24 @@ const SendMailPage = () => {
             white-space: nowrap;
           }
           .file-list .remove-button {
-            background: #fa0003;
+            background: #e53e3e; /* Softer red */
             color: #ffffff;
             border: none;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 0.7rem;
-            transition: background 0.3s ease;
+            font-size: 0.8rem;
+            transition: background 0.3s ease, transform 0.2s ease;
             flex-shrink: 0;
             margin-left: 0.5rem;
           }
           .file-list .remove-button:hover {
-            background: #ff3333;
+            background: #f56565; /* Lighter red on hover */
+            transform: scale(1.1);
           }
           button {
             width: 100%;
@@ -549,9 +549,9 @@ const SendMailPage = () => {
               font-size: 0.8rem;
             }
             .file-list .remove-button {
-              width: 18px;
-              height: 18px;
-              font-size: 0.6rem;
+              width: 20px;
+              height: 20px;
+              font-size: 0.7rem;
             }
           }
           @media (max-width: 480px) {
@@ -606,9 +606,9 @@ const SendMailPage = () => {
               font-size: 0.7rem;
             }
             .file-list .remove-button {
-              width: 16px;
-              height: 16px;
-              font-size: 0.5rem;
+              width: 18px;
+              height: 18px;
+              font-size: 0.6rem;
             }
           }
         `}
@@ -846,10 +846,10 @@ const SendMailPage = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#fa0003',
+                  color: '#e53e3e',
                   margin: '1rem 0',
                   fontSize: '1rem',
-                  textShadow: '0 0 8px rgba(250, 0, 3, 0.5)',
+                  textShadow: '0 0 8px rgba(229, 62, 62, 0.5)',
                 }}>
                   <FaExclamationTriangle style={{ marginRight: '0.5rem' }} />
                   <span>{error}</span>
