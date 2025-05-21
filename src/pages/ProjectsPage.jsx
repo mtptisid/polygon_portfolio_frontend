@@ -1360,7 +1360,7 @@ const ProjectsPage = () => {
                       name="contactEmail"
                       type="email"
                       id="contactEmail"
-                      placeholder="Email"
+                      placeholder="Your Email"
                       defaultValue=""
                       required
                     />
