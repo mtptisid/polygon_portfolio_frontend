@@ -575,7 +575,7 @@ const ContactPage = () => {
               <div className="form-field">
                 <textarea
                   name="contactMessage"
-                  id essay="contactMessage"
+                  id="contactMessage"
                   placeholder="message"
                   rows="5"
                   required
