@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiHome, FiArrowLeft, FiMail, FiInbox} from 'react-icons/fi';
+import { FiHome, FiArrowLeft, FiInbox } from 'react-icons/fi';
 import { FaUser, FaLinkedin, FaMedium, FaGithub, FaInstagram, FaExclamationTriangle, FaCheck } from 'react-icons/fa';
 import $ from 'jquery';
 
@@ -8,8 +8,16 @@ const ContactPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Ensure jQuery is loaded
+    if (!window.jQuery) {
+      console.error('jQuery is not loaded. Please ensure it is included in your project.');
+      return;
+    }
+
+    // Hide messages initially
     $('#message-warning').hide();
     $('#message-success').hide();
+    $('#submit-loader').hide();
 
     const handleSubmit = (event) => {
       event.preventDefault();
@@ -25,6 +33,7 @@ const ContactPage = () => {
         honeypot: $('#honeypot').val()
       };
 
+      // Client-side validation
       if (!formData.name || formData.name.length < 2) {
         $('#submit-loader').hide();
         $('#message-warning').find('span').text('Please enter a valid name (at least 2 characters)');
@@ -46,21 +55,33 @@ const ContactPage = () => {
         setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
         return;
       }
+      if (formData.honeypot) {
+        $('#submit-loader').hide();
+        $('#message-warning').find('span').text('Bot detected. Please try again.');
+        $('#message-warning').show();
+        setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
+        return;
+      }
 
+      // AJAX request with timeout and detailed error handling
       $.ajax({
         url: 'https://portpoliosid.onrender.com/contact',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),
+        timeout: 10000, // 10-second timeout
         success: () => {
           $('#submit-loader').hide();
           $('#message-success').show();
           $('#contactForm')[0].reset();
           setTimeout(() => $('#message-success').fadeOut('slow'), 5000);
         },
-        error: (xhr) => {
+        error: (xhr, status, error) => {
           $('#submit-loader').hide();
-          const errorMessage = xhr.responseJSON?.detail || 'Failed to send message. Please try again later.';
+          console.error('AJAX Error:', { status, error, xhr });
+          const errorMessage =
+            xhr.responseJSON?.detail ||
+            (status === 'timeout' ? 'Request timed out. Please try again.' : 'Failed to send message. Please try again later.');
           $('#message-warning').find('span').text(errorMessage);
           $('#message-warning').show();
           setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
@@ -70,6 +91,7 @@ const ContactPage = () => {
 
     $('#contactForm').on('submit', handleSubmit);
 
+    // Cleanup event listener
     return () => {
       $('#contactForm').off('submit', handleSubmit);
     };
@@ -301,7 +323,7 @@ const ContactPage = () => {
           }
           .s-loader {
             margin: 1.2rem auto;
-            width: 70 диапазонpx;
+            width: 70px;
             text-align: center;
             transform: translateX(0.45rem);
           }
@@ -575,7 +597,7 @@ const ContactPage = () => {
               <div className="form-field">
                 <textarea
                   name="contactMessage"
-                  id essay="contactMessage"
+                  id="contactMessage" // Fixed typo: was "id essay"
                   placeholder="message"
                   rows="5"
                   required
@@ -637,7 +659,7 @@ const ContactPage = () => {
             <div className="icon">
               <i className="fa fa-map-marker"></i>
             </div>
-            <h5>Wherevaises to find me</h5>
+            <h5>Where to find me</h5>
             <p>
               #372, Ward no 3<br />
               Yadur, Chikodi<br />
