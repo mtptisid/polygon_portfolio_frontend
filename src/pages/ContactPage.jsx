@@ -115,6 +115,8 @@ const ContactPage = () => {
         {`
           * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
           }
           @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
@@ -125,24 +127,30 @@ const ContactPage = () => {
           }
           #contact {
             background: #151515;
-            padding: 8rem 1rem 4rem;
+            padding: clamp(6rem, 10vh, 10rem) 1rem clamp(4rem, 8vh, 6rem);
+            min-height: calc(100vh - 60px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
             position: relative;
             zIndex: 1;
-            min-height: calc(100vh - 60px); /* Adjust for navbar height */
           }
           .row.section-intro {
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
             text-align: center;
-            width: 90%;
-            max-width: 960px; /* Increased for desktop */
+            width: 100%;
+            max-width: clamp(700px, 80vw, 1200px);
             margin: 0 auto 2rem;
           }
           .row.section-intro h1 {
             color: #FFFFFF;
             font-family: "poppins-bold", sans-serif;
-            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-size: clamp(2rem, 4vw, 3.5rem);
             font-weight: 700;
             margin-bottom: 1rem;
             animation: slideUp 0.5s ease-out;
@@ -150,7 +158,7 @@ const ContactPage = () => {
           .row.section-intro h5 {
             color: #07b1d0;
             font-family: "poppins-bold", sans-serif;
-            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
             font-weight: 600;
             text-transform: uppercase;
             margin-bottom: 0.5rem;
@@ -159,15 +167,16 @@ const ContactPage = () => {
           }
           .row.section-intro p {
             color: rgba(255, 255, 255, 0.7);
-            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            font-size: clamp(1rem, 2vw, 1.3rem);
             margin: 0;
           }
           .row.contact-form {
             display: flex;
             justify-content: center;
-            width: 90%;
-            max-width: 960px; /* Increased for desktop */
-            margin: 0 auto;
+            align-items: center;
+            width: 100%;
+            max-width: clamp(700px, 80vw, 1200px);
+            margin: 0 auto 1.5rem;
             background: transparent;
             border: none !important;
           }
@@ -189,7 +198,6 @@ const ContactPage = () => {
           .contact-form .form-field {
             position: relative;
             margin-bottom: 1rem;
-            padding-bottom: 0;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             background: transparent;
             border: none !important;
@@ -202,21 +210,20 @@ const ContactPage = () => {
           .contact-form input[type="email"],
           .contact-form textarea {
             width: 100%;
-            height: 4rem;
+            height: clamp(3.5rem, 8vw, 4rem);
             padding: 0.8rem;
             font-family: "poppins-regular", sans-serif;
-            font-size: clamp(1.2rem, 2.5vw, 1.4rem);
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
             color: rgba(255, 255, 255, 0.7);
             background: rgba(255, 255, 255, 0.05);
             border: none !important;
             border-radius: 4px;
             transition: all 0.3s ease;
             outline: none;
-            line-height: normal;
           }
           .contact-form textarea {
             height: auto;
-            min-height: clamp(8rem, 20vw, 12rem);
+            min-height: clamp(8rem, 15vh, 12rem);
             resize: vertical;
             line-height: 1.5;
             padding: 1rem;
@@ -236,10 +243,10 @@ const ContactPage = () => {
           }
           .contact-form button.submitform {
             font-family: "poppins-bold", sans-serif;
-            font-size: clamp(1.2rem, 2.5vw, 1.4rem);
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
             letter-spacing: 0.2rem;
-            height: 4rem;
-            line-height: 4rem;
+            height: clamp(3.5rem, 8vw, 4rem);
+            line-height: clamp(3.5rem, 8vw, 4rem);
             padding: 0;
             margin: 0;
             width: 100%;
@@ -258,17 +265,18 @@ const ContactPage = () => {
           .row.message-row {
             display: flex;
             justify-content: center;
-            width: 90%;
-            max-width: 960px;
+            align-items: center;
+            width: 100%;
+            max-width: clamp(700px, 80vw, 1200px);
             margin: 1rem auto;
           }
           #message-warning,
           #message-success {
             display: none;
             width: 100%;
-            max-width: 400px;
+            max-width: clamp(300px, 50vw, 400px);
             margin: 0 auto;
-            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
             text-align: center;
             display: flex;
             align-items: center;
@@ -286,7 +294,7 @@ const ContactPage = () => {
           #message-warning i,
           #message-success i {
             margin-right: 0.5rem;
-            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
           }
           #submit-loader {
             display: none;
@@ -301,11 +309,11 @@ const ContactPage = () => {
             color: #FFFFFF;
             letter-spacing: 0.3rem;
             text-transform: uppercase;
-            font-size: clamp(1rem, 2vw, 1.2rem);
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
           }
           .s-loader {
             margin: 1.2rem auto;
-            width: 70px; /* Fixed typo */
+            width: 70px;
             text-align: center;
             transform: translateX(0.45rem);
           }
@@ -336,9 +344,9 @@ const ContactPage = () => {
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 90%;
-            max-width: 960px;
-            margin: 2rem auto;
+            width: 100%;
+            max-width: clamp(700px, 80vw, 1200px);
+            margin: clamp(1.5rem, 3vh, 2rem) auto;
             text-align: center;
           }
           .footer-social {
@@ -368,17 +376,18 @@ const ContactPage = () => {
             transform: scale(1.1);
           }
           .row.contact-info {
-            margin: 3rem auto 0;
+            margin: clamp(2rem, 5vh, 3rem) auto 0;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
-            width: 90%;
-            max-width: 1200px;
+            align-items: flex-start;
+            width: 100%;
+            max-width: clamp(900px, 90vw, 1400px);
           }
           .contact-info .col-four {
-            flex: 1 1 30%;
-            max-width: 30%;
-            padding: 0 1rem;
+            flex: 1 1 clamp(250px, 30%, 400px);
+            max-width: clamp(250px, 30%, 400px);
+            padding: 0 clamp(0.5rem, 2vw, 1rem);
             text-align: center;
             margin-bottom: 2rem;
           }
@@ -386,7 +395,7 @@ const ContactPage = () => {
             margin-bottom: 1.5rem;
           }
           .contact-info .icon i {
-            font-size: clamp(3rem, 6vw, 4.2rem);
+            font-size: clamp(2.5rem, 5vw, 4.2rem);
             color: #FFFFFF;
           }
           .contact-info h5 {
@@ -398,31 +407,46 @@ const ContactPage = () => {
           .contact-info p {
             color: rgba(255, 255, 255, 0.7);
             font-family: "poppins-regular", sans-serif;
-            font-size: clamp(1rem, 2vw, 1.2rem);
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
           }
           @media (min-width: 1200px) {
             #contact {
-              padding: 10rem 2rem 6rem;
+              padding: clamp(8rem, 12vh, 12rem) 2rem clamp(5rem, 10vh, 8rem);
             }
             .row.section-intro,
             .row.contact-form,
             .row.message-row,
             .row.social {
-              max-width: 1100px; /* Wider for large screens */
+              max-width: clamp(900px, 80vw, 1400px);
             }
             .row.contact-info {
-              max-width: 1400px;
+              max-width: clamp(1000px, 90vw, 1600px);
+            }
+          }
+          @media (min-width: 992px) and (max-width: 1199px) {
+            .row.section-intro,
+            .row.contact-form,
+            .row.message-row,
+            .row.social {
+              max-width: clamp(700px, 85vw, 1000px);
+            }
+            .row.contact-info {
+              max-width: clamp(800px, 90vw, 1200px);
+            }
+            .contact-info .col-four {
+              flex: 1 1 clamp(200px, 45%, 350px);
+              max-width: clamp(200px, 45%, 350px);
             }
           }
           @media (max-width: 991px) {
             .contact-info .col-four {
-              flex: 1 1 45%;
-              max-width: 45%;
+              flex: 1 1 clamp(200px, 45%, 350px);
+              max-width: clamp(200px, 45%, 350px);
             }
           }
           @media (max-width: 767px) {
             #contact {
-              padding: 6rem 1rem 3rem;
+              padding: clamp(4rem, 8vh, 6rem) 0.5rem clamp(2rem, 5vh, 3rem);
             }
             .row.section-intro,
             .row.contact-form,
@@ -432,36 +456,30 @@ const ContactPage = () => {
               max-width: 700px;
             }
             .row.section-intro h1 {
-              font-size: 2rem;
+              font-size: clamp(1.5rem, 5vw, 2rem);
             }
             .row.section-intro h5 {
-              font-size: 1.2rem;
-            }
-            .row.contact-form {
-              width: 95%;
-            }
-            .row.message-row {
-              width: 95%;
+              font-size: clamp(1rem, 3vw, 1.2rem);
             }
             .contact-form input[type="text"],
             .contact-form input[type="email"] {
-              height: 3.6rem;
-              font-size: 1.2rem;
-              padding: 0.8rem;
+              height: clamp(3rem, 8vw, 3.6rem);
+              font-size: clamp(1rem, 2.5vw, 1.2rem);
+              padding: 0.6rem;
             }
             .contact-form textarea {
-              min-height: 8rem;
-              font-size: 1.2rem;
+              min-height: clamp(6rem, 15vh, 8rem);
+              font-size: clamp(1rem, 2.5vw, 1.2rem);
             }
             .contact-form button.submitform {
-              height: 3.6rem;
-              line-height: 3.6rem;
-              font-size: 1.2rem;
+              height: clamp(3rem, 8vw, 3.6rem);
+              line-height: clamp(3rem, 8vw, 3.6rem);
+              font-size: clamp(1rem, 2.5vw, 1.2rem);
             }
             #message-warning,
             #message-success {
-              font-size: 1.2rem;
-              max-width: 280px;
+              font-size: clamp(1rem, 2.5vw, 1.2rem);
+              max-width: clamp(250px, 80vw, 300px);
               text-shadow: 0 0 6px rgba(250, 0, 3, 0.5);
             }
             #message-success {
@@ -469,63 +487,63 @@ const ContactPage = () => {
             }
             #message-warning i,
             #message-success i {
-              font-size: 1.2rem;
+              font-size: clamp(1rem, 2.5vw, 1.2rem);
             }
             .row.social {
-              margin: 1.5rem auto;
+              margin: clamp(1rem, 2vh, 1.5rem) auto;
             }
             .footer-social {
-              gap: 1rem;
+              gap: clamp(0.8rem, 2vw, 1rem);
             }
             .footer-social li a {
-              width: 2.5rem;
-              height: 2.5rem;
+              width: clamp(2rem, 5vw, 2.5rem);
+              height: clamp(2rem, 5vw, 2.5rem);
             }
             .row.contact-info {
-              margin: 2rem auto 0;
+              margin: clamp(1.5rem, 3vh, 2rem) auto 0;
             }
             .contact-info .col-four {
               flex: 1 1 100%;
               max-width: 100%;
-              margin-bottom: 2rem;
+              margin-bottom: 1.5rem;
             }
             .contact-info .icon i {
-              font-size: 3rem;
+              font-size: clamp(2rem, 5vw, 3rem);
             }
             .contact-info h5 {
-              font-size: 1.2rem;
+              font-size: clamp(1rem, 2.5vw, 1.2rem);
             }
             .contact-info p {
-              font-size: 1rem;
+              font-size: clamp(0.8rem, 2vw, 1rem);
             }
           }
           @media (max-width: 480px) {
             #contact {
-              padding: 5rem 0.5rem 2rem;
+              padding: clamp(3rem, 6vh, 5rem) 0.5rem clamp(1.5rem, 4vh, 2rem);
             }
             .row.section-intro h1 {
-              font-size: 1.5rem;
+              font-size: clamp(1.2rem, 4vw, 1.5rem);
             }
             .row.section-intro h5 {
-              font-size: 0.9rem;
+              font-size: clamp(0.8rem, 3vw, 0.9rem);
             }
             .contact-form input[type="text"],
             .contact-form input[type="email"],
             .contact-form textarea {
-              font-size: 1rem;
+              font-size: clamp(0.9rem, 2.5vw, 1rem);
             }
             .contact-form button.submitform {
-              font-size: 1rem;
+              font-size: clamp(0.9rem, 2.5vw, 1rem);
             }
             .contact-info .icon i {
-              font-size: 2.5rem;
+              font-size: clamp(1.8rem, 5vw, 2.5rem);
             }
             .row.social {
-              margin: 1rem auto;
+              margin: clamp(0.8rem, 2vh, 1rem) auto;
             }
             .footer-social li a {
-              width: 2rem;
-              height: 2rem;
+              width: clamp(1.8rem, 5vw, 2rem);
+              height: clamp(1.8rem, 5vw, 2rem);
             }
           }
         `}
@@ -589,6 +607,7 @@ const ContactPage = () => {
                   defaultValue=""
                   minLength="2"
                   required
+                  aria-label="Your Name"
                 />
               </div>
               <div className="form-field">
@@ -599,6 +618,7 @@ const ContactPage = () => {
                   placeholder="Email"
                   defaultValue=""
                   required
+                  aria-label="Your Email"
                 />
               </div>
               <div className="form-field">
@@ -608,19 +628,21 @@ const ContactPage = () => {
                   id="contactSubject"
                   placeholder="Subject"
                   defaultValue=""
+                  aria-label="Subject"
                 />
               </div>
               <div className="form-field">
                 <textarea
                   name="contactMessage"
                   id="contactMessage"
-                  placeholder="message"
+                  placeholder="Message"
                   rows="5"
                   required
+                  aria-label="Your Message"
                 ></textarea>
               </div>
               <div className="form-field" style={{ display: 'none' }}>
-                <input name="honeypot" type="text" id="honeypot" />
+                <input name="honeypot" type="text" id="honeypot" aria-hidden="true" />
               </div>
               <div className="form-field submit-field">
                 <button className="submitform">Submit</button>
@@ -649,22 +671,22 @@ const ContactPage = () => {
         <div className="row social">
           <ul className="footer-social">
             <li>
-              <a href="https://www.linkedin.com/in/siddharamayya-mathapati">
+              <a href="https://www.linkedin.com/in/siddharamayya-mathapati" aria-label="LinkedIn Profile">
                 <FaLinkedin size={30} />
               </a>
             </li>
             <li>
-              <a href="https://medium.com/@msidrm455">
+              <a href="https://medium.com/@msidrm455" aria-label="Medium Profile">
                 <FaMedium size={30} />
               </a>
             </li>
             <li>
-              <a href="https://github.com/mtptisid">
+              <a href="https://github.com/mtptisid" aria-label="GitHub Profile">
                 <FaGithub size={30} />
               </a>
             </li>
             <li>
-              <a href="https://www.instagram.com/its_5id">
+              <a href="https://www.instagram.com/its_5id" aria-label="Instagram Profile">
                 <FaInstagram size={30} />
               </a>
             </li>
@@ -673,7 +695,7 @@ const ContactPage = () => {
         <div className="row contact-info">
           <div className="col-four">
             <div className="icon">
-              <i className="fa fa-map-marker"></i>
+              <i className="fa fa-map-marker" aria-hidden="true"></i>
             </div>
             <h5>Where to find me</h5>
             <p>
@@ -684,14 +706,14 @@ const ContactPage = () => {
           </div>
           <div className="col-four">
             <div className="icon">
-              <i className="fa fa-envelope"></i>
+              <i className="fa fa-envelope" aria-hidden="true"></i>
             </div>
             <h5>Email Me At</h5>
             <p>me@siddharamayya.in</p>
           </div>
           <div className="col-four">
             <div className="icon">
-              <i className="fa fa-phone"></i>
+              <i className="fa fa-phone" aria-hidden="true"></i>
             </div>
             <h5>Call Me At</h5>
             <p>Phone: (+91) 97406 71620</p>
