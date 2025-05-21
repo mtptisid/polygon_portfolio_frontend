@@ -295,11 +295,11 @@ const SendMailPage = () => {
           }
           input[type="file"] {
             width: 100%;
-            padding: 1rem;
-            font-size: 1rem;
+            padding: 0.5rem; /* Smaller padding to keep button small */
+            font-size: 0.9rem; /* Smaller font size */
             font-family: "Poppins", sans-serif;
             color: #ffffff;
-            background: #07b1d0; /* Match submit button */
+            background: #07b1d0; /* Match submit button color */
             border: none;
             border-radius: 4px;
             transition: background 0.3s ease;
@@ -364,7 +364,7 @@ const SendMailPage = () => {
           }
           .file-list .remove-button {
             background: #e53e3e; /* Red color */
-            color: #ffffff;
+            color: #ffffff !important; /* Force white icon color */
             border: none;
             border-radius: 50%;
             width: 24px;
@@ -373,15 +373,22 @@ const SendMailPage = () => {
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 1rem; /* Increased for icon visibility */
-            line-height: 1; /* Ensure icon is centered */
+            font-size: 1.1rem; /* Increased for icon visibility */
+            line-height: 1; /* Ensure icon centering */
             transition: background 0.3s ease, transform 0.2s ease;
             flex-shrink: 0;
             margin-left: 0.5rem;
+            position: relative; /* For debugging */
+            z-index: 1; /* Ensure visibility */
           }
           .file-list .remove-button:hover {
             background: #f56565; /* Lighter red on hover */
             transform: scale(1.1);
+          }
+          .file-list .remove-button svg {
+            fill: #ffffff; /* Explicitly set SVG fill */
+            width: 14px; /* Fixed size for consistency */
+            height: 14px;
           }
           button {
             width: 100%;
@@ -562,6 +569,10 @@ const SendMailPage = () => {
               font-size: 0.9rem;
               padding: 0.8rem;
             }
+            input[type="file"] {
+              padding: 0.4rem; /* Smaller for mobile */
+              font-size: 0.8rem;
+            }
             button {
               font-size: 0.9rem;
               padding: 0.8rem;
@@ -582,7 +593,11 @@ const SendMailPage = () => {
             .file-list .remove-button {
               width: 22px;
               height: 22px;
-              font-size: 0.9rem;
+              font-size: 1rem;
+            }
+            .file-list .remove-button svg {
+              width: 12px;
+              height: 12px;
             }
           }
           @media (max-width: 480px) {
@@ -618,6 +633,10 @@ const SendMailPage = () => {
               font-size: 0.8rem;
               padding: 0.7rem;
             }
+            input[type="file"] {
+              padding: 0.3rem;
+              font-size: 0.7rem;
+            }
             button {
               font-size: 0.8rem;
               padding: 0.7rem;
@@ -639,7 +658,11 @@ const SendMailPage = () => {
             .file-list .remove-button {
               width: 20px;
               height: 20px;
-              font-size: 0.8rem;
+              font-size: 0.9rem;
+            }
+            .file-list .remove-button svg {
+              width: 10px;
+              height: 10px;
             }
           }
         `}
