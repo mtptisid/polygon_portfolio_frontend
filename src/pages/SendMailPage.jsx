@@ -14,6 +14,7 @@ const SendMailPage = () => {
     bcc: '',
     honeypot: '',
   });
+  const [files, setFiles] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +24,16 @@ const SendMailPage = () => {
 
   // Token expiration time: 20 minutes (in milliseconds)
   const TOKEN_EXPIRY_TIME = 20 * 60 * 1000;
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  const MAX_FILES = 5;
+  const ALLOWED_FILE_TYPES = [
+    'application/pdf',
+    'image/jpeg',
+    'image/png',
+    'text/plain',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ];
 
   // Check if token is valid (not expired)
   const isTokenValid = () => {
@@ -83,6 +94,39 @@ const SendMailPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    let valid = true;
+    let errorMsg = '';
+
+    if (selectedFiles.length > MAX_FILES) {
+      errorMsg = `Maximum ${MAX_FILES} files allowed`;
+      valid = false;
+    }
+
+    for (const file of selectedFiles) {
+      if (file.size > MAX_FILE_SIZE) {
+        errorMsg = `File ${file.name} exceeds 5MB limit`;
+        valid = false;
+        break;
+      }
+      if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+        errorMsg = `File ${file.name} has unsupported type: ${file.type}`;
+        valid = false;
+        break;
+      }
+    }
+
+    if (valid) {
+      setFiles(selectedFiles);
+      setError('');
+    } else {
+      setFiles([]);
+      setError(errorMsg);
+      e.target.value = ''; // Reset file input
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -127,23 +171,26 @@ const SendMailPage = () => {
     }
 
     try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name || 'Unknown');
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('subject', formData.subject || 'Message from Siddharamayya');
+      formDataToSend.append('message', formData.message);
+      if (formData.cc) formDataToSend.append('cc', formData.cc);
+      if (formData.bcc) formDataToSend.append('bcc', formData.bcc);
+      if (formData.honeypot) formDataToSend.append('honeypot', formData.honeypot);
+      
+      files.forEach((file, index) => {
+        formDataToSend.append('files', file);
+      });
+
       const token = localStorage.getItem('access_token');
       const response = await fetch('https://portpoliosid.onrender.com/sendmail', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          name: formData.name || 'Unknown',
-          email: formData.email,
-          subject: formData.subject || 'Message from Siddharamayya',
-          message: formData.message,
-          honeypot: formData.honeypot,
-          cc: formData.cc || null,
-          bcc: formData.bcc || null,
-        }),
+        body: formDataToSend,
       });
 
       if (!response.ok) {
@@ -169,6 +216,8 @@ const SendMailPage = () => {
         bcc: '',
         honeypot: '',
       });
+      setFiles([]);
+      document.getElementById('file-input').value = ''; // Reset file input
     } catch (err) {
       setError(err.message);
     } finally {
@@ -226,6 +275,7 @@ const SendMailPage = () => {
           input[type="text"],
           input[type="email"],
           input[type="password"],
+          input[type="file"],
           textarea {
             width: 100%;
             padding: 1rem;
@@ -237,6 +287,9 @@ const SendMailPage = () => {
             border-radius: 4px;
             transition: all 0.3s ease;
             outline: none;
+          }
+          input[type="file"] {
+            padding: 0.5rem;
           }
           textarea {
             min-height: 120px;
@@ -251,6 +304,14 @@ const SendMailPage = () => {
           textarea::placeholder {
             color: rgba(255, 255, 255, 0.5);
             font-style: italic;
+          }
+          .file-list {
+            margin-top: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+          }
+          .file-list li {
+            margin-bottom: 0.3rem;
           }
           button {
             width: 100%;
@@ -426,6 +487,7 @@ const SendMailPage = () => {
             input[type="text"],
             input[type="email"],
             input[type="password"],
+            input[type="file"],
             textarea {
               font-size: 0.9rem;
               padding: 0.8rem;
@@ -443,6 +505,9 @@ const SendMailPage = () => {
             }
             .password-modal-content {
               padding: 1.5rem;
+            }
+            .file-list {
+              font-size: 0.8rem;
             }
           }
           @media (max-width: 480px) {
@@ -473,6 +538,7 @@ const SendMailPage = () => {
             input[type="text"],
             input[type="email"],
             input[type="password"],
+            input[type="file"],
             textarea {
               font-size: 0.8rem;
               padding: 0.7rem;
@@ -491,6 +557,9 @@ const SendMailPage = () => {
             .password-modal-content {
               padding: 1rem;
               max-width: 300px;
+            }
+            .file-list {
+              font-size: 0.7rem;
             }
           }
         `}
@@ -687,6 +756,23 @@ const SendMailPage = () => {
                   placeholder="Message"
                   required
                 />
+              </div>
+              <div className="form-field">
+                <input
+                  id="file-input"
+                  type="file"
+                  name="files"
+                  onChange={handleFileChange}
+                  multiple
+                  accept=".pdf,.jpg,.jpeg,.png,.txt,.doc,.docx"
+                />
+                {files.length > 0 && (
+                  <ul className="file-list">
+                    {files.map((file, index) => (
+                      <li key={index}>{file.name} ({(file.size / 1024).toFixed(2)} KB)</li>
+                    ))}
+                  </ul>
+                )}
               </div>
               <div style={{ display: 'none' }}>
                 <input
