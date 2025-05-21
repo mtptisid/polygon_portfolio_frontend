@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiHome, FiArrowLeft, FiMail, FiInbox} from 'react-icons/fi';
+import { FiHome, FiArrowLeft, FiInbox } from 'react-icons/fi';
 import { FaUser, FaLinkedin, FaMedium, FaGithub, FaInstagram, FaExclamationTriangle, FaCheck } from 'react-icons/fa';
 import $ from 'jquery';
 
@@ -125,21 +125,24 @@ const ContactPage = () => {
           }
           #contact {
             background: #151515;
-            padding: 12rem 1rem 7.2rem;
+            padding: 8rem 1rem 4rem;
             position: relative;
             zIndex: 1;
+            min-height: calc(100vh - 60px); /* Adjust for navbar height */
           }
           .row.section-intro {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             text-align: center;
-            max-width: 740px;
-            margin: 0 auto 3rem;
+            width: 90%;
+            max-width: 960px; /* Increased for desktop */
+            margin: 0 auto 2rem;
           }
           .row.section-intro h1 {
             color: #FFFFFF;
             font-family: "poppins-bold", sans-serif;
-            font-size: 3rem;
+            font-size: clamp(2rem, 5vw, 3.5rem);
             font-weight: 700;
             margin-bottom: 1rem;
             animation: slideUp 0.5s ease-out;
@@ -147,7 +150,7 @@ const ContactPage = () => {
           .row.section-intro h5 {
             color: #07b1d0;
             font-family: "poppins-bold", sans-serif;
-            font-size: 1.5rem;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
             font-weight: 600;
             text-transform: uppercase;
             margin-bottom: 0.5rem;
@@ -156,13 +159,14 @@ const ContactPage = () => {
           }
           .row.section-intro p {
             color: rgba(255, 255, 255, 0.7);
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
             margin: 0;
           }
           .row.contact-form {
             display: flex;
             justify-content: center;
-            max-width: 740px;
+            width: 90%;
+            max-width: 960px; /* Increased for desktop */
             margin: 0 auto;
             background: transparent;
             border: none !important;
@@ -184,15 +188,14 @@ const ContactPage = () => {
           }
           .contact-form .form-field {
             position: relative;
-            margin-bottom: 0;
-            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             background: transparent;
             border: none !important;
           }
           .contact-form .form-field.submit-field {
-            margin-top: 1rem;
-            padding-bottom: 0;
+            margin-top: 1.5rem;
             box-shadow: none;
           }
           .contact-form input[type="text"],
@@ -200,23 +203,23 @@ const ContactPage = () => {
           .contact-form textarea {
             width: 100%;
             height: 4rem;
-            padding: 0;
+            padding: 0.8rem;
             font-family: "poppins-regular", sans-serif;
-            font-size: 1.4rem;
+            font-size: clamp(1.2rem, 2.5vw, 1.4rem);
             color: rgba(255, 255, 255, 0.7);
             background: rgba(255, 255, 255, 0.05);
             border: none !important;
             border-radius: 4px;
             transition: all 0.3s ease;
             outline: none;
-            line-height: 4rem;
-            vertical-align: middle;
+            line-height: normal;
           }
           .contact-form textarea {
             height: auto;
-            min-height: 10rem;
+            min-height: clamp(8rem, 20vw, 12rem);
             resize: vertical;
             line-height: 1.5;
+            padding: 1rem;
           }
           .contact-form input[type="text"]:focus,
           .contact-form input[type="email"]:focus,
@@ -233,14 +236,13 @@ const ContactPage = () => {
           }
           .contact-form button.submitform {
             font-family: "poppins-bold", sans-serif;
-            font-size: 1.4rem;
+            font-size: clamp(1.2rem, 2.5vw, 1.4rem);
             letter-spacing: 0.2rem;
             height: 4rem;
             line-height: 4rem;
             padding: 0;
             margin: 0;
             width: 100%;
-            max-width: none;
             background: #07b1d0;
             color: #FFFFFF;
             border: none !important;
@@ -256,16 +258,17 @@ const ContactPage = () => {
           .row.message-row {
             display: flex;
             justify-content: center;
-            max-width: 740px;
-            margin: 0.5rem auto;
+            width: 90%;
+            max-width: 960px;
+            margin: 1rem auto;
           }
           #message-warning,
           #message-success {
             display: none;
             width: 100%;
-            max-width: 300px;
+            max-width: 400px;
             margin: 0 auto;
-            font-size: 1.5rem;
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
             text-align: center;
             display: flex;
             align-items: center;
@@ -283,7 +286,7 @@ const ContactPage = () => {
           #message-warning i,
           #message-success i {
             margin-right: 0.5rem;
-            font-size: 1.5rem;
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
           }
           #submit-loader {
             display: none;
@@ -293,15 +296,16 @@ const ContactPage = () => {
             margin-top: 1rem;
           }
           #submit-loader .text-loader {
-            display: none;
+            display: block;
             font-family: "poppins-bold", sans-serif;
             color: #FFFFFF;
             letter-spacing: 0.3rem;
             text-transform: uppercase;
+            font-size: clamp(1rem, 2vw, 1.2rem);
           }
           .s-loader {
             margin: 1.2rem auto;
-            width: 70 диапазонpx;
+            width: 70px; /* Fixed typo */
             text-align: center;
             transform: translateX(0.45rem);
           }
@@ -332,14 +336,15 @@ const ContactPage = () => {
             display: flex;
             justify-content: center;
             align-items: center;
+            width: 90%;
+            max-width: 960px;
             margin: 2rem auto;
-            max-width: 740px;
             text-align: center;
           }
           .footer-social {
             display: flex;
             flex-direction: row;
-            gap: 1.5rem;
+            gap: clamp(1rem, 3vw, 1.5rem);
             justify-content: center;
             align-items: center;
             list-style: none;
@@ -355,51 +360,76 @@ const ContactPage = () => {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 3rem;
-            height: 3rem;
+            width: clamp(2.5rem, 5vw, 3rem);
+            height: clamp(2.5rem, 5vw, 3rem);
           }
           .footer-social li a:hover {
             color: #07b1d0;
             transform: scale(1.1);
           }
           .row.contact-info {
-            margin: 4.8rem auto 0;
+            margin: 3rem auto 0;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
+            width: 90%;
             max-width: 1200px;
           }
           .contact-info .col-four {
-            flex: 0 0 33.333333%;
-            max-width: 33.333333%;
+            flex: 1 1 30%;
+            max-width: 30%;
             padding: 0 1rem;
             text-align: center;
+            margin-bottom: 2rem;
           }
           .contact-info .icon {
-            margin-bottom: 2.1rem;
+            margin-bottom: 1.5rem;
           }
           .contact-info .icon i {
-            font-size: 4.2rem;
+            font-size: clamp(3rem, 6vw, 4.2rem);
             color: #FFFFFF;
           }
           .contact-info h5 {
             color: #07b1d0;
             font-family: "poppins-bold", sans-serif;
-            font-size: 1.5rem;
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
             margin-bottom: 1rem;
           }
           .contact-info p {
             color: rgba(255, 255, 255, 0.7);
             font-family: "poppins-regular", sans-serif;
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+          }
+          @media (min-width: 1200px) {
+            #contact {
+              padding: 10rem 2rem 6rem;
+            }
+            .row.section-intro,
+            .row.contact-form,
+            .row.message-row,
+            .row.social {
+              max-width: 1100px; /* Wider for large screens */
+            }
+            .row.contact-info {
+              max-width: 1400px;
+            }
+          }
+          @media (max-width: 991px) {
+            .contact-info .col-four {
+              flex: 1 1 45%;
+              max-width: 45%;
+            }
           }
           @media (max-width: 767px) {
-            .navbar {
-              padding: 0.75rem;
-              justify-content: space-between;
+            #contact {
+              padding: 6rem 1rem 3rem;
             }
-            .row.section-intro {
-              max-width: 90%;
+            .row.section-intro,
+            .row.contact-form,
+            .row.message-row,
+            .row.social {
+              width: 95%;
+              max-width: 700px;
             }
             .row.section-intro h1 {
               font-size: 2rem;
@@ -408,16 +438,16 @@ const ContactPage = () => {
               font-size: 1.2rem;
             }
             .row.contact-form {
-              max-width: 90%;
+              width: 95%;
             }
             .row.message-row {
-              max-width: 90%;
+              width: 95%;
             }
             .contact-form input[type="text"],
             .contact-form input[type="email"] {
               height: 3.6rem;
               font-size: 1.2rem;
-              line-height: 3.6rem;
+              padding: 0.8rem;
             }
             .contact-form textarea {
               min-height: 8rem;
@@ -452,10 +482,10 @@ const ContactPage = () => {
               height: 2.5rem;
             }
             .row.contact-info {
-              margin: 3rem auto 0;
+              margin: 2rem auto 0;
             }
             .contact-info .col-four {
-              flex: 0 0 100%;
+              flex: 1 1 100%;
               max-width: 100%;
               margin-bottom: 2rem;
             }
@@ -470,14 +500,22 @@ const ContactPage = () => {
             }
           }
           @media (max-width: 480px) {
-            .navbar {
-              padding: 0.5rem;
+            #contact {
+              padding: 5rem 0.5rem 2rem;
             }
             .row.section-intro h1 {
               font-size: 1.5rem;
             }
             .row.section-intro h5 {
               font-size: 0.9rem;
+            }
+            .contact-form input[type="text"],
+            .contact-form input[type="email"],
+            .contact-form textarea {
+              font-size: 1rem;
+            }
+            .contact-form button.submitform {
+              font-size: 1rem;
             }
             .contact-info .icon i {
               font-size: 2.5rem;
@@ -497,8 +535,8 @@ const ContactPage = () => {
           <button
             style={styles.mobileNavLink}
             onClick={handleBackClick}
-            onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
-            onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+            onMouseEnter={(e) => (e.target.style.color = '#63b3ed')}
+            onMouseLeave={(e) => (e.target.style.color = '#edf2f7')}
             aria-label="Back to Projects"
           >
             <FiArrowLeft size={24} />
@@ -507,8 +545,8 @@ const ContactPage = () => {
             <a
               href="/"
               style={styles.mobileNavLink}
-              onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
-              onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+              onMouseEnter={(e) => (e.target.style.color = '#63b3ed')}
+              onMouseLeave={(e) => (e.target.style.color = '#edf2f7')}
               aria-label="Home"
             >
               <FiHome size={24} />
@@ -516,8 +554,8 @@ const ContactPage = () => {
             <a
               href="https://portfolio.siddharamayya.in/"
               style={styles.mobileNavLink}
-              onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
-              onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+              onMouseEnter={(e) => (e.target.style.color = '#63b3ed')}
+              onMouseLeave={(e) => (e.target.style.color = '#edf2f7')}
               aria-label="Contact"
             >
               <FaUser size={24} />
@@ -525,8 +563,8 @@ const ContactPage = () => {
             <button
               style={styles.mobileNavLink}
               onClick={handleAdminMailClick}
-              onMouseEnter={(e) => e.target.style.color = '#63b3ed'}
-              onMouseLeave={(e) => e.target.style.color = '#edf2f7'}
+              onMouseEnter={(e) => (e.target.style.color = '#63b3ed')}
+              onMouseLeave={(e) => (e.target.style.color = '#edf2f7')}
               aria-label="Admin Mail"
             >
               <FiInbox size={24} />
@@ -637,7 +675,7 @@ const ContactPage = () => {
             <div className="icon">
               <i className="fa fa-map-marker"></i>
             </div>
-            <h5>Wherevaises to find me</h5>
+            <h5>Where to find me</h5>
             <p>
               #372, Ward no 3<br />
               Yadur, Chikodi<br />
