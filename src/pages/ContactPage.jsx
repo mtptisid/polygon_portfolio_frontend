@@ -14,7 +14,7 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      return <div style={{ color: '#fff', textAlign: 'center', padding: '2rem' }}>
+      return <div style={{ color: '#fff', textAlign: 'center', padding: '2rem', background: '#151515' }}>
         Something went wrong. Please refresh the page or try again later.
       </div>;
     }
@@ -25,20 +25,14 @@ class ErrorBoundary extends React.Component {
 const ContactPage = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Check if jQuery is loaded
-    if (!window.jQuery) {
-      console.error('jQuery is not loaded. Please ensure it is included in your project.');
-      return;
-    }
+  // Form submission handler
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    try {
+      if (!window.jQuery) {
+        throw new Error('jQuery is not loaded');
+      }
 
-    // Hide messages and loader on mount
-    $('#message-warning').hide();
-    $('#message-success').hide();
-    $('#submit-loader').hide();
-
-    const handleSubmit = (event) => {
-      event.preventDefault();
       $('#message-warning').hide();
       $('#message-success').hide();
       $('#submit-loader').show();
@@ -81,7 +75,7 @@ const ContactPage = () => {
         return;
       }
 
-      // AJAX request with timeout
+      // AJAX request
       $.ajax({
         url: 'https://portpoliosid.onrender.com/contact',
         type: 'POST',
@@ -96,7 +90,7 @@ const ContactPage = () => {
         },
         error: (xhr, status, error) => {
           $('#submit-loader').hide();
-          console.error('AJAX Error:', { status, error, xhr });
+          console.error('AJAX Error:', { status, error, response: xhr.responseText });
           const errorMessage =
             xhr.responseJSON?.detail ||
             (status === 'timeout' ? 'Request timed out. Please try again.' : 'Failed to send message. Please try again later.');
@@ -105,8 +99,29 @@ const ContactPage = () => {
           setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
         }
       });
-    };
+    } catch (error) {
+      $('#submit-loader').hide();
+      console.error('Form Submission Error:', error);
+      $('#message-warning').find('span').text('An error occurred. Please try again.');
+      $('#message-warning').show();
+      setTimeout(() => $('#message-warning').fadeOut('slow'), 5000);
+    }
+  };
 
+  useEffect(() => {
+    // Check if jQuery is loaded
+    if (!window.jQuery) {
+      console.error('jQuery is not loaded. Please ensure it is included in your project.');
+      $('#message-warning').css('display', 'flex').find('span').text('jQuery is not loaded. Please refresh the page.');
+      return;
+    }
+
+    // Hide messages and loader on mount
+    $('#message-warning').hide();
+    $('#message-success').hide();
+    $('#submit-loader').hide();
+
+    // Bind form submission
     $('#contactForm').on('submit', handleSubmit);
 
     return () => {
@@ -165,17 +180,20 @@ const ContactPage = () => {
             }
             #contact {
               background: #151515;
-              padding: 12rem 1rem 7.2rem;
+              padding: 12rem 0 7.2rem;
               position: relative;
               zIndex: 1;
               min-height: calc(100vh - 60px);
+              width: 100%;
             }
             .row.section-intro {
               display: flex;
               justify-content: center;
               text-align: center;
-              max-width: 740px;
+              width: 100%;
+              max-width: 1200px;
               margin: 0 auto 3rem;
+              padding: 0 1rem;
             }
             .row.section-intro h1 {
               color: #FFFFFF;
@@ -203,8 +221,10 @@ const ContactPage = () => {
             .row.contact-form {
               display: flex;
               justify-content: center;
-              max-width: 740px;
+              width: 100%;
+              max-width: 1200px;
               margin: 0 auto;
+              padding: 0 1rem;
               background: transparent;
               border: none !important;
             }
@@ -298,12 +318,14 @@ const ContactPage = () => {
             .row.message-row {
               display: flex;
               justify-content: center;
-              max-width: 740px;
+              width: 100%;
+              max-width: 1200px;
               margin: 0.5rem auto;
+              padding: 0 1rem;
             }
             #message-warning,
             #message-success {
-              display: none !important; /* Ensure hidden by default */
+              display: none !important;
               width: 100%;
               max-width: 300px;
               margin: 0 auto;
@@ -375,8 +397,10 @@ const ContactPage = () => {
               display: flex;
               justify-content: center;
               align-items: center;
+              width: 100%;
+              max-width: 1200px;
               margin: 2rem auto;
-              max-width: 740px;
+              padding: 0 1rem;
               text-align: center;
             }
             .footer-social {
@@ -410,7 +434,9 @@ const ContactPage = () => {
               display: flex;
               flex-wrap: wrap;
               justify-content: space-between;
+              width: 100%;
               max-width: 1200px;
+              padding: 0 1rem;
             }
             .contact-info .col-four {
               flex: 0 0 33.333333%;
@@ -442,8 +468,12 @@ const ContactPage = () => {
                 height: 50px;
                 justify-content: space-between;
               }
+              #contact {
+                padding: 6rem 0.5rem 4rem;
+              }
               .row.section-intro {
                 max-width: 90%;
+                padding: 0 0.5rem;
               }
               .row.section-intro h1 {
                 font-size: 2rem;
@@ -453,9 +483,11 @@ const ContactPage = () => {
               }
               .row.contact-form {
                 max-width: 90%;
+                padding: 0 0.5rem;
               }
               .row.message-row {
                 max-width: 90%;
+                padding: 0 0.5rem;
               }
               .contact-form input[type="text"],
               .contact-form input[type="email"] {
@@ -489,6 +521,8 @@ const ContactPage = () => {
               }
               .row.social {
                 margin: 1.5rem auto;
+                padding: 0 0.5rem;
+                max-width: 90%;
               }
               .footer-social {
                 gap: 1rem;
@@ -501,6 +535,8 @@ const ContactPage = () => {
               .row.contact-info {
                 margin: 3rem auto 0;
                 flex-direction: column;
+                max-width: 90%;
+                padding: 0 0.5rem;
               }
               .contact-info .col-four {
                 flex: 0 0 100%;
@@ -726,7 +762,7 @@ const ContactPage = () => {
           </div>
         </section>
         <footer style={{ backgroundColor: '#daebdd', color: '#000000', padding: '0.1rem 0' }}>
-          <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center', padding: '0 1rem' }}>
             <p style={{ fontSize: '1rem', fontWeight: '500' }}>© 2025 Siddharamayya M. All rights reserved.</p>
           </div>
         </footer>
