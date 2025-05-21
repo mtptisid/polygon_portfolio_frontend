@@ -281,7 +281,6 @@ const SendMailPage = () => {
           input[type="text"],
           input[type="email"],
           input[type="password"],
-          input[type="file"],
           textarea {
             width: 100%;
             padding: 1rem;
@@ -295,7 +294,35 @@ const SendMailPage = () => {
             outline: none;
           }
           input[type="file"] {
-            padding: 0.5rem;
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            font-family: "Poppins", sans-serif;
+            color: #ffffff;
+            background: #07b1d0; /* Match submit button */
+            border: none;
+            border-radius: 4px;
+            transition: background 0.3s ease;
+            outline: none;
+            cursor: pointer;
+          }
+          input[type="file"]:hover {
+            background: #0cd2e8; /* Match submit button hover */
+          }
+          input[type="file"]::-webkit-file-upload-button {
+            visibility: hidden;
+            width: 0;
+          }
+          input[type="file"]::before {
+            content: 'Choose File';
+            display: inline-block;
+            background: transparent;
+            color: #ffffff;
+            font-weight: 600;
+            padding: 0;
+            outline: none;
+            white-space: nowrap;
+            cursor: pointer;
           }
           textarea {
             min-height: 120px;
@@ -305,6 +332,9 @@ const SendMailPage = () => {
           textarea:focus {
             background: rgba(255, 255, 255, 0.15);
             box-shadow: 0 0 8px rgba(7, 177, 208, 0.3);
+          }
+          input[type="file"]:focus {
+            background: #0cd2e8;
           }
           input::placeholder,
           textarea::placeholder {
@@ -333,7 +363,7 @@ const SendMailPage = () => {
             white-space: nowrap;
           }
           .file-list .remove-button {
-            background: #07b1d0; /* Same as submit button */
+            background: #e53e3e; /* Red color */
             color: #ffffff;
             border: none;
             border-radius: 50%;
@@ -343,13 +373,14 @@ const SendMailPage = () => {
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 0.9rem; /* Adjusted for icon visibility */
+            font-size: 1rem; /* Increased for icon visibility */
+            line-height: 1; /* Ensure icon is centered */
             transition: background 0.3s ease, transform 0.2s ease;
             flex-shrink: 0;
             margin-left: 0.5rem;
           }
           .file-list .remove-button:hover {
-            background: #0cd2e8; /* Same as submit button hover */
+            background: #f56565; /* Lighter red on hover */
             transform: scale(1.1);
           }
           button {
@@ -551,7 +582,7 @@ const SendMailPage = () => {
             .file-list .remove-button {
               width: 22px;
               height: 22px;
-              font-size: 0.8rem;
+              font-size: 0.9rem;
             }
           }
           @media (max-width: 480px) {
@@ -608,7 +639,7 @@ const SendMailPage = () => {
             .file-list .remove-button {
               width: 20px;
               height: 20px;
-              font-size: 0.7rem;
+              font-size: 0.8rem;
             }
           }
         `}
@@ -783,7 +814,7 @@ const SendMailPage = () => {
                 <input
                   type="email"
                   name="bcc"
-                  value={formData.cc}
+                  value={formData.bcc}
                   onChange={handleChange}
                   placeholder="BCC Email (optional)"
                 />
