@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiHome } from 'react-icons/fi';
-import { FaUser, FaLinkedin, FaMedium, FaGithub, FaInstagram, FaExclamationTriangle, FaCheck } from 'react-icons/fa';
+import { FaUser, FaLinkedin, FaMedium, FaGithub, FaInstagram, FaExclamationTriangle, FaCheck, FaTimes } from 'react-icons/fa';
 
 const SendMailPage = () => {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const SendMailPage = () => {
   // Token expiration time: 20 minutes (in milliseconds)
   const TOKEN_EXPIRY_TIME = 20 * 60 * 1000;
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const MAX_FILES = 5;
+  const MAX_FILES = 3; // Updated to allow only 3 files
   const ALLOWED_FILE_TYPES = [
     'application/pdf',
     'image/jpeg',
@@ -99,32 +99,42 @@ const SendMailPage = () => {
     let valid = true;
     let errorMsg = '';
 
-    if (selectedFiles.length > MAX_FILES) {
-      errorMsg = `Maximum ${MAX_FILES} files allowed`;
+    // Check total number of files (including already selected)
+    if (files.length + selectedFiles.length > MAX_FILES) {
+      errorMsg = `You can attach up to ${MAX_FILES} files only`;
       valid = false;
     }
 
+    // Validate each new file
+    const validFiles = [];
     for (const file of selectedFiles) {
       if (file.size > MAX_FILE_SIZE) {
-        errorMsg = `File ${file.name} exceeds 5MB limit`;
+        errorMsg = `File "${file.name}" exceeds the 5MB size limit`;
         valid = false;
         break;
       }
       if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-        errorMsg = `File ${file.name} has unsupported type: ${file.type}`;
+        errorMsg = `File "${file.name}" is not a supported type (PDF, JPEG, PNG, TXT, DOC, DOCX)`;
         valid = false;
         break;
       }
+      validFiles.push(file);
     }
 
     if (valid) {
-      setFiles(selectedFiles);
+      setFiles([...files, ...validFiles]);
       setError('');
     } else {
-      setFiles([]);
       setError(errorMsg);
       e.target.value = ''; // Reset file input
     }
+  };
+
+  const handleRemoveFile = (indexToRemove) => {
+    setFiles(files.filter((_, index) => index !== indexToRemove));
+    setError('');
+    // Reset file input to allow re-selection
+    document.getElementById('file-input').value = '';
   };
 
   const handleSubmit = async (e) => {
@@ -179,8 +189,8 @@ const SendMailPage = () => {
       if (formData.cc) formDataToSend.append('cc', formData.cc);
       if (formData.bcc) formDataToSend.append('bcc', formData.bcc);
       if (formData.honeypot) formDataToSend.append('honeypot', formData.honeypot);
-      
-      files.forEach((file, index) => {
+
+      files.forEach((file) => {
         formDataToSend.append('files', file);
       });
 
@@ -275,7 +285,6 @@ const SendMailPage = () => {
           input[type="text"],
           input[type="email"],
           input[type="password"],
-          input[type="file"],
           textarea {
             width: 100%;
             padding: 1rem;
@@ -288,15 +297,51 @@ const SendMailPage = () => {
             transition: all 0.3s ease;
             outline: none;
           }
-          input[type="file"] {
+          .file-input-container {
+            position: relative;
+            width: 100%;
             padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+          }
+          .file-input-container:hover {
+            background: rgba(255, 255, 255, 0.15);
+          }
+          input[type="file"] {
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 1rem;
+            font-family: "Poppins", sans-serif;
+            color: #ffffff;
+            background: transparent;
+            border: none;
+            outline: none;
+            cursor: pointer;
+          }
+          input[type="file"]::-webkit-file-upload-button {
+            background: #07b1d0;
+            color: #ffffff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-family: "Poppins", sans-serif;
+            transition: background 0.3s ease;
+          }
+          input[type="file"]::-webkit-file-upload-button:hover {
+            background: #0cd2e8;
           }
           textarea {
             min-height: 120px;
             resize: vertical;
           }
           input:focus,
-          textarea:focus {
+          textarea:focus,
+          .file-input-container:focus-within {
             background: rgba(255, 255, 255, 0.15);
             box-shadow: 0 0 8px rgba(7, 177, 208, 0.3);
           }
@@ -309,9 +354,35 @@ const SendMailPage = () => {
             margin-top: 0.5rem;
             color: rgba(255, 255, 255, 0.7);
             font-size: 0.9rem;
+            list-style: none;
           }
           .file-list li {
-            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+          }
+          .file-list button {
+            background: #fa0003;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            padding: 0.3rem 0.6rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background 0.3s ease;
+            font-size: 0.8rem;
+          }
+          .file-list button:hover {
+            background: #ff3333;
+          }
+          .file-list button:focus {
+            outline: 2px solid #07b1d0;
+            outline-offset: 2px;
           }
           button {
             width: 100%;
@@ -561,6 +632,10 @@ const SendMailPage = () => {
             .file-list {
               font-size: 0.7rem;
             }
+            .file-list button {
+              padding: 0.2rem 0.5rem;
+              font-size: 0.7rem;
+            }
           }
         `}
       </style>
@@ -653,6 +728,7 @@ const SendMailPage = () => {
                     border: '1px solid #e2e8f0',
                     borderRadius: '4px',
                   }}
+                  aria-label="Admin password"
                 />
               </div>
               {passwordError && (
@@ -709,6 +785,7 @@ const SendMailPage = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Name (optional)"
+                  aria-label="Sender name"
                 />
               </div>
               <div className="form-field">
@@ -719,6 +796,7 @@ const SendMailPage = () => {
                   onChange={handleChange}
                   placeholder="Recipient Email"
                   required
+                  aria-label="Recipient email"
                 />
               </div>
               <div className="form-field">
@@ -728,6 +806,7 @@ const SendMailPage = () => {
                   value={formData.cc}
                   onChange={handleChange}
                   placeholder="CC Email (optional)"
+                  aria-label="CC email"
                 />
               </div>
               <div className="form-field">
@@ -737,6 +816,7 @@ const SendMailPage = () => {
                   value={formData.bcc}
                   onChange={handleChange}
                   placeholder="BCC Email (optional)"
+                  aria-label="BCC email"
                 />
               </div>
               <div className="form-field">
@@ -746,6 +826,7 @@ const SendMailPage = () => {
                   value={formData.subject}
                   onChange={handleChange}
                   placeholder="Subject (optional)"
+                  aria-label="Email subject"
                 />
               </div>
               <div className="form-field">
@@ -755,21 +836,35 @@ const SendMailPage = () => {
                   onChange={handleChange}
                   placeholder="Message"
                   required
+                  aria-label="Email message"
                 />
               </div>
               <div className="form-field">
-                <input
-                  id="file-input"
-                  type="file"
-                  name="files"
-                  onChange={handleFileChange}
-                  multiple
-                  accept=".pdf,.jpg,.jpeg,.png,.txt,.doc,.docx"
-                />
+                <div className="file-input-container">
+                  <input
+                    id="file-input"
+                    type="file"
+                    name="files"
+                    onChange={handleFileChange}
+                    multiple
+                    accept=".pdf,.jpg,.jpeg,.png,.txt,.doc,.docx"
+                    aria-label="Attach files (up to 3, 5MB each)"
+                  />
+                </div>
                 {files.length > 0 && (
                   <ul className="file-list">
                     {files.map((file, index) => (
-                      <li key={index}>{file.name} ({(file.size / 1024).toFixed(2)} KB)</li>
+                      <li key={index}>
+                        <span>{file.name} ({(file.size / 1024).toFixed(2)} KB)</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFile(index)}
+                          aria-label={`Remove ${file.name}`}
+                          title={`Remove ${file.name}`}
+                        >
+                          <FaTimes />
+                        </button>
+                      </li>
                     ))}
                   </ul>
                 )}
@@ -780,6 +875,7 @@ const SendMailPage = () => {
                   name="honeypot"
                   value={formData.honeypot}
                   onChange={handleChange}
+                  aria-hidden="true"
                 />
               </div>
               {error && (
@@ -810,7 +906,7 @@ const SendMailPage = () => {
                   <span>{success}</span>
                 </div>
               )}
-              <button type="submit" disabled={isLoading}>
+              <button type="submit" disabled={isLoading} aria-label="Send email">
                 {isLoading ? 'Sending...' : 'Send Email'}
               </button>
               <div className={`loader ${isLoading ? 'active' : ''}`}>
@@ -821,16 +917,16 @@ const SendMailPage = () => {
             </form>
           </section>
           <section className="social-links animate-slideUp">
-            <a href="https://www.linkedin.com/in/siddharamayya-mathapati" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.linkedin.com/in/siddharamayya-mathapati" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
               <FaLinkedin size={24} />
             </a>
-            <a href="https://medium.com/@msidrm455" target="_blank" rel="noopener noreferrer">
+            <a href="https://medium.com/@msidrm455" target="_blank" rel="noopener noreferrer" aria-label="Medium">
               <FaMedium size={24} />
             </a>
-            <a href="https://github.com/mtptisid" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/mtptisid" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
               <FaGithub size={24} />
             </a>
-            <a href="https://www.instagram.com/its_5id" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.instagram.com/its_5id" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
               <FaInstagram size={24} />
             </a>
           </section>
