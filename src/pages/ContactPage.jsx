@@ -649,7 +649,7 @@ const ContactPage = () => {
               <i className="fa fa-envelope"></i>
             </div>
             <h5>Email Me At</h5>
-            <p>msidrm455@gmail.com</p>
+            <p>me@siddharamayya.in</p>
           </div>
           <div className="col-four">
             <div className="icon">
