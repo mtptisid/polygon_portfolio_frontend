@@ -25,7 +25,7 @@ const SendMailPage = () => {
   // Token expiration time: 20 minutes (in milliseconds)
   const TOKEN_EXPIRY_TIME = 20 * 60 * 1000;
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const MAX_FILES = 3; // Updated to allow only 3 files
+  const MAX_FILES = 8; // Updated to allow only 8 files
   const ALLOWED_FILE_TYPES = [
     'application/pdf',
     'image/jpeg',
@@ -941,7 +941,7 @@ const SendMailPage = () => {
             </div>
             <div>
               <h5>Email Me At</h5>
-              <p>msidrm455@gmail.com</p>
+              <p>me@siddharamayya.in</p>
             </div>
             <div>
               <h5>Call Me At</h5>
