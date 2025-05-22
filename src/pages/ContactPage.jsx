@@ -752,7 +752,7 @@ const ContactPage = () => {
       </section>
       <footer style={{ backgroundColor: '#daebdd', color: '#000000', padding: '0.1rem 0' }}>
         <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: '1rem', fontWeight: '500' }}>© 2025 Siddharamayya M. All rights reserved.</p>
+          <p style={{ fontSize: '0.2rem', fontWeight: '300' }}>© 2025 Siddharamayya M. All rights reserved.</p>
         </div>
       </footer>
     </div>
