@@ -604,7 +604,7 @@ const ProjectsViewPage = () => {
           </section>
           <footer className="footer">
             <div style={{ maxWidth: '896px', margin: '0 auto' }}>
-              <p style={{ fontSize: '0.3rem', fontWeight: '300' }}>
+              <p style={{ fontSize: '0.2rem', fontWeight: '300' }}>
                 © 2025 Siddharamayya M. All rights reserved.
               </p>
             </div>
