@@ -1475,7 +1475,7 @@ const ProjectsPage = () => {
                   aria-label="Go to My Mail Page"
                 >
                   <FiMail style={{ marginRight: '0.5rem' }} size={18} color="#ffffff" />
-                  MyMailPage
+                  AdminMailSender
                 </button>
               </div>
             </div>
