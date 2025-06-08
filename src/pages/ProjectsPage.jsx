@@ -149,19 +149,19 @@ const projects = [
   },
   {
   "title": "IPL Score Prediction Using Machine Learning",
-  "url": "https://github.com/mtptisid/IPL_score_prediction",
+  "url": "https://github1s.com/mtptisid/IPL_score_prediction",
   "description": "A sports analytics project predicting the final score of an IPL innings using historical data and regression models. Focuses on data preprocessing, feature extraction, and model evaluation to provide reliable predictions. Includes rich visualizations and EDA.",
   "technologies": ["Python", "Pandas", "Matplotlib", "Seaborn", "Scikit-learn", "Regression", "Sports Analytics"]
   },
   {
   "title": "RAG Hands-On: Retrieval-Augmented Generation with LLMs",
-  "url": "https://github.com/mtptisid/RAG-hands-on",
+  "url": "https://github1s.com/mtptisid/RAG-hands-on",
   "description": "A practical project implementing Retrieval-Augmented Generation using LangChain and FAISS. Demonstrates how to combine LLMs with document retrieval for enhanced context-aware responses. Useful for building chatbots, assistants, and intelligent search systems.",
   "technologies": ["Python", "LangChain", "FAISS", "OpenAI API", "RAG", "LLM", "NLP"]
   },
   {
   "title": "ML Hands-On: Practical Machine Learning Projects",
-  "url": "https://github.com/mtptisid/ml-hands-on",
+  "url": "https://github1s.com/mtptisid/ml-hands-on",
   "description": "A curated collection of practical machine learning projects for hands-on learning. Covers end-to-end workflows from data preprocessing to model deployment. Ideal for beginners and intermediate learners to strengthen applied ML skills.",
   "technologies": ["Python", "Scikit-learn", "Pandas", "Matplotlib", "Jupyter", "Machine Learning"]
   },
