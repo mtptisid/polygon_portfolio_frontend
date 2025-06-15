@@ -220,6 +220,12 @@ const projects = [
     "technologies": ["Python", "Flask", "Docker", "REST", "Microservices"]
   },
   {
+  "title": "FLAN-T5 Small Fine-Tuning with LoRA",
+  "url": "https://github.com/mtptisid/FLAN-T5-Small_finetuning_LoRA",
+  "description": "A hands-on project to fine-tune FLAN-T5-Small using Low-Rank Adaptation (LoRA) for efficient NLP task adaptation. Demonstrates parameter-efficient fine-tuning (PEFT) techniques using Hugging Face and PEFT libraries. Great for quick experimentation on lower-end GPUs.",
+  "technologies": ["Python", "Hugging Face Transformers", "LoRA", "PEFT", "NLP", "FLAN-T5", "Machine Learning"]
+  }, 
+  {
     "title": "Recruitment Helper AI with LLAMA",
     "url": "https://github1s.com/mtptisid/Recruitment_Helper_AI_with_LLAMA",
     "description": "An AI-powered recruitment assistant that utilizes the LLAMA language model to analyze resumes and job descriptions. It provides insights and recommendations to streamline the hiring process, showcasing the application of large language models in human resources.",
