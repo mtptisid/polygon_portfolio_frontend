@@ -164,7 +164,7 @@ const projects = [
     "technologies": ["Python", "Hugging Face Transformers", "LoRA", "PEFT", "NLP", "FLAN-T5", "Machine Learning"]
     },
     {
-        "title": "Personal_Voice_Assistant_with_OpenAI",
+        "title": "Personal Voice Assistant with OpenAI",
         "url": "https://github1s.com/mtptisid/Personal_Voice_Assistant_with_OpenAI",
         "description": "A personal voice assistant application that leverages OpenAI's API to process voice commands and provide intelligent responses. The assistant can perform tasks such as fetching information, setting reminders, and more, demonstrating the integration of speech recognition with AI-powered text generation.",
         "technologies": ["Python", "OpenAI API", "SpeechRecognition", "Text-to-Speech"]
@@ -188,7 +188,7 @@ const projects = [
         "technologies": ["Python", "Scrapy", "Linux", "Data Preprocessing"]
     },
     {
-        "title": "SIMPLE_SQL_WITH_GOOGLE_GEMINI_AI",
+        "title": "SIMPLE SQL WITH GOOGLE GEMINI AI",
         "url": "https://github1s.com/mtptisid/SIMPLE_SQL_WITH_GOOGLE_GEMINI_AI",
         "description": "This project demonstrates how to integrate Google Gemini LLM with a MySQL database using LangChain for natural language queries. It uses semantic similarity-based few-shot learning to generate accurate SQL queries and fetch results from the database. The application supports text-to-SQL conversion and dynamic prompting for enhanced query generation.",
         "technologies": ["Python", "LangChain", "Google Gemini", "MySQL", "Chroma"]
@@ -212,7 +212,7 @@ const projects = [
         "technologies": ["Python", "Streamlit", "Plotly", "yfinance", "AI Agents"]
     },
     {
-        "title": "STUDENT_STUDY_HELPER_AI_WITH_GOOGLE_GEMINI",
+        "title": "STUDENT STUDY HELPER_AI WITH GOOGLE GEMINI",
         "url": "https://github1s.com/mtptisid/STUDENT_STUDY_HELPER_AI_WITH_GOOGLE_GEMINI",
         "description": "An AI-powered study assistant that utilizes Google's Gemini LLM to help students with their studies. The application can answer questions, provide explanations, and assist with various academic tasks, enhancing the learning experience through intelligent interactions.",
         "technologies": ["Python", "Google Gemini", "LangChain", "Streamlit"]
@@ -242,7 +242,7 @@ const projects = [
         "technologies": ["Python", "Machine Learning", "Streamlit", "Pandas", "Scikit-learn"]
     },
     {
-        "title": "Youtube_Video_Transcribe_Summarizer_with_whisper_OPENAI_App",
+        "title": "Youtube Video Transcribe Summarizer with whisper OPENAI App",
         "url": "https://github1s.com/mtptisid/Youtube_Video_Transcribe_Summarizer_with_whisper_OPENAI_App",
         "description": "This application allows users to summarize YouTube videos by transcribing and processing their audio. Built with state-of-the-art technologies like LangChain, Google Gemini, OpenAI Whisper, and Streamlit, it provides a seamless experience to extract meaningful insights from video content. Users can input a YouTube URL, and the app transcribes the audio, summarizes the content, and enables question-answering based on the summarized text.",
         "technologies": ["Python", "OpenAI Whisper", "LangChain", "Google Gemini", "Streamlit"]
