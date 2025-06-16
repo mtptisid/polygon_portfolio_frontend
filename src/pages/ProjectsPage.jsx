@@ -423,7 +423,12 @@ const ProjectsPage = () => {
     if (window.matchMedia("(max-width: 767px)").matches) {
       navigate('/contact');
     } else {
-      document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+      const contactElement = document.getElementById('contact');
+      if (contactElement) {
+        contactElement.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        navigate('/contact');
+      }
     }
   };
 
