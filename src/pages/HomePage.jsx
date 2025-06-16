@@ -367,7 +367,7 @@ const HomePage = () => {
     const prefix = 'Welcome to my digital workspace.';
     const name = 'Siddharamayya M';
     const description = 'Crafting solutions with AI, data, and code';
-    const subdesc = 'Select any AI Model and ask for anything.';
+    const subdesc = 'Select any AI Model and ask anything.';
     
     return (
       <div style={{ textAlign: 'center', margin: '1rem auto', width: '100%', maxWidth: '1200px' }} className="header">
