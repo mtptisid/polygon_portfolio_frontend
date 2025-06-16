@@ -221,7 +221,7 @@ const projects = [
   },
   {
   "title": "FLAN-T5 Small Fine-Tuning with LoRA",
-  "url": "https://github.com/mtptisid/FLAN-T5-Small_finetuning_LoRA",
+  "url": "https://github1s.com/mtptisid/FLAN-T5-Small_finetuning_LoRA",
   "description": "A hands-on project to fine-tune FLAN-T5-Small using Low-Rank Adaptation (LoRA) for efficient NLP task adaptation. Demonstrates parameter-efficient fine-tuning (PEFT) techniques using Hugging Face and PEFT libraries. Great for quick experimentation on lower-end GPUs.",
   "technologies": ["Python", "Hugging Face Transformers", "LoRA", "PEFT", "NLP", "FLAN-T5", "Machine Learning"]
   }, 
