@@ -226,6 +226,18 @@ const projects = [
   "technologies": ["Python", "Hugging Face Transformers", "LoRA", "PEFT", "NLP", "FLAN-T5", "Machine Learning"]
   }, 
   {
+  "title": "YOLOv5 Object Detection Practice",
+  "url": "https://github.com/mtptisid/YOLOV5_Practice",
+  "description": "A project showcasing object detection using YOLOv5. Covers custom dataset annotation, model training, and prediction. Useful for learning end-to-end object detection with PyTorch and Roboflow.",
+  "technologies": ["Python", "YOLOv5", "PyTorch", "OpenCV", "Computer Vision", "Roboflow"]
+  },
+  {
+  "title": "Custom CNN Image Classifier with PyTorch",
+  "url": "https://github.com/mtptisid/PyTorch-CNN-model",
+  "description": "A basic convolutional neural network implemented in PyTorch for image classification. Demonstrates CNN architecture, forward pass, loss computation, training, and evaluation on small image datasets.",
+  "technologies": ["Python", "PyTorch", "Deep Learning", "CNN", "Image Classification"]
+  },
+  {
     "title": "Recruitment Helper AI with LLAMA",
     "url": "https://github1s.com/mtptisid/Recruitment_Helper_AI_with_LLAMA",
     "description": "An AI-powered recruitment assistant that utilizes the LLAMA language model to analyze resumes and job descriptions. It provides insights and recommendations to streamline the hiring process, showcasing the application of large language models in human resources.",
