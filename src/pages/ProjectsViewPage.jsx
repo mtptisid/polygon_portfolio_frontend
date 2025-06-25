@@ -164,6 +164,18 @@ const projects = [
        "technologies": ["Python", "Hugging Face Transformers", "LoRA", "PEFT", "NLP", "FLAN-T5", "Machine Learning"]
     },
     {
+        "title": "YOLOv5 Object Detection Practice",
+       "url": "https://github1s.com/mtptisid/YOLOV5_Practice",
+        "description": "A project showcasing object detection using YOLOv5. Covers custom dataset annotation, model training, and prediction. Useful for learning end-to-end object detection with PyTorch and Roboflow.",
+       "technologies": ["Python", "YOLOv5", "PyTorch", "OpenCV", "Computer Vision", "Roboflow"]
+    },
+    {
+       "title": "Custom CNN Image Classifier with PyTorch",
+       "url": "https://github1s.com/mtptisid/PyTorch-CNN-model",
+       "description": "A basic convolutional neural network implemented in PyTorch for image classification. Demonstrates CNN architecture, forward pass, loss computation, training, and evaluation on small image datasets.",
+       "technologies": ["Python", "PyTorch", "Deep Learning", "CNN", "Image Classification"]
+    },
+    {
         "title": "Personal Voice Assistant with OpenAI",
         "url": "https://github1s.com/mtptisid/Personal_Voice_Assistant_with_OpenAI",
         "description": "A personal voice assistant application that leverages OpenAI's API to process voice commands and provide intelligent responses. The assistant can perform tasks such as fetching information, setting reminders, and more, demonstrating the integration of speech recognition with AI-powered text generation.",

@@ -227,13 +227,13 @@ const projects = [
   }, 
   {
   "title": "YOLOv5 Object Detection Practice",
-  "url": "https://github.com/mtptisid/YOLOV5_Practice",
+  "url": "https://github1s.com/mtptisid/YOLOV5_Practice",
   "description": "A project showcasing object detection using YOLOv5. Covers custom dataset annotation, model training, and prediction. Useful for learning end-to-end object detection with PyTorch and Roboflow.",
   "technologies": ["Python", "YOLOv5", "PyTorch", "OpenCV", "Computer Vision", "Roboflow"]
   },
   {
   "title": "Custom CNN Image Classifier with PyTorch",
-  "url": "https://github.com/mtptisid/PyTorch-CNN-model",
+  "url": "https://github1s.com/mtptisid/PyTorch-CNN-model",
   "description": "A basic convolutional neural network implemented in PyTorch for image classification. Demonstrates CNN architecture, forward pass, loss computation, training, and evaluation on small image datasets.",
   "technologies": ["Python", "PyTorch", "Deep Learning", "CNN", "Image Classification"]
   },
