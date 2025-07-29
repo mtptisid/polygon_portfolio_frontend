@@ -79,6 +79,7 @@ const HomePage = () => {
     "What are Siddharamayya’s contributions to web development?": { icon: <FaCode size={18} color="#10b981" />, emoji: "🌐" },
     "Visit Siddharamayya's portfolio": { icon: <FaGlobe size={18} color="#d91a89" />, emoji: "🌐" },
     "Download Resume": { icon: <FaFileDownload size={18} color="#f59e0b" />, emoji: "📄" },
+    "Siddharamayya's latest job": { icon: <FaBriefcase size={18} color="#3b82f6" />, emoji: "💼" },
     "Write an Ansible playbook to deploy a web server": { icon: <FaTools size={18} color="#ef4444" />, emoji: "📜" },
     "Create a Bash script to monitor system resources": { icon: <FaCode size={18} color="#3b82f6" />, emoji: "🖥️" },
     "Design a machine learning model for image classification": { icon: <FaBrain size={18} color="#8b5cf6" />, emoji: "🧠" },
@@ -120,17 +121,17 @@ const HomePage = () => {
 
   // Cycle through example prompts every 15 seconds
   useEffect(() => {
-    const fixedPrompts = ["Visit Siddharamayya's portfolio", "Download Resume"];
+    const fixedPrompts = ["Siddharamayya's latest job", "Download Resume"];
     const otherPrompts = examplePrompts.filter(prompt => !fixedPrompts.includes(prompt));
     const getRandomPrompts = () => {
       const shuffled = shuffleArray(otherPrompts);
-      const selected = shuffled.slice(0, 4);
+      const selected = shuffled.slice(0, 7);
       return [...fixedPrompts, ...selected];
     };
     setDisplayedPrompts(getRandomPrompts());
     const interval = setInterval(() => {
       setDisplayedPrompts(getRandomPrompts());
-    }, 15000);
+    }, 12000);
     return () => clearInterval(interval);
   }, []);
 
