@@ -413,23 +413,28 @@ const parseMarkdown = (text, handleCopy, copiedStates, messageIndex) => {
       return;
     }
 
-    // Split text into lines for better list processing
-    const lines = part.content.split('\n').filter(line => line.trim());
+    // Split text into lines without filtering empty lines
+    const lines = part.content.split('\n');
     let i = 0;
 
     while (i < lines.length) {
-      const line = lines[i].trim();
+      const trimmedLine = lines[i].trim();
+
+      if (!trimmedLine) {
+        i++;
+        continue;
+      }
 
       // Handle horizontal rule
-      if (line === '---' || line === '⸻') {
+      if (trimmedLine === '---' || trimmedLine === '⸻') {
         components.push(<hr key={`sep-${idx}-${i}`} style={{ margin: '1rem 0', border: '1px solid #e2e8f0' }} />);
         i++;
         continue;
       }
 
       // Handle headings
-      if (line.match(/^\*\*[0-9]+\.\s+.*:\*\*/)) {
-        const headingText = line.replace(/^\*\*[0-9]+\.\s+/, '').replace(/:\*\*$/, '').trim();
+      if (trimmedLine.match(/^\*\*[0-9]+\.\s+.*:\*\*/)) {
+        const headingText = trimmedLine.replace(/^\*\*[0-9]+\.\s+/, '').replace(/:\*\*$/, '').trim();
         const emoji = Object.keys(emojiMap).find(key => headingText.includes(key)) ? emojiMap[Object.keys(emojiMap).find(key => headingText.includes(key))] : '';
         components.push(
           <h3 key={`h3-${idx}-${i}`} style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1e293b', margin: '1rem 0', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
@@ -441,15 +446,27 @@ const parseMarkdown = (text, handleCopy, copiedStates, messageIndex) => {
       }
 
       // Handle lists (support both * and -)
-      if (line.match(/^\s*[-*]\s/)) {
-        const listItems = [];
-        let currentList = [];
-        let currentIndent = 0;
+      if (trimmedLine.match(/^[-*]\s/)) {  // After trim, no leading space for top level
+        // First, find minIndent
+        let minIndent = Infinity;
+        let j = i;
+        while (j < lines.length && lines[j].trim().match(/^[-*]\s/)) {
+          const indentMatch = lines[j].match(/^\s*/);
+          const thisIndent = indentMatch ? indentMatch[0].length : 0;
+          if (thisIndent < minIndent) minIndent = thisIndent;
+          j++;
+        }
 
-        while (i < lines.length && lines[i].trim().match(/^\s*[-*]\s/)) {
+        // Now process the list
+        const listRoot = [];
+        const levels = [listRoot];
+        let currentLevel = 0;
+
+        while (i < lines.length && lines[i].trim().match(/^[-*]\s/)) {
           const currentLine = lines[i];
           const indentMatch = currentLine.match(/^\s*/);
-          const indent = indentMatch ? indentMatch[0].length / 2 : 0;
+          const indent = indentMatch ? indentMatch[0].length : 0;
+          const effectiveIndent = Math.floor((indent - minIndent) / 2);  // Normalize indent levels
           const text = currentLine.replace(/^\s*[-*]\s/, '').trim();
 
           const parsedText = text
@@ -457,68 +474,57 @@ const parseMarkdown = (text, handleCopy, copiedStates, messageIndex) => {
             .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color: #3b82f6; text-decoration: none; border-bottom: 1px solid #3b82f6;">$1</a>')
             .replace(/`([^`]+)`/g, '<code style="background: #f1f5f9; padding: 2px 4px; border-radius: 4px; color: #1e293b; font-family: monospace">$1</code>');
 
-          if (indent > currentIndent) {
-            // Start a nested list
-            const nestedList = [];
-            currentList[currentList.length - 1] = (
-              <li key={`li-${listCounter}-${idx}-${i}`} style={{ margin: '0.25rem 0', color: '#1e293b', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
-                <span dangerouslySetInnerHTML={{ __html: parsedText }} />
-                <ul style={{ margin: '0.25rem 0', paddingLeft: '1.5rem' }}>{nestedList}</ul>
-              </li>
-            );
-            currentList = nestedList;
-            currentIndent = indent;
-          } else if (indent < currentIndent) {
-            // End nested list and move up
-            while (indent < currentIndent && currentList.length) {
-              listItems.push(
-                <ul key={`ul-${listCounter}-${idx}-${i}`} style={{ margin: '0.5rem 0', paddingLeft: '1.5rem', listStyleType: 'disc' }}>
-                  {currentList}
-                </ul>
-              );
-              listCounter++;
-              currentList = components[components.length - 1].props.children[1].props.children; // Move up to parent list
-              currentIndent -= 1;
-            }
-            currentList.push(
-              <li key={`li-${listCounter}-${idx}-${i}`} style={{ margin: '0.25rem 0', color: '#1e293b', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
-                <span dangerouslySetInnerHTML={{ __html: parsedText }} />
-              </li>
-            );
-          } else {
-            // Same level
-            currentList.push(
-              <li key={`li-${listCounter}-${idx}-${i}`} style={{ margin: '0.25rem 0', color: '#1e293b', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
-                <span dangerouslySetInnerHTML={{ __html: parsedText }} />
-              </li>
-            );
+          // Adjust levels
+          while (effectiveIndent < currentLevel) {
+            levels.pop();
+            currentLevel--;
           }
+
+          if (effectiveIndent > currentLevel) {
+            const lastItem = levels[levels.length - 1][levels[levels.length - 1].length - 1];
+            if (!lastItem.subitems) {
+              lastItem.subitems = [];
+            }
+            levels.push(lastItem.subitems);
+            currentLevel = effectiveIndent;
+          }
+
+          // Add item
+          const item = { text: parsedText, subitems: null };
+          levels[levels.length - 1].push(item);
 
           i++;
         }
 
-        // Close any open lists
-        while (currentList.length) {
-          listItems.push(
-            <ul key={`ul-${listCounter}-${idx}-${i}`} style={{ margin: '0.5rem 0', paddingLeft: '1.5rem', listStyleType: 'disc' }}>
-              {currentList}
-            </ul>
-          );
-          listCounter++;
-          if (components.length && components[components.length - 1].props.children[1]) {
-            currentList = components[components.length - 1].props.children[1].props.children;
-            currentIndent -= 1;
-          } else {
-            currentList = [];
-          }
-        }
+        // Build the React list recursively
+        const buildList = (items, depth = 0) => (
+          <ul key={`ul-${listCounter++}-${idx}-${depth}`} style={{ margin: '0.5rem 0', paddingLeft: '1.5rem', listStyleType: 'disc' }}>
+            {items.map((item, index) => (
+              <li key={`li-${listCounter++}-${idx}-${index}`} style={{ margin: '0.25rem 0', color: '#1e293b', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                <span dangerouslySetInnerHTML={{ __html: item.text }} />
+                {item.subitems && buildList(item.subitems, depth + 1)}
+              </li>
+            ))}
+          </ul>
+        );
 
-        components.push(...listItems);
+        if (listRoot.length > 0) {
+          components.push(buildList(listRoot));
+        }
         continue;
       }
 
-      // Handle paragraphs
-      let parsedLine = line
+      // Handle paragraphs: collect consecutive non-blank lines
+      let paragraphLines = [lines[i]];
+      i++;
+      while (i < lines.length && lines[i].trim()) {
+        paragraphLines.push(lines[i]);
+        i++;
+      }
+
+      let paragraph = paragraphLines.join('\n').trim();
+
+      let parsedLine = paragraph
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color: #3b82f6; text-decoration: none; border-bottom: 1px solid #3b82f6;">$1</a>')
         .replace(/`([^`]+)`/g, '<code style="background: #f1f5f9; padding: 2px 4px; border-radius: 4px; color: #1e293b; font-family: monospace">$1</code>');
@@ -534,7 +540,6 @@ const parseMarkdown = (text, handleCopy, copiedStates, messageIndex) => {
           <span dangerouslySetInnerHTML={{ __html: parsedLine }} />
         </p>
       );
-      i++;
     }
   });
 
