@@ -368,13 +368,24 @@ const HomePage = () => {
     };
   }, [messages.length]);
 
-  // Trigger featured carousel after header animation finishes (~5s)
+  // Trigger carousel auto-advance after header animation finishes (~5s)
   useEffect(() => {
     if (messages.length > 0) return;
     const timer = setTimeout(() => {
       setHeaderAnimDone(true);
+      // Start auto-advance after header animation
+      featuredTimerRef.current = setInterval(() => {
+        setFeaturedVisible(false);
+        setTimeout(() => {
+          setFeaturedSlide(prev => (prev + 1) % 6); // 6 total slides (0=header, 1-5=content)
+          setFeaturedVisible(true);
+        }, 400);
+      }, 5000);
     }, 5000);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (featuredTimerRef.current) clearInterval(featuredTimerRef.current);
+    };
   }, [messages.length]);
 
   const featuredContent = [
@@ -440,21 +451,8 @@ const HomePage = () => {
     }
   ];
 
-  // Auto-advance featured slides every 5s once visible
-  useEffect(() => {
-    if (!headerAnimDone || messages.length > 0) return;
-    featuredTimerRef.current = setInterval(() => {
-      setFeaturedVisible(false);
-      setTimeout(() => {
-        setFeaturedSlide(prev => (prev + 1) % featuredContent.length);
-        setFeaturedVisible(true);
-      }, 400);
-    }, 5000);
-    return () => clearInterval(featuredTimerRef.current);
-  }, [headerAnimDone, messages.length]);
-
   const goToSlide = (idx) => {
-    clearInterval(featuredTimerRef.current);
+    if (featuredTimerRef.current) clearInterval(featuredTimerRef.current);
     setFeaturedVisible(false);
     setTimeout(() => {
       setFeaturedSlide(idx);
@@ -464,7 +462,7 @@ const HomePage = () => {
     featuredTimerRef.current = setInterval(() => {
       setFeaturedVisible(false);
       setTimeout(() => {
-        setFeaturedSlide(prev => (prev + 1) % featuredContent.length);
+        setFeaturedSlide(prev => (prev + 1) % 6);
         setFeaturedVisible(true);
       }, 400);
     }, 5000);
@@ -547,14 +545,21 @@ const HomePage = () => {
   };
 
   const renderFeaturedContent = () => {
-    const item = featuredContent[featuredSlide];
+    const TOTAL_SLIDES = 6; // slide 0 = header intro, slides 1-5 = featuredContent[0-4]
+    const isHeaderSlide = featuredSlide === 0;
+    const item = isHeaderSlide ? null : featuredContent[featuredSlide - 1];
+
     const bgGradients = {
       medium: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
       github: 'linear-gradient(135deg, #0d1117 0%, #161b22 100%)',
       linkedin: 'linear-gradient(135deg, #e8f0fe 0%, #dbeafe 100%)'
     };
-    const textColor = item.type === 'github' ? '#e6edf3' : '#1e293b';
-    const subTextColor = item.type === 'github' ? '#8b949e' : '#6b7280';
+    const textColor = item ? (item.type === 'github' ? '#e6edf3' : '#1e293b') : '#1e293b';
+    const subTextColor = item ? (item.type === 'github' ? '#8b949e' : '#6b7280') : '#6b7280';
+
+    // Dot color for non-header slides
+    const dotActiveColor = item ? item.color : '#d91a89';
+    const dotInactiveColor = item && item.type === 'github' ? '#30363d' : '#d1d5db';
 
     return (
       <div style={{
@@ -562,185 +567,203 @@ const HomePage = () => {
         maxWidth: '1200px',
         margin: '0 auto 1rem',
         padding: '0 0.5rem',
-        boxSizing: 'border-box',
-        opacity: headerAnimDone ? 1 : 0,
-        transform: headerAnimDone ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 0.6s ease, transform 0.6s ease'
+        boxSizing: 'border-box'
       }}>
-        {/* Label */}
-        <div style={{
-          fontSize: isMobile ? '0.7rem' : '0.8rem',
-          fontWeight: '600',
-          color: '#9ca3af',
-          letterSpacing: '0.08em',
-          textTransform: 'uppercase',
-          marginBottom: '0.5rem',
-          paddingLeft: '0.25rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem'
-        }}>
-          <span>Featured · Posts &amp; Projects</span>
-          <span style={{ color: '#d1d5db', fontWeight: '400' }}>
-            {featuredSlide + 1} / {featuredContent.length}
-          </span>
-        </div>
+        {/* Label row — hidden on header slide */}
+        {!isHeaderSlide && (
+          <div style={{
+            fontSize: isMobile ? '0.7rem' : '0.8rem',
+            fontWeight: '600',
+            color: '#9ca3af',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            marginBottom: '0.5rem',
+            paddingLeft: '0.25rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            <span>Featured · Posts &amp; Projects</span>
+            <span style={{ color: '#d1d5db', fontWeight: '400' }}>
+              {featuredSlide} / {TOTAL_SLIDES - 1}
+            </span>
+          </div>
+        )}
 
-        {/* Main slide card */}
+        {/* Slide content */}
         <div style={{
           width: '100%',
-          borderRadius: '20px',
+          borderRadius: isHeaderSlide ? '0' : '20px',
           overflow: 'hidden',
-          background: bgGradients[item.type],
-          border: item.type === 'github' ? '1px solid #30363d' : '1px solid #e5e7eb',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.10)',
+          background: isHeaderSlide
+            ? 'transparent'
+            : bgGradients[item.type],
+          border: isHeaderSlide
+            ? 'none'
+            : (item.type === 'github' ? '1px solid #30363d' : '1px solid #e5e7eb'),
+          boxShadow: isHeaderSlide ? 'none' : '0 4px 24px rgba(0,0,0,0.10)',
           opacity: featuredVisible ? 1 : 0,
           transform: featuredVisible ? 'translateY(0) scale(1)' : 'translateY(12px) scale(0.98)',
           transition: 'opacity 0.4s ease, transform 0.4s ease',
           display: 'flex',
-          flexDirection: isMobile ? 'column' : 'row',
-          minHeight: isMobile ? 'auto' : '220px'
+          flexDirection: isHeaderSlide ? 'column' : (isMobile ? 'column' : 'row'),
+          minHeight: isHeaderSlide ? 'auto' : (isMobile ? 'auto' : '220px')
         }}>
-          {/* Visual panel */}
-          <div style={{
-            flex: '0 0 auto',
-            width: isMobile ? '100%' : '340px',
-            minHeight: isMobile ? '160px' : '220px',
-            position: 'relative',
-            overflow: 'hidden',
-            backgroundColor: item.type === 'github' ? '#0d1117' : item.type === 'linkedin' ? '#0a66c2' : '#00ab6c'
-          }}>
-            {item.image ? (
-              <img
-                src={item.image}
-                alt={item.title}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
-            ) : (
-              <div style={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'column',
-                gap: '0.75rem',
-                padding: '1.5rem'
-              }}>
-                <div style={{ transform: 'scale(3.5)', opacity: 0.85 }}>{item.icon}</div>
-                <div style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '600',
-                  color: item.type === 'github' ? '#8b949e' : 'rgba(255,255,255,0.8)',
-                  letterSpacing: '0.05em',
-                  textTransform: 'uppercase',
-                  marginTop: '1.5rem'
-                }}>
-                  {item.label}
-                </div>
+          {isHeaderSlide ? (
+            /* ── Slide 0: Header intro ── */
+            <div style={{ textAlign: 'center', margin: '1rem auto', width: '100%', maxWidth: '1200px' }} className="header">
+              <div style={{ fontSize: isMobile ? '1.25rem' : '2rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                {'Welcome to my digital workspace.'.split('').map((char, index) => (
+                  <span key={index} style={{
+                    animation: `fadeInScale 0.5s ease-in-out ${index * 0.1}s forwards`,
+                    opacity: 0,
+                    display: char === ' ' ? 'inline' : 'inline-block'
+                  }}>{char}</span>
+                ))}
               </div>
-            )}
-          </div>
-
-          {/* Content panel */}
-          <div style={{
-            flex: 1,
-            padding: isMobile ? '1.25rem' : '1.75rem 2rem',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            gap: '0.75rem'
-          }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.6rem' }}>
-                {item.icon}
-                <span style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '700',
-                  color: item.color,
-                  letterSpacing: '0.04em',
-                  textTransform: 'uppercase'
-                }}>
-                  {item.label}
-                </span>
-              </div>
-              <div style={{
-                fontSize: isMobile ? '1.1rem' : '1.4rem',
-                fontWeight: '800',
-                color: textColor,
-                lineHeight: '1.3',
-                marginBottom: '0.6rem'
-              }}>
-                {item.title}
-              </div>
-              <div style={{
-                fontSize: isMobile ? '0.85rem' : '0.95rem',
-                color: subTextColor,
-                lineHeight: '1.6'
-              }}>
-                {item.description}
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-              <a
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  padding: '0.6rem 1.4rem',
-                  borderRadius: '50px',
-                  backgroundColor: item.color,
-                  color: '#ffffff',
+              <div style={{ fontSize: isMobile ? '1.75rem' : '3.15rem', fontWeight: '800' }}>
+                <a href="https://mtptisid.github.io" style={{
                   textDecoration: 'none',
-                  fontSize: '0.875rem',
-                  fontWeight: '700',
-                  transition: 'opacity 0.2s ease, transform 0.2s ease',
-                  boxShadow: `0 4px 12px ${item.color}55`
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = '0.85';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = '1';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                Open {item.type === 'medium' ? 'Article' : item.type === 'github' ? 'Repository' : 'Profile'} ↗
-              </a>
-
-              {/* Dot indicators */}
-              <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                {featuredContent.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => goToSlide(idx)}
-                    style={{
-                      width: idx === featuredSlide ? '20px' : '8px',
-                      height: '8px',
-                      borderRadius: '4px',
-                      border: 'none',
-                      backgroundColor: idx === featuredSlide ? item.color : (item.type === 'github' ? '#30363d' : '#d1d5db'),
-                      cursor: 'pointer',
-                      padding: 0,
-                      transition: 'width 0.3s ease, background-color 0.3s ease'
-                    }}
-                    aria-label={`Go to slide ${idx + 1}`}
-                  />
+                  display: 'inline-block',
+                  animation: `fadeInScale 0.5s ease-in-out ${32 * 0.05}s forwards, colorBlink 8s ease-in-out infinite, glow 2s ease-in-out infinite`,
+                  opacity: 0,
+                  color: '#d91a89'
+                }}>Siddharamayya M</a>
+                <span style={{
+                  animation: `fadeInScale 0.5s ease-in-out ${(32 + 15) * 0.05}s forwards`,
+                  opacity: 0, display: 'inline-block'
+                }}>{' — '}</span>
+                {'Crafting solutions with AI, data, and code'.split('').map((char, index) => (
+                  <span key={index} style={{
+                    animation: `fadeInScale 0.5s ease-in-out ${(32 + 15 + 3 + index) * 0.05}s forwards`,
+                    opacity: 0,
+                    color: '#000000',
+                    display: char === ' ' ? 'inline' : 'inline-block'
+                  }}>{char}</span>
+                ))}
+              </div>
+              <div style={{ fontSize: isMobile ? '1rem' : '2rem', color: 'rgb(180 185 194)', marginBottom: '0.5rem', marginTop: '1rem' }}>
+                {'Select any AI Model and ask anything.'.split('').map((char, index) => (
+                  <span key={index} style={{
+                    animation: `fadeInScale 0.5s ease-in-out ${index * 0.09}s forwards`,
+                    opacity: 0,
+                    display: char === ' ' ? 'inline' : 'inline-block'
+                  }}>{char}</span>
                 ))}
               </div>
             </div>
-          </div>
+          ) : (
+            /* ── Slides 1-5: Content cards ── */
+            <>
+              {/* Visual panel */}
+              <div style={{
+                flex: '0 0 auto',
+                width: isMobile ? '100%' : '340px',
+                minHeight: isMobile ? '160px' : '220px',
+                position: 'relative',
+                overflow: 'hidden',
+                backgroundColor: item.type === 'github' ? '#0d1117' : item.type === 'linkedin' ? '#0a66c2' : '#00ab6c'
+              }}>
+                {item.image ? (
+                  <img src={item.image} alt={item.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                ) : (
+                  <div style={{
+                    width: '100%', height: '100%',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    flexDirection: 'column', gap: '0.75rem', padding: '1.5rem'
+                  }}>
+                    <div style={{ transform: 'scale(3.5)', opacity: 0.85 }}>{item.icon}</div>
+                    <div style={{
+                      fontSize: '0.75rem', fontWeight: '600',
+                      color: item.type === 'github' ? '#8b949e' : 'rgba(255,255,255,0.8)',
+                      letterSpacing: '0.05em', textTransform: 'uppercase', marginTop: '1.5rem'
+                    }}>{item.label}</div>
+                  </div>
+                )}
+              </div>
+
+              {/* Content panel */}
+              <div style={{
+                flex: 1,
+                padding: isMobile ? '1.25rem' : '1.75rem 2rem',
+                display: 'flex', flexDirection: 'column',
+                justifyContent: 'space-between', gap: '0.75rem'
+              }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.6rem' }}>
+                    {item.icon}
+                    <span style={{ fontSize: '0.75rem', fontWeight: '700', color: item.color, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                      {item.label}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: isMobile ? '1.1rem' : '1.4rem', fontWeight: '800', color: textColor, lineHeight: '1.3', marginBottom: '0.6rem' }}>
+                    {item.title}
+                  </div>
+                  <div style={{ fontSize: isMobile ? '0.85rem' : '0.95rem', color: subTextColor, lineHeight: '1.6' }}>
+                    {item.description}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+                  <a href={item.url} target="_blank" rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                      padding: '0.6rem 1.4rem', borderRadius: '50px',
+                      backgroundColor: item.color, color: '#ffffff',
+                      textDecoration: 'none', fontSize: '0.875rem', fontWeight: '700',
+                      transition: 'opacity 0.2s ease, transform 0.2s ease',
+                      boxShadow: `0 4px 12px ${item.color}55`
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                  >
+                    Open {item.type === 'medium' ? 'Article' : item.type === 'github' ? 'Repository' : 'Profile'} ↗
+                  </a>
+
+                  {/* Dot indicators */}
+                  <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                    {Array.from({ length: TOTAL_SLIDES }).map((_, idx) => (
+                      <button key={idx} onClick={() => goToSlide(idx)}
+                        style={{
+                          width: idx === featuredSlide ? '20px' : '8px',
+                          height: '8px', borderRadius: '4px', border: 'none',
+                          backgroundColor: idx === featuredSlide ? dotActiveColor : dotInactiveColor,
+                          cursor: 'pointer', padding: 0,
+                          transition: 'width 0.3s ease, background-color 0.3s ease'
+                        }}
+                        aria-label={`Go to slide ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
+
+        {/* Dot indicators for header slide (shown below the header text) */}
+        {isHeaderSlide && (
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.4rem', marginTop: '1rem' }}>
+            {Array.from({ length: TOTAL_SLIDES }).map((_, idx) => (
+              <button key={idx} onClick={() => goToSlide(idx)}
+                style={{
+                  width: idx === featuredSlide ? '20px' : '8px',
+                  height: '8px', borderRadius: '4px', border: 'none',
+                  backgroundColor: idx === featuredSlide ? '#d91a89' : '#d1d5db',
+                  cursor: 'pointer', padding: 0,
+                  transition: 'width 0.3s ease, background-color 0.3s ease'
+                }}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Prev / Next arrows */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.6rem' }}>
           <button
-            onClick={() => goToSlide((featuredSlide - 1 + featuredContent.length) % featuredContent.length)}
+            onClick={() => goToSlide((featuredSlide - 1 + TOTAL_SLIDES) % TOTAL_SLIDES)}
             style={{
               width: '36px', height: '36px', borderRadius: '50%',
               border: '1px solid #e5e7eb', backgroundColor: '#ffffff',
@@ -752,7 +775,7 @@ const HomePage = () => {
             aria-label="Previous"
           >‹</button>
           <button
-            onClick={() => goToSlide((featuredSlide + 1) % featuredContent.length)}
+            onClick={() => goToSlide((featuredSlide + 1) % TOTAL_SLIDES)}
             style={{
               width: '36px', height: '36px', borderRadius: '50%',
               border: '1px solid #e5e7eb', backgroundColor: '#ffffff',
@@ -1768,13 +1791,11 @@ const HomePage = () => {
               {isMobile ? (
                 <>
                   {renderExamplePrompts()}
-                  {renderHeader()}
                   {renderFeaturedContent()}
                 </>
               ) : (
                 <>
                   {renderExamplePrompts()}
-                  {renderHeader()}
                   {renderFeaturedContent()}
                 </>
               )}
