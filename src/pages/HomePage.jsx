@@ -607,7 +607,7 @@ const HomePage = () => {
           transition: 'opacity 0.4s ease, transform 0.4s ease',
           display: 'flex',
           flexDirection: isHeaderSlide ? 'column' : (isMobile ? 'column' : 'row'),
-          minHeight: isHeaderSlide ? 'auto' : (isMobile ? 'auto' : '220px')
+          minHeight: isHeaderSlide ? 'auto' : (isMobile ? 'auto' : '380px')
         }}>
           {isHeaderSlide ? (
             /* ── Slide 0: Header intro ── */
@@ -659,7 +659,7 @@ const HomePage = () => {
               <div style={{
                 flex: '0 0 auto',
                 width: isMobile ? '100%' : '340px',
-                minHeight: isMobile ? '160px' : '220px',
+                minHeight: isMobile ? '240px' : '380px',
                 position: 'relative',
                 overflow: 'hidden',
                 backgroundColor: item.type === 'github' ? '#0d1117' : item.type === 'linkedin' ? '#0a66c2' : '#00ab6c'
