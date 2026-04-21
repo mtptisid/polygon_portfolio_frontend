@@ -20,6 +20,10 @@ const HomePage = () => {
   const [tool, setTool] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
   const [slideChatId, setSlideChatId] = useState(null);
+  const [featuredSlide, setFeaturedSlide] = useState(0);
+  const [headerAnimDone, setHeaderAnimDone] = useState(false);
+  const [featuredVisible, setFeaturedVisible] = useState(true);
+  const featuredTimerRef = useRef(null);
   const textareaRef = useRef(null);
   const chatContainerRef = useRef(null);
   const bottomRef = useRef(null);
@@ -364,6 +368,108 @@ const HomePage = () => {
     };
   }, [messages.length]);
 
+  // Trigger featured carousel after header animation finishes (~5s)
+  useEffect(() => {
+    if (messages.length > 0) return;
+    const timer = setTimeout(() => {
+      setHeaderAnimDone(true);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [messages.length]);
+
+  const featuredContent = [
+    {
+      type: 'medium',
+      title: 'MCP & AI Agents: Everyone Talks About Them, Few Actually Understand Them',
+      description: 'A deep dive into Model Context Protocol and how AI agents actually work under the hood — beyond the hype.',
+      url: 'https://medium.com/@msidrm455/mcp-ai-agents-everyone-talks-about-them-few-actually-understand-them-461260617d8d',
+      image: '/aiimage1.png',
+      label: 'Medium · Article',
+      color: '#00ab6c',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#00ab6c"><path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>
+      )
+    },
+    {
+      type: 'github',
+      title: 'AI Agent with AutoGen + MCP Server',
+      description: 'An AI agent built using Microsoft AutoGen framework integrated with Model Context Protocol (MCP) server for tool use.',
+      url: 'https://github.com/mtptisid/AI_Agent_autogen_use_MCP_server',
+      image: '/aiimage2.png',
+      label: 'GitHub · Repository',
+      color: '#1e293b',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#1e293b"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      )
+    },
+    {
+      type: 'github',
+      title: 'All GitHub Projects',
+      description: 'Explore all my open-source repositories — AI, ML, DevOps, web apps, and more.',
+      url: 'https://github.com/mtptisid?tab=repositories',
+      image: null,
+      label: 'GitHub · Profile',
+      color: '#1e293b',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#1e293b"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      )
+    },
+    {
+      type: 'linkedin',
+      title: 'LinkedIn Activity & Posts',
+      description: 'Follow my latest thoughts on AI, data engineering, and software development on LinkedIn.',
+      url: 'https://www.linkedin.com/in/siddharamayya-mathapati/recent-activity/all/',
+      image: null,
+      label: 'LinkedIn · Activity',
+      color: '#0a66c2',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      )
+    },
+    {
+      type: 'linkedin',
+      title: 'Connect on LinkedIn',
+      description: 'Senior AI/ML Engineer at Capgemini. Let\'s connect and talk AI, data, and cloud.',
+      url: 'https://www.linkedin.com/in/siddharamayya-mathapati/',
+      image: null,
+      label: 'LinkedIn · Profile',
+      color: '#0a66c2',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      )
+    }
+  ];
+
+  // Auto-advance featured slides every 5s once visible
+  useEffect(() => {
+    if (!headerAnimDone || messages.length > 0) return;
+    featuredTimerRef.current = setInterval(() => {
+      setFeaturedVisible(false);
+      setTimeout(() => {
+        setFeaturedSlide(prev => (prev + 1) % featuredContent.length);
+        setFeaturedVisible(true);
+      }, 400);
+    }, 5000);
+    return () => clearInterval(featuredTimerRef.current);
+  }, [headerAnimDone, messages.length]);
+
+  const goToSlide = (idx) => {
+    clearInterval(featuredTimerRef.current);
+    setFeaturedVisible(false);
+    setTimeout(() => {
+      setFeaturedSlide(idx);
+      setFeaturedVisible(true);
+    }, 300);
+    // Restart auto-advance
+    featuredTimerRef.current = setInterval(() => {
+      setFeaturedVisible(false);
+      setTimeout(() => {
+        setFeaturedSlide(prev => (prev + 1) % featuredContent.length);
+        setFeaturedVisible(true);
+      }, 400);
+    }, 5000);
+  };
+
   const renderHeader = () => {
     const prefix = 'Welcome to my digital workspace.';
     const name = 'Siddharamayya M';
@@ -440,195 +546,227 @@ const HomePage = () => {
     );
   };
 
-  const featuredContent = [
-    {
-      type: 'medium',
-      title: 'MCP & AI Agents: Everyone Talks About Them, Few Actually Understand Them',
-      description: 'A deep dive into Model Context Protocol and how AI agents actually work under the hood — beyond the hype.',
-      url: 'https://medium.com/@msidrm455/mcp-ai-agents-everyone-talks-about-them-few-actually-understand-them-461260617d8d',
-      image: '/aiimage1.png',
-      label: 'Medium · Article',
-      color: '#00ab6c',
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#00ab6c"><path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>
-      )
-    },
-    {
-      type: 'github',
-      title: 'AI Agent with AutoGen + MCP Server',
-      description: 'An AI agent built using Microsoft AutoGen framework integrated with Model Context Protocol (MCP) server for tool use.',
-      url: 'https://github.com/mtptisid/AI_Agent_autogen_use_MCP_server',
-      image: '/aiimage2.png',
-      label: 'GitHub · Repository',
-      color: '#1e293b',
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#1e293b"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-      )
-    },
-    {
-      type: 'github',
-      title: 'All GitHub Projects',
-      description: 'Explore all my open-source repositories — AI, ML, DevOps, web apps, and more.',
-      url: 'https://github.com/mtptisid?tab=repositories',
-      image: null,
-      label: 'GitHub · Profile',
-      color: '#1e293b',
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#1e293b"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-      )
-    },
-    {
-      type: 'linkedin',
-      title: 'LinkedIn Activity & Posts',
-      description: 'Follow my latest thoughts on AI, data engineering, and software development on LinkedIn.',
-      url: 'https://www.linkedin.com/in/siddharamayya-mathapati/recent-activity/all/',
-      image: null,
-      label: 'LinkedIn · Activity',
-      color: '#0a66c2',
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-      )
-    },
-    {
-      type: 'linkedin',
-      title: 'Connect on LinkedIn',
-      description: 'Senior AI/ML Engineer at Capgemini. Let\'s connect and talk AI, data, and cloud.',
-      url: 'https://www.linkedin.com/in/siddharamayya-mathapati/',
-      image: null,
-      label: 'LinkedIn · Profile',
-      color: '#0a66c2',
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-      )
-    }
-  ];
+  const renderFeaturedContent = () => {
+    const item = featuredContent[featuredSlide];
+    const bgGradients = {
+      medium: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+      github: 'linear-gradient(135deg, #0d1117 0%, #161b22 100%)',
+      linkedin: 'linear-gradient(135deg, #e8f0fe 0%, #dbeafe 100%)'
+    };
+    const textColor = item.type === 'github' ? '#e6edf3' : '#1e293b';
+    const subTextColor = item.type === 'github' ? '#8b949e' : '#6b7280';
 
-  const renderFeaturedContent = () => (
-    <div style={{ width: '100%', maxWidth: '1200px', margin: '0 auto 1rem', padding: '0 0.5rem', boxSizing: 'border-box' }}>
+    return (
       <div style={{
-        fontSize: isMobile ? '0.75rem' : '0.875rem',
-        fontWeight: '600',
-        color: '#9ca3af',
-        letterSpacing: '0.08em',
-        textTransform: 'uppercase',
-        marginBottom: '0.6rem',
-        paddingLeft: '0.25rem'
+        width: '100%',
+        maxWidth: '1200px',
+        margin: '0 auto 1rem',
+        padding: '0 0.5rem',
+        boxSizing: 'border-box',
+        opacity: headerAnimDone ? 1 : 0,
+        transform: headerAnimDone ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 0.6s ease, transform 0.6s ease'
       }}>
-        Featured · Posts &amp; Projects
-      </div>
-      <div
-        className="featured-scroll"
-        style={{
+        {/* Label */}
+        <div style={{
+          fontSize: isMobile ? '0.7rem' : '0.8rem',
+          fontWeight: '600',
+          color: '#9ca3af',
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          marginBottom: '0.5rem',
+          paddingLeft: '0.25rem',
           display: 'flex',
-          gap: '0.75rem',
-          overflowX: 'auto',
-          paddingBottom: '0.5rem',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
-        }}
-      >
-        {featuredContent.map((item, idx) => (
-          <a
-            key={idx}
-            href={item.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              flex: '0 0 auto',
-              width: isMobile ? '220px' : '260px',
-              backgroundColor: '#ffffff',
-              borderRadius: '16px',
-              border: '1px solid #e5e7eb',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
-              textDecoration: 'none',
-              color: '#1e293b',
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-4px)';
-              e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.13)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
-            }}
-          >
+          alignItems: 'center',
+          gap: '0.5rem'
+        }}>
+          <span>Featured · Posts &amp; Projects</span>
+          <span style={{ color: '#d1d5db', fontWeight: '400' }}>
+            {featuredSlide + 1} / {featuredContent.length}
+          </span>
+        </div>
+
+        {/* Main slide card */}
+        <div style={{
+          width: '100%',
+          borderRadius: '20px',
+          overflow: 'hidden',
+          background: bgGradients[item.type],
+          border: item.type === 'github' ? '1px solid #30363d' : '1px solid #e5e7eb',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.10)',
+          opacity: featuredVisible ? 1 : 0,
+          transform: featuredVisible ? 'translateY(0) scale(1)' : 'translateY(12px) scale(0.98)',
+          transition: 'opacity 0.4s ease, transform 0.4s ease',
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          minHeight: isMobile ? 'auto' : '220px'
+        }}>
+          {/* Visual panel */}
+          <div style={{
+            flex: '0 0 auto',
+            width: isMobile ? '100%' : '340px',
+            minHeight: isMobile ? '160px' : '220px',
+            position: 'relative',
+            overflow: 'hidden',
+            backgroundColor: item.type === 'github' ? '#0d1117' : item.type === 'linkedin' ? '#0a66c2' : '#00ab6c'
+          }}>
             {item.image ? (
-              <div style={{
-                width: '100%',
-                height: '110px',
-                overflow: 'hidden',
-                backgroundColor: '#f3f4f6'
-              }}>
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              </div>
+              <img
+                src={item.image}
+                alt={item.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
             ) : (
               <div style={{
                 width: '100%',
-                height: '70px',
-                backgroundColor: item.type === 'github' ? '#0d1117' : item.type === 'linkedin' ? '#e8f0fe' : '#f0fdf4',
+                height: '100%',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                flexDirection: 'column',
+                gap: '0.75rem',
+                padding: '1.5rem'
               }}>
-                <div style={{ transform: 'scale(2)', opacity: 0.6 }}>{item.icon}</div>
+                <div style={{ transform: 'scale(3.5)', opacity: 0.85 }}>{item.icon}</div>
+                <div style={{
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  color: item.type === 'github' ? '#8b949e' : 'rgba(255,255,255,0.8)',
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase',
+                  marginTop: '1.5rem'
+                }}>
+                  {item.label}
+                </div>
               </div>
             )}
-            <div style={{ padding: '0.75rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          </div>
+
+          {/* Content panel */}
+          <div style={{
+            flex: 1,
+            padding: isMobile ? '1.25rem' : '1.75rem 2rem',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            gap: '0.75rem'
+          }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.6rem' }}>
                 {item.icon}
-                <span style={{ fontSize: '0.7rem', fontWeight: '600', color: item.color, letterSpacing: '0.03em' }}>
+                <span style={{
+                  fontSize: '0.75rem',
+                  fontWeight: '700',
+                  color: item.color,
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase'
+                }}>
                   {item.label}
                 </span>
               </div>
               <div style={{
-                fontSize: isMobile ? '0.8rem' : '0.875rem',
-                fontWeight: '700',
-                color: '#1e293b',
+                fontSize: isMobile ? '1.1rem' : '1.4rem',
+                fontWeight: '800',
+                color: textColor,
                 lineHeight: '1.3',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden'
+                marginBottom: '0.6rem'
               }}>
                 {item.title}
               </div>
               <div style={{
-                fontSize: '0.75rem',
-                color: '#6b7280',
-                lineHeight: '1.4',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                flex: 1
+                fontSize: isMobile ? '0.85rem' : '0.95rem',
+                color: subTextColor,
+                lineHeight: '1.6'
               }}>
                 {item.description}
               </div>
-              <div style={{
-                fontSize: '0.75rem',
-                fontWeight: '600',
-                color: item.color,
-                marginTop: '0.25rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.2rem'
-              }}>
-                View →
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.6rem 1.4rem',
+                  borderRadius: '50px',
+                  backgroundColor: item.color,
+                  color: '#ffffff',
+                  textDecoration: 'none',
+                  fontSize: '0.875rem',
+                  fontWeight: '700',
+                  transition: 'opacity 0.2s ease, transform 0.2s ease',
+                  boxShadow: `0 4px 12px ${item.color}55`
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.opacity = '0.85';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.opacity = '1';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                Open {item.type === 'medium' ? 'Article' : item.type === 'github' ? 'Repository' : 'Profile'} ↗
+              </a>
+
+              {/* Dot indicators */}
+              <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                {featuredContent.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => goToSlide(idx)}
+                    style={{
+                      width: idx === featuredSlide ? '20px' : '8px',
+                      height: '8px',
+                      borderRadius: '4px',
+                      border: 'none',
+                      backgroundColor: idx === featuredSlide ? item.color : (item.type === 'github' ? '#30363d' : '#d1d5db'),
+                      cursor: 'pointer',
+                      padding: 0,
+                      transition: 'width 0.3s ease, background-color 0.3s ease'
+                    }}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
               </div>
             </div>
-          </a>
-        ))}
+          </div>
+        </div>
+
+        {/* Prev / Next arrows */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.6rem' }}>
+          <button
+            onClick={() => goToSlide((featuredSlide - 1 + featuredContent.length) % featuredContent.length)}
+            style={{
+              width: '36px', height: '36px', borderRadius: '50%',
+              border: '1px solid #e5e7eb', backgroundColor: '#ffffff',
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1rem', color: '#4b5563', transition: 'background-color 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
+            aria-label="Previous"
+          >‹</button>
+          <button
+            onClick={() => goToSlide((featuredSlide + 1) % featuredContent.length)}
+            style={{
+              width: '36px', height: '36px', borderRadius: '50%',
+              border: '1px solid #e5e7eb', backgroundColor: '#ffffff',
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1rem', color: '#4b5563', transition: 'background-color 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
+            aria-label="Next"
+          >›</button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderExamplePrompts = () => (
     <div style={styles.promptsMarquee}>
