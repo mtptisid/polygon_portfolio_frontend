@@ -316,7 +316,7 @@ const HomePage = () => {
       window.location.href = 'https://portfolio.siddharamayya.in';
     } else if (prompt === "Download Resume") {
       const link = document.createElement('a');
-      link.href = 'https://portfolio.siddharamayya.in/images/Mathapati_Siddharamayya.pdf';
+      link.href = 'https://portfolio.siddharamayya.in/resume/Mathapati_Siddharamayya.pdf';
       link.download = 'Mathapati_Siddharamayya.pdf';
       document.body.appendChild(link);
       link.click();
