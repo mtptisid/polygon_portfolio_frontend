@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { FiEdit2, FiCheck, FiX, FiCopy } from 'react-icons/fi';
 import parseMarkdown from '../utils/parseMarkdown';
 
-const ChatContainer = ({ messages, setMessages, examplePrompts, selectedChatId, styles, onExamplePromptClick, onSendMessage }) => {
+const ChatContainer = ({ messages, setMessages, examplePrompts, selectedChatId, styles, onExamplePromptClick, onSendMessage, isLoading }) => {
   const [editingMessageIndex, setEditingMessageIndex] = useState(null);
   const [editContent, setEditContent] = useState('');
   const [copiedStates, setCopiedStates] = useState({});
@@ -37,13 +37,20 @@ const ChatContainer = ({ messages, setMessages, examplePrompts, selectedChatId, 
 
   const parsedMessages = useMemo(() => {
     const parsed = messages.map((msg, index) => {
-      const content = msg.isUser
-        ? parseUserMessage(msg.content)
-        : parseMarkdown(msg.content, handleCopy, copiedStates, index);
-      console.log(`Parsed message ${index}:`, { isUser: msg.isUser, content });
-      return { content, isUser: msg.isUser };
+      try {
+        const content = msg.isUser
+          ? parseUserMessage(msg.content)
+          : parseMarkdown(msg.content, handleCopy, copiedStates, index);
+        return { content, isUser: msg.isUser };
+      } catch (error) {
+        console.error(`Error parsing message ${index}:`, error);
+        // Return a safe fallback if parsing fails
+        return { 
+          content: msg.isUser ? msg.content : 'Error rendering message', 
+          isUser: msg.isUser 
+        };
+      }
     });
-    console.log('Parsed messages:', parsed);
     return parsed;
   }, [messages, copiedStates]);
 
@@ -253,6 +260,80 @@ const ChatContainer = ({ messages, setMessages, examplePrompts, selectedChatId, 
           </div>
         );
       })}
+      
+      {/* Loading indicator - appears after all messages */}
+      {isLoading && (
+        <div
+          style={{
+            maxWidth: '900px',
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'flex-start',
+            marginBottom: '1.5rem',
+            boxSizing: 'border-box'
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <div
+              style={{
+                backgroundColor: '#ffffff',
+                padding: '1.25rem',
+                borderRadius: '1.5rem',
+                marginBottom: '0.5rem',
+                maxWidth: '100%',
+                fontWeight: '450',
+                fontSize: '0.9rem',
+                alignSelf: 'flex-start',
+                border: '1px solid #e2e8f0',
+                color: '#1e293b',
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
+                overflow: 'hidden',
+                boxSizing: 'border-box',
+                whiteSpace: 'pre-wrap',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                minWidth: '80px'
+              }}
+            >
+              {/* Animated dots */}
+              <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                <div
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor: '#94a3b8',
+                    animation: 'dotBounce 1.4s infinite ease-in-out',
+                    animationDelay: '0s'
+                  }}
+                />
+                <div
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor: '#94a3b8',
+                    animation: 'dotBounce 1.4s infinite ease-in-out',
+                    animationDelay: '0.2s'
+                  }}
+                />
+                <div
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor: '#94a3b8',
+                    animation: 'dotBounce 1.4s infinite ease-in-out',
+                    animationDelay: '0.4s'
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
