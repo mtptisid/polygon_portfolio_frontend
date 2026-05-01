@@ -23,7 +23,10 @@ const HomePage = () => {
   const [featuredSlide, setFeaturedSlide] = useState(0);
   const [headerAnimDone, setHeaderAnimDone] = useState(false);
   const [featuredVisible, setFeaturedVisible] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingStage, setLoadingStage] = useState(0);
   const featuredTimerRef = useRef(null);
+  const loadingStageTimerRef = useRef(null);
   const textareaRef = useRef(null);
   const chatContainerRef = useRef(null);
   const bottomRef = useRef(null);
@@ -266,6 +269,13 @@ const HomePage = () => {
     setMessages(prev => [...prev, userMessage]);
     setMessage('');
     setTool(null);
+    setIsLoading(true);
+    setLoadingStage(0);
+
+    // Cycle through loading stages: 0=Thinking, 1=Processing, 2=Generating
+    loadingStageTimerRef.current = setInterval(() => {
+      setLoadingStage(prev => (prev + 1) % 3);
+    }, 1500);
 
     const sessionId = currentSessionId || generateSessionId();
     if (!currentSessionId) {
@@ -295,6 +305,11 @@ const HomePage = () => {
 
       const data = await response.json();
       const botMessage = { content: data.content, isUser: false, is_bot: true };
+      
+      // Clear loading state
+      setIsLoading(false);
+      if (loadingStageTimerRef.current) clearInterval(loadingStageTimerRef.current);
+      
       setMessages(prev => [...prev, botMessage]);
 
       const currentTimestamp = Date.now();
@@ -307,6 +322,8 @@ const HomePage = () => {
       setChatHistory(updatedHistory.sort((a, b) => b.timestamp - a.timestamp));
     } catch (error) {
       console.error('Error sending message:', error);
+      setIsLoading(false);
+      if (loadingStageTimerRef.current) clearInterval(loadingStageTimerRef.current);
       setMessages(prev => [...prev, { content: `Error: ${error.message}`, isUser: false }]);
     }
   };
@@ -1407,6 +1424,26 @@ const HomePage = () => {
             0%, 100% { text-shadow: 0 0 1px currentColor, 0 0 4px currentColor; }
             50% { text-shadow: 0 0 4px currentColor, 0 0 8px currentColor; }
           }
+          @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+          }
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+          @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+          }
+          @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+          }
+          @keyframes dotFlash {
+            0%, 80%, 100% { opacity: 0; }
+            40% { opacity: 1; }
+          }
           @keyframes marquee {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
@@ -1814,6 +1851,81 @@ const HomePage = () => {
                 onExamplePromptClick={handleExamplePrompt}
                 onSendMessage={handleSendMessage}
               />
+              
+              {/* Loading indicator */}
+              {isLoading && (
+                <div style={{
+                  ...styles.botMessage,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  padding: '1.25rem',
+                  background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+                  border: '1px solid #e2e8f0',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  {/* Shimmer background effect */}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: '-100%',
+                    width: '100%',
+                    height: '100%',
+                    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)',
+                    animation: 'shimmer 2s infinite'
+                  }} />
+                  
+                  {/* Animated icon */}
+                  <div style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    background: loadingStage === 0 ? '#3b82f6' : loadingStage === 1 ? '#8b5cf6' : '#10b981',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    animation: loadingStage === 0 ? 'pulse 1.5s ease-in-out infinite' : loadingStage === 1 ? 'spin 1s linear infinite' : 'bounce 0.6s ease-in-out infinite',
+                    transition: 'background 0.3s ease',
+                    flexShrink: 0
+                  }}>
+                    {loadingStage === 0 && (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                        <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+                      </svg>
+                    )}
+                    {loadingStage === 1 && (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                        <circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24"/>
+                      </svg>
+                    )}
+                    {loadingStage === 2 && (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4m14-7l-5-5-5 5m5-5v12"/>
+                      </svg>
+                    )}
+                  </div>
+                  
+                  {/* Text with animated dots */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', zIndex: 1 }}>
+                    <div style={{ fontSize: '0.95rem', fontWeight: '600', color: '#1e293b' }}>
+                      {loadingStage === 0 && 'Thinking'}
+                      {loadingStage === 1 && 'Processing'}
+                      {loadingStage === 2 && 'Generating response'}
+                      <span style={{ display: 'inline-block', width: '1.5rem' }}>
+                        <span style={{ animation: 'dotFlash 1.4s infinite', animationDelay: '0s' }}>.</span>
+                        <span style={{ animation: 'dotFlash 1.4s infinite', animationDelay: '0.2s' }}>.</span>
+                        <span style={{ animation: 'dotFlash 1.4s infinite', animationDelay: '0.4s' }}>.</span>
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                      {loadingStage === 0 && 'Analyzing your question'}
+                      {loadingStage === 1 && 'Gathering information'}
+                      {loadingStage === 2 && 'Crafting the perfect answer'}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <div ref={bottomRef} />
           </div>
