@@ -30,10 +30,26 @@ const escapeHtml = (text) => {
 };
 
 const parseMarkdown = (text, handleCopy, copiedStates, messageIndex) => {
-  if (!text) return null;
+  console.log('parseMarkdown called with:', { 
+    textType: typeof text, 
+    textLength: text?.length, 
+    messageIndex,
+    textPreview: text?.substring(0, 100)
+  });
+  
+  if (!text) {
+    console.warn('parseMarkdown received empty text');
+    return <span style={{ color: '#94a3b8' }}>Empty message</span>;
+  }
+  
+  if (typeof text !== 'string') {
+    console.error('parseMarkdown received non-string:', typeof text, text);
+    return <span style={{ color: '#ef4444' }}>Invalid message format</span>;
+  }
 
-  // Syntax highlighting function
-  const syntaxHighlight = (code, language) => {
+  try {
+    // Syntax highlighting function
+    const syntaxHighlight = (code, language) => {
     if (!code.trim()) return '<span style="color: #888">Empty code block</span>';
 
     let highlightedCode = code;
@@ -544,6 +560,30 @@ const parseMarkdown = (text, handleCopy, copiedStates, messageIndex) => {
   });
 
   return components;
+  
+  } catch (error) {
+    console.error('Error in parseMarkdown:', error, 'Text:', text);
+    // Return a safe fallback
+    return (
+      <div style={{ color: '#ef4444' }}>
+        <p style={{ margin: '0.5rem 0' }}>Error parsing markdown content</p>
+        <details style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
+          <summary style={{ cursor: 'pointer' }}>Show raw content</summary>
+          <pre style={{ 
+            whiteSpace: 'pre-wrap', 
+            wordBreak: 'break-word',
+            backgroundColor: '#fee',
+            padding: '0.5rem',
+            borderRadius: '4px',
+            marginTop: '0.5rem',
+            fontSize: '0.75rem'
+          }}>
+            {text}
+          </pre>
+        </details>
+      </div>
+    );
+  }
 };
 
 export default parseMarkdown;

@@ -36,21 +36,49 @@ const ChatContainer = ({ messages, setMessages, examplePrompts, selectedChatId, 
   };
 
   const parsedMessages = useMemo(() => {
+    console.log('ChatContainer parsing messages:', messages.length, messages);
     const parsed = messages.map((msg, index) => {
       try {
+        if (!msg || !msg.content) {
+          console.error(`Message ${index} is invalid:`, msg);
+          return { content: 'Invalid message', isUser: msg?.isUser || false };
+        }
+        
+        console.log(`Parsing message ${index}:`, { isUser: msg.isUser, contentLength: msg.content?.length });
+        
         const content = msg.isUser
           ? parseUserMessage(msg.content)
           : parseMarkdown(msg.content, handleCopy, copiedStates, index);
+        
+        console.log(`Successfully parsed message ${index}`);
         return { content, isUser: msg.isUser };
       } catch (error) {
-        console.error(`Error parsing message ${index}:`, error);
-        // Return a safe fallback if parsing fails
+        console.error(`Error parsing message ${index}:`, error, 'Message:', msg);
+        // Return the raw content as a fallback
         return { 
-          content: msg.isUser ? msg.content : 'Error rendering message', 
+          content: msg.isUser ? (
+            <span>{msg.content}</span>
+          ) : (
+            <div style={{ color: '#ef4444' }}>
+              <p>Error rendering message. Raw content:</p>
+              <pre style={{ 
+                whiteSpace: 'pre-wrap', 
+                wordBreak: 'break-word',
+                fontSize: '0.875rem',
+                backgroundColor: '#fee',
+                padding: '0.5rem',
+                borderRadius: '4px',
+                marginTop: '0.5rem'
+              }}>
+                {msg.content}
+              </pre>
+            </div>
+          ), 
           isUser: msg.isUser 
         };
       }
     });
+    console.log('All messages parsed successfully');
     return parsed;
   }, [messages, copiedStates]);
 
