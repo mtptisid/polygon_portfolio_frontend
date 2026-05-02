@@ -36,49 +36,33 @@ const ChatContainer = ({ messages, setMessages, examplePrompts, selectedChatId, 
   };
 
   const parsedMessages = useMemo(() => {
-    console.log('ChatContainer parsing messages:', messages.length, messages);
     const parsed = messages.map((msg, index) => {
       try {
         if (!msg || !msg.content) {
           console.error(`Message ${index} is invalid:`, msg);
-          return { content: 'Invalid message', isUser: msg?.isUser || false };
+          return { content: <span>Invalid message</span>, isUser: msg?.isUser || false };
         }
-        
-        console.log(`Parsing message ${index}:`, { isUser: msg.isUser, contentLength: msg.content?.length });
         
         const content = msg.isUser
           ? parseUserMessage(msg.content)
           : parseMarkdown(msg.content, handleCopy, copiedStates, index);
         
-        console.log(`Successfully parsed message ${index}`);
         return { content, isUser: msg.isUser };
       } catch (error) {
-        console.error(`Error parsing message ${index}:`, error, 'Message:', msg);
+        console.error(`Error parsing message ${index}:`, error);
         // Return the raw content as a fallback
         return { 
-          content: msg.isUser ? (
-            <span>{msg.content}</span>
-          ) : (
-            <div style={{ color: '#ef4444' }}>
-              <p>Error rendering message. Raw content:</p>
-              <pre style={{ 
-                whiteSpace: 'pre-wrap', 
-                wordBreak: 'break-word',
-                fontSize: '0.875rem',
-                backgroundColor: '#fee',
-                padding: '0.5rem',
-                borderRadius: '4px',
-                marginTop: '0.5rem'
-              }}>
-                {msg.content}
-              </pre>
+          content: (
+            <div>
+              <p style={{ margin: '0.5rem 0', color: '#1e293b' }}>
+                {String(msg.content || '')}
+              </p>
             </div>
           ), 
           isUser: msg.isUser 
         };
       }
     });
-    console.log('All messages parsed successfully');
     return parsed;
   }, [messages, copiedStates]);
 

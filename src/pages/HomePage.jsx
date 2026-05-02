@@ -615,7 +615,8 @@ const HomePage = () => {
           transition: 'opacity 0.4s ease, transform 0.4s ease',
           display: 'flex',
           flexDirection: isHeaderSlide ? 'column' : (isMobile ? 'column' : 'row'),
-          minHeight: isHeaderSlide ? 'auto' : (isMobile ? 'auto' : 'clamp(280px, 35vw, 380px)')
+          minHeight: isHeaderSlide ? 'auto' : (isMobile ? '320px' : 'clamp(280px, 35vw, 380px)'),
+          maxHeight: isHeaderSlide ? 'none' : (isMobile ? '500px' : 'none')
         }}>
           {isHeaderSlide ? (
             /* ── Slide 0: Header intro ── */
@@ -667,7 +668,9 @@ const HomePage = () => {
               <div style={{
                 flex: '0 0 auto',
                 width: isMobile ? '100%' : '340px',
-                minHeight: isMobile ? 'clamp(140px, 40vw, 200px)' : 'clamp(280px, 35vw, 380px)',
+                height: isMobile ? '180px' : 'auto',
+                minHeight: isMobile ? '180px' : 'clamp(280px, 35vw, 380px)',
+                maxHeight: isMobile ? '180px' : 'none',
                 position: 'relative',
                 overflow: 'hidden',
                 backgroundColor: item.type === 'github' ? '#0d1117' : item.type === 'linkedin' ? '#0a66c2' : '#00ab6c'
@@ -694,21 +697,23 @@ const HomePage = () => {
               {/* Content panel */}
               <div style={{
                 flex: 1,
-                padding: isMobile ? '1.25rem' : '1.75rem 2rem',
+                padding: isMobile ? '1rem' : '1.75rem 2rem',
                 display: 'flex', flexDirection: 'column',
-                justifyContent: 'space-between', gap: '0.75rem'
+                justifyContent: 'space-between', gap: '0.75rem',
+                minHeight: isMobile ? '140px' : 'auto',
+                overflow: isMobile ? 'auto' : 'visible'
               }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.6rem' }}>
                     {item.icon}
-                    <span style={{ fontSize: '0.75rem', fontWeight: '700', color: item.color, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                    <span style={{ fontSize: isMobile ? '0.65rem' : '0.75rem', fontWeight: '700', color: item.color, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
                       {item.label}
                     </span>
                   </div>
-                  <div style={{ fontSize: isMobile ? '1.1rem' : '1.4rem', fontWeight: '800', color: textColor, lineHeight: '1.3', marginBottom: '0.6rem' }}>
+                  <div style={{ fontSize: isMobile ? '0.95rem' : '1.4rem', fontWeight: '800', color: textColor, lineHeight: '1.3', marginBottom: '0.6rem' }}>
                     {item.title}
                   </div>
-                  <div style={{ fontSize: isMobile ? '0.85rem' : '0.95rem', color: subTextColor, lineHeight: '1.6' }}>
+                  <div style={{ fontSize: isMobile ? '0.75rem' : '0.95rem', color: subTextColor, lineHeight: '1.5' }}>
                     {item.description}
                   </div>
                 </div>
@@ -717,9 +722,12 @@ const HomePage = () => {
                   <a href={item.url} target="_blank" rel="noopener noreferrer"
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-                      padding: '0.6rem 1.4rem', borderRadius: '50px',
+                      padding: isMobile ? '0.5rem 1rem' : '0.6rem 1.4rem', 
+                      borderRadius: '50px',
                       backgroundColor: item.color, color: '#ffffff',
-                      textDecoration: 'none', fontSize: '0.875rem', fontWeight: '700',
+                      textDecoration: 'none', 
+                      fontSize: isMobile ? '0.75rem' : '0.875rem', 
+                      fontWeight: '700',
                       transition: 'opacity 0.2s ease, transform 0.2s ease',
                       boxShadow: `0 4px 12px ${item.color}55`
                     }}

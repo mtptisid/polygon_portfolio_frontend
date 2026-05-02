@@ -30,27 +30,20 @@ const escapeHtml = (text) => {
 };
 
 const parseMarkdown = (text, handleCopy, copiedStates, messageIndex) => {
-  console.log('parseMarkdown called with:', { 
-    textType: typeof text, 
-    textLength: text?.length, 
-    messageIndex,
-    textPreview: text?.substring(0, 100)
-  });
-  
   if (!text) {
-    console.warn('parseMarkdown received empty text');
     return <span style={{ color: '#94a3b8' }}>Empty message</span>;
   }
   
   if (typeof text !== 'string') {
-    console.error('parseMarkdown received non-string:', typeof text, text);
     return <span style={{ color: '#ef4444' }}>Invalid message format</span>;
   }
 
   try {
     // Syntax highlighting function
     const syntaxHighlight = (code, language) => {
-    if (!code.trim()) return '<span style="color: #888">Empty code block</span>';
+      if (!code || typeof code !== 'string' || !code.trim()) {
+        return '<span style="color: #888">Empty code block</span>';
+      }
 
     let highlightedCode = code;
 
@@ -326,16 +319,23 @@ const parseMarkdown = (text, handleCopy, copiedStates, messageIndex) => {
   let lastIndex = 0;
 
   let match;
-  while ((match = codeBlockRegex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push({ type: 'text', content: text.slice(lastIndex, match.index) });
+  try {
+    while ((match = codeBlockRegex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push({ type: 'text', content: text.slice(lastIndex, match.index) });
+      }
+      parts.push({
+        type: 'code',
+        language: match[1] ? match[1].toLowerCase() : '',
+        content: match[2] ? match[2].trim() : ''
+      });
+      lastIndex = match.index + match[0].length;
     }
-    parts.push({
-      type: 'code',
-      language: match[1] ? match[1].toLowerCase() : '',
-      content: match[2].trim()
-    });
-    lastIndex = match.index + match[0].length;
+  } catch (regexError) {
+    console.error('Error parsing code blocks:', regexError);
+    // If regex fails, treat entire text as plain text
+    parts.push({ type: 'text', content: text });
+    lastIndex = text.length;
   }
 
   if (lastIndex < text.length) {
@@ -347,9 +347,10 @@ const parseMarkdown = (text, handleCopy, copiedStates, messageIndex) => {
   let codeBlockCounter = 0;
 
   parts.forEach((part, idx) => {
-    if (part.type === 'code') {
-      const codeBlockId = `code-block-${messageIndex}-${idx}-${codeBlockCounter++}`;
-      const highlightedCode = syntaxHighlight(part.content, part.language);
+    try {
+      if (part.type === 'code') {
+        const codeBlockId = `code-block-${messageIndex}-${idx}-${codeBlockCounter++}`;
+        const highlightedCode = syntaxHighlight(part.content || '', part.language || '');
 
       const codeStyle = {
         background: '#2d2d2d',
@@ -555,6 +556,21 @@ const parseMarkdown = (text, handleCopy, copiedStates, messageIndex) => {
         <p key={`p-${idx}-${i}`} style={{ margin: '0.5rem 0', color: '#1e293b', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
           <span dangerouslySetInnerHTML={{ __html: parsedLine }} />
         </p>
+      );
+    }
+    } catch (partError) {
+      console.error(`Error processing part ${idx}:`, partError, part);
+      // Add a fallback for this part
+      components.push(
+        <div key={`error-${idx}`} style={{ 
+          margin: '0.5rem 0', 
+          padding: '0.5rem', 
+          backgroundColor: '#fee', 
+          borderRadius: '4px',
+          color: '#1e293b'
+        }}>
+          <p style={{ margin: 0 }}>{part.content || 'Error rendering content'}</p>
+        </div>
       );
     }
   });
