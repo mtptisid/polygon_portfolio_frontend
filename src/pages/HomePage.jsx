@@ -615,8 +615,8 @@ const HomePage = () => {
           transition: 'opacity 0.4s ease, transform 0.4s ease',
           display: 'flex',
           flexDirection: isHeaderSlide ? 'column' : (isMobile ? 'column' : 'row'),
-          minHeight: isHeaderSlide ? 'auto' : (isMobile ? '320px' : 'clamp(280px, 35vw, 380px)'),
-          maxHeight: isHeaderSlide ? 'none' : (isMobile ? '500px' : 'none')
+          minHeight: isHeaderSlide ? 'auto' : (isMobile ? '280px' : 'clamp(280px, 35vw, 380px)'),
+          maxHeight: isHeaderSlide ? 'none' : (isMobile ? '450px' : 'none')
         }}>
           {isHeaderSlide ? (
             /* ── Slide 0: Header intro ── */
@@ -668,9 +668,9 @@ const HomePage = () => {
               <div style={{
                 flex: '0 0 auto',
                 width: isMobile ? '100%' : '340px',
-                height: isMobile ? '180px' : 'auto',
-                minHeight: isMobile ? '180px' : 'clamp(280px, 35vw, 380px)',
-                maxHeight: isMobile ? '180px' : 'none',
+                height: isMobile ? '150px' : 'auto',
+                minHeight: isMobile ? '150px' : 'clamp(280px, 35vw, 380px)',
+                maxHeight: isMobile ? '150px' : 'none',
                 position: 'relative',
                 overflow: 'hidden',
                 backgroundColor: item.type === 'github' ? '#0d1117' : item.type === 'linkedin' ? '#0a66c2' : '#00ab6c'
@@ -1144,14 +1144,15 @@ const HomePage = () => {
     },
     promptsContainer: {
       paddingTop: '85px',
-      height: '100vh',
+      paddingBottom: '20px',
+      minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       width: '100vw',
       backgroundColor: '#f8fafc',
-      minHeight: 'calc(100vh - 60px)',
       overflowY: 'auto',
+      overflowX: 'hidden',
       boxSizing: 'border-box'
     },
     chatContainer: {
@@ -1529,8 +1530,9 @@ const HomePage = () => {
               padding: 0.75rem;
             }
             .promptsContainer {
-              padding: 60px 0.5rem 0;
+              padding: 60px 0.5rem 20px;
               width: 100vw;
+              min-height: 100vh;
             }
             .chatContainer {
               padding: 20px 0.5rem 60px;
@@ -1649,8 +1651,9 @@ const HomePage = () => {
               padding: 0.5rem;
             }
             .promptsContainer {
-              padding: 50px 0.25rem 0;
+              padding: 50px 0.25rem 20px;
               width: 100vw;
+              min-height: 100vh;
             }
             .chatContainer {
               padding: 15px 0.25rem 50px;
