@@ -308,12 +308,20 @@ const HomePage = () => {
       // Check if response contains error message (fallback message from backend)
       const isErrorResponse = data.content && (
         data.content.includes('Apologies, an error occurred') ||
-        data.content.includes('🤔 Apologies')
+        data.content.includes('🤔 Apologies') ||
+        data.content.startsWith('**Apologies**')
       );
+      
+      console.log('Response check:', { 
+        modelToUse, 
+        retryWithGroq, 
+        isErrorResponse, 
+        contentPreview: data.content?.substring(0, 50) 
+      });
       
       // If error response and not already retrying with Groq, retry with Groq
       if (isErrorResponse && !retryWithGroq && modelToUse !== 'groq') {
-        console.log(`${modelToUse} failed, retrying with Groq...`);
+        console.log(`${modelToUse} returned error response, retrying with Groq...`);
         setIsLoading(false);
         // Add a system message about fallback
         setMessages(prev => [...prev, { 
@@ -324,7 +332,7 @@ const HomePage = () => {
         // Wait a moment then retry with Groq
         setTimeout(() => {
           handleSendMessage(content, selectedTool, true);
-        }, 500);
+        }, 800);
         return;
       }
       
@@ -357,7 +365,7 @@ const HomePage = () => {
         }]);
         setTimeout(() => {
           handleSendMessage(content, selectedTool, true);
-        }, 500);
+        }, 800);
         return;
       }
       
