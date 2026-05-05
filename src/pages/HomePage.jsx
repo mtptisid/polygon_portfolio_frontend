@@ -260,13 +260,17 @@ const HomePage = () => {
     slideRef.current.longPressTriggered = false;
   };
 
-  const handleSendMessage = async (content, selectedTool = null) => {
+  const handleSendMessage = async (content, selectedTool = null, retryWithGroq = false) => {
     if (!content.trim()) return;
 
-    const userMessage = { content, isUser: true, is_bot: false };
-    setMessages(prev => [...prev, userMessage]);
-    setMessage('');
-    setTool(null);
+    // Only add user message on first attempt (not on retry)
+    if (!retryWithGroq) {
+      const userMessage = { content, isUser: true, is_bot: false };
+      setMessages(prev => [...prev, userMessage]);
+      setMessage('');
+      setTool(null);
+    }
+    
     setIsLoading(true);
 
     const sessionId = currentSessionId || generateSessionId();
@@ -274,9 +278,12 @@ const HomePage = () => {
       setCurrentSessionId(sessionId);
     }
 
+    // Use Groq as fallback if retrying, otherwise use selected model
+    const modelToUse = retryWithGroq ? 'groq' : selectedModel.toLowerCase();
+
     const payload = {
       content,
-      model: selectedModel.toLowerCase(),
+      model: modelToUse,
       session_id: sessionId,
       tool: selectedTool
     };
@@ -298,6 +305,29 @@ const HomePage = () => {
 
       const data = await response.json();
       
+      // Check if response contains error message (fallback message from backend)
+      const isErrorResponse = data.content && (
+        data.content.includes('Apologies, an error occurred') ||
+        data.content.includes('🤔 Apologies')
+      );
+      
+      // If error response and not already retrying with Groq, retry with Groq
+      if (isErrorResponse && !retryWithGroq && modelToUse !== 'groq') {
+        console.log(`${modelToUse} failed, retrying with Groq...`);
+        setIsLoading(false);
+        // Add a system message about fallback
+        setMessages(prev => [...prev, { 
+          content: `⚠️ ${selectedModel} is unavailable. Switching to Groq...`, 
+          isUser: false, 
+          is_bot: true 
+        }]);
+        // Wait a moment then retry with Groq
+        setTimeout(() => {
+          handleSendMessage(content, selectedTool, true);
+        }, 500);
+        return;
+      }
+      
       // Clear loading state BEFORE updating messages
       setIsLoading(false);
       
@@ -305,6 +335,7 @@ const HomePage = () => {
       setMessages(prev => [...prev, botMessage]);
 
       const currentTimestamp = Date.now();
+      const userMessage = { content, isUser: true, is_bot: false };
       const updatedHistory = chatHistory.filter(session => session.session_id !== sessionId).concat({
         session_id: sessionId,
         messages: [...(chatHistory.find(s => s.session_id === sessionId)?.messages || []), userMessage, botMessage],
@@ -315,7 +346,26 @@ const HomePage = () => {
     } catch (error) {
       console.error('Error sending message:', error);
       setIsLoading(false);
-      setMessages(prev => [...prev, { content: `Error: ${error.message}`, isUser: false }]);
+      
+      // If network/fetch error and not already retrying with Groq, retry with Groq
+      if (!retryWithGroq && modelToUse !== 'groq') {
+        console.log(`${modelToUse} failed with error, retrying with Groq...`);
+        setMessages(prev => [...prev, { 
+          content: `⚠️ ${selectedModel} encountered an error. Switching to Groq...`, 
+          isUser: false, 
+          is_bot: true 
+        }]);
+        setTimeout(() => {
+          handleSendMessage(content, selectedTool, true);
+        }, 500);
+        return;
+      }
+      
+      // If Groq also fails, show error
+      setMessages(prev => [...prev, { 
+        content: `❌ Error: ${error.message}. All models are currently unavailable.`, 
+        isUser: false 
+      }]);
     }
   };
 
