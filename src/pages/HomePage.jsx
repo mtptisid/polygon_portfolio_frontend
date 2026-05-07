@@ -24,6 +24,9 @@ const HomePage = () => {
   const [headerAnimDone, setHeaderAnimDone] = useState(false);
   const [featuredVisible, setFeaturedVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [showHRPopup, setShowHRPopup] = useState(false);
+  const [showMinimizedHR, setShowMinimizedHR] = useState(false);
+  const [isHRHovered, setIsHRHovered] = useState(false);
   const featuredTimerRef = useRef(null);
   const textareaRef = useRef(null);
   const chatContainerRef = useRef(null);
@@ -306,24 +309,27 @@ const HomePage = () => {
       const data = await response.json();
       
       // Check if response contains error message (fallback message from backend)
-      const isErrorResponse = data.content && (
-        data.content.includes('Apologies, an error occurred') ||
-        data.content.includes('🤔 Apologies') ||
-        data.content.startsWith('**Apologies**')
-      );
+      // Backend returns error messages starting with "**Apologies**" or "🤔 Apologies"
+      const contentStr = data.content || '';
+      const isErrorResponse = contentStr.includes('Apologies, an error occurred') ||
+                             contentStr.includes('🤔 Apologies') ||
+                             contentStr.startsWith('**Apologies**') ||
+                             contentStr.trim().startsWith('**Apologies**');
       
       console.log('Response check:', { 
         modelToUse, 
         retryWithGroq, 
         isErrorResponse, 
-        contentPreview: data.content?.substring(0, 50) 
+        contentPreview: contentStr.substring(0, 100),
+        startsWithApologies: contentStr.startsWith('**Apologies**'),
+        trimmedStartsWithApologies: contentStr.trim().startsWith('**Apologies**')
       });
       
       // If error response and not already retrying with Groq, retry with Groq
       if (isErrorResponse && !retryWithGroq && modelToUse !== 'groq') {
         console.log(`${modelToUse} returned error response, retrying with Groq...`);
         setIsLoading(false);
-        // Add a system message about fallback
+        // Don't show the error message, just show fallback warning
         setMessages(prev => [...prev, { 
           content: `⚠️ ${selectedModel} is unavailable. Switching to Groq...`, 
           isUser: false, 
@@ -443,18 +449,54 @@ const HomePage = () => {
       featuredTimerRef.current = setInterval(() => {
         setFeaturedVisible(false);
         setTimeout(() => {
-          setFeaturedSlide(prev => (prev + 1) % 6); // 6 total slides (0=header, 1-5=content)
+          setFeaturedSlide(prev => (prev + 1) % 7); // 7 total slides (0=header, 1-6=content)
           setFeaturedVisible(true);
         }, 400);
       }, 5000);
     }, 5000);
+    
+    // Show HR popup after 3 seconds (only if not shown before in this session)
+    const popupTimer = setTimeout(() => {
+      const popupShown = sessionStorage.getItem('hr_popup_shown');
+      if (!popupShown) {
+        setShowHRPopup(true);
+      } else {
+        // If already shown, just show the minimized button
+        setShowMinimizedHR(true);
+      }
+    }, 3000);
+    
+    // Minimize HR popup to button after 13 seconds (only if popup is showing)
+    const minimizeTimer = setTimeout(() => {
+      const popupShown = sessionStorage.getItem('hr_popup_shown');
+      if (!popupShown) {
+        setShowHRPopup(false);
+        setShowMinimizedHR(true);
+      }
+    }, 13000); // 3s + 10s = 13s total
+    
     return () => {
       clearTimeout(timer);
+      clearTimeout(popupTimer);
+      clearTimeout(minimizeTimer);
       if (featuredTimerRef.current) clearInterval(featuredTimerRef.current);
     };
   }, [messages.length]);
 
   const featuredContent = [
+    {
+      type: 'hr',
+      title: 'Are you hiring?',
+      description: 'Chat with my AI Assistant to learn about my experience, skills, and how I can contribute to your team. Get instant answers!',
+      url: '/hr-assistant',
+      image: null,
+      label: 'HR Assistant · Interactive',
+      color: '#667eea',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#667eea"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+      ),
+      features: ['⚡ Instant Responses', '🎯 Detailed Analysis', '🤖 AI-Powered']
+    },
     {
       type: 'medium',
       title: 'MCP & AI Agents: Everyone Talks About Them, Few Actually Understand Them',
@@ -528,7 +570,7 @@ const HomePage = () => {
     featuredTimerRef.current = setInterval(() => {
       setFeaturedVisible(false);
       setTimeout(() => {
-        setFeaturedSlide(prev => (prev + 1) % 6);
+        setFeaturedSlide(prev => (prev + 1) % 7);
         setFeaturedVisible(true);
       }, 400);
     }, 5000);
@@ -611,17 +653,18 @@ const HomePage = () => {
   };
 
   const renderFeaturedContent = () => {
-    const TOTAL_SLIDES = 6; // slide 0 = header intro, slides 1-5 = featuredContent[0-4]
+    const TOTAL_SLIDES = 7; // slide 0 = header intro, slides 1-6 = featuredContent[0-5]
     const isHeaderSlide = featuredSlide === 0;
     const item = isHeaderSlide ? null : featuredContent[featuredSlide - 1];
 
     const bgGradients = {
+      hr: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
       medium: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
       github: 'linear-gradient(135deg, #0d1117 0%, #161b22 100%)',
       linkedin: 'linear-gradient(135deg, #e8f0fe 0%, #dbeafe 100%)'
     };
-    const textColor = item ? (item.type === 'github' ? '#e6edf3' : '#1e293b') : '#1e293b';
-    const subTextColor = item ? (item.type === 'github' ? '#8b949e' : '#6b7280') : '#6b7280';
+    const textColor = item ? (item.type === 'github' ? '#e6edf3' : (item.type === 'hr' ? '#ffffff' : '#1e293b')) : '#1e293b';
+    const subTextColor = item ? (item.type === 'github' ? '#8b949e' : (item.type === 'hr' ? 'rgba(255,255,255,0.9)' : '#6b7280')) : '#6b7280';
 
     // Dot color for non-header slides
     const dotActiveColor = item ? item.color : '#d91a89';
@@ -731,7 +774,7 @@ const HomePage = () => {
                 maxHeight: isMobile ? '150px' : 'none',
                 position: 'relative',
                 overflow: 'hidden',
-                backgroundColor: item.type === 'github' ? '#0d1117' : item.type === 'linkedin' ? '#0a66c2' : '#00ab6c'
+                backgroundColor: item.type === 'hr' ? '#667eea' : (item.type === 'github' ? '#0d1117' : (item.type === 'linkedin' ? '#0a66c2' : '#00ab6c'))
               }}>
                 {item.image ? (
                   <img src={item.image} alt={item.title}
@@ -742,10 +785,10 @@ const HomePage = () => {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexDirection: 'column', gap: '0.75rem', padding: '1.5rem'
                   }}>
-                    <div style={{ transform: 'scale(3.5)', opacity: 0.85 }}>{item.icon}</div>
+                    <div style={{ transform: 'scale(3.5)', opacity: 0.85, color: item.type === 'hr' ? '#ffffff' : 'inherit' }}>{item.icon}</div>
                     <div style={{
                       fontSize: '0.75rem', fontWeight: '600',
-                      color: item.type === 'github' ? '#8b949e' : 'rgba(255,255,255,0.8)',
+                      color: item.type === 'hr' ? 'rgba(255,255,255,0.9)' : (item.type === 'github' ? '#8b949e' : 'rgba(255,255,255,0.8)'),
                       letterSpacing: '0.05em', textTransform: 'uppercase', marginTop: '1.5rem'
                     }}>{item.label}</div>
                   </div>
@@ -769,31 +812,79 @@ const HomePage = () => {
                     </span>
                   </div>
                   <div style={{ fontSize: isMobile ? '0.95rem' : '1.4rem', fontWeight: '800', color: textColor, lineHeight: '1.3', marginBottom: '0.6rem' }}>
-                    {item.title}
+                    {item.title} {item.type === 'hr' && '💼'}
                   </div>
-                  <div style={{ fontSize: isMobile ? '0.75rem' : '0.95rem', color: subTextColor, lineHeight: '1.5' }}>
+                  <div style={{ fontSize: isMobile ? '0.75rem' : '0.95rem', color: subTextColor, lineHeight: '1.5', marginBottom: item.type === 'hr' ? '0.75rem' : '0' }}>
                     {item.description}
                   </div>
+                  
+                  {/* Feature badges for HR slide */}
+                  {item.type === 'hr' && item.features && (
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.75rem' }}>
+                      {item.features.map((feature, idx) => (
+                        <span key={idx} style={{
+                          background: 'rgba(255, 255, 255, 0.2)',
+                          padding: '0.4rem 0.75rem',
+                          borderRadius: '20px',
+                          fontSize: isMobile ? '0.7rem' : '0.8rem',
+                          fontWeight: '600',
+                          color: '#ffffff',
+                          border: '1px solid rgba(255, 255, 255, 0.3)'
+                        }}>
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-                  <a href={item.url} target="_blank" rel="noopener noreferrer"
-                    style={{
-                      display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-                      padding: isMobile ? '0.5rem 1rem' : '0.6rem 1.4rem', 
-                      borderRadius: '50px',
-                      backgroundColor: item.color, color: '#ffffff',
-                      textDecoration: 'none', 
-                      fontSize: isMobile ? '0.75rem' : '0.875rem', 
-                      fontWeight: '700',
-                      transition: 'opacity 0.2s ease, transform 0.2s ease',
-                      boxShadow: `0 4px 12px ${item.color}55`
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                  >
-                    Open {item.type === 'medium' ? 'Article' : item.type === 'github' ? 'Repository' : 'Profile'} ↗
-                  </a>
+                  {item.type === 'hr' ? (
+                    <button
+                      onClick={() => navigate('/hr-assistant')}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                        padding: isMobile ? '0.5rem 1rem' : '0.6rem 1.4rem', 
+                        borderRadius: '50px',
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        color: item.color,
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: isMobile ? '0.75rem' : '0.875rem', 
+                        fontWeight: '700',
+                        transition: 'all 0.2s ease',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+                      }}
+                      onMouseEnter={(e) => { 
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.3)';
+                      }}
+                      onMouseLeave={(e) => { 
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+                      }}
+                    >
+                      Start Conversation →
+                    </button>
+                  ) : (
+                    <a href={item.url} target="_blank" rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                        padding: isMobile ? '0.5rem 1rem' : '0.6rem 1.4rem', 
+                        borderRadius: '50px',
+                        backgroundColor: item.color, color: '#ffffff',
+                        textDecoration: 'none', 
+                        fontSize: isMobile ? '0.75rem' : '0.875rem', 
+                        fontWeight: '700',
+                        transition: 'opacity 0.2s ease, transform 0.2s ease',
+                        boxShadow: `0 4px 12px ${item.color}55`
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                    >
+                      Open {item.type === 'medium' ? 'Article' : item.type === 'github' ? 'Repository' : 'Profile'} ↗
+                    </a>
+                  )}
 
                   {/* Dot indicators */}
                   <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
@@ -1855,6 +1946,15 @@ const HomePage = () => {
               <FiBriefcase size={16} />
               <span className="hide-on-mobile">Projects</span>
             </button>
+            <button
+              style={styles.navLink}
+              onClick={() => navigate('/admin/login')}
+              onMouseEnter={(e) => e.target.style.color = '#08d7fc'}
+              onMouseLeave={(e) => e.target.style.color = '#ffffff'}
+            >
+              <FiCpu size={16} />
+              <span className="hide-on-mobile">Admin</span>
+            </button>
             <a
               href="https://mtptisid.github.io"
               style={styles.navLink}
@@ -2014,6 +2114,250 @@ const HomePage = () => {
           </div>
         </div>
       </div>
+      
+      {/* HR Popup/Button - Shows as popup first, then minimizes, expands on hover */}
+      {messages.length === 0 && (showHRPopup || (showMinimizedHR && isHRHovered)) && (
+        <div
+          onMouseEnter={() => setIsHRHovered(true)}
+          onMouseLeave={() => setIsHRHovered(false)}
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            zIndex: 9999,
+            width: 'calc(100% - 40px)',
+            maxWidth: '420px',
+            animation: showHRPopup ? 'slideInUp 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards' : 'none',
+            transition: 'all 0.3s ease'
+          }}
+        >
+          <div style={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+            borderRadius: '20px',
+            boxShadow: '0 20px 60px rgba(102, 126, 234, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+            padding: '1.75rem',
+            color: '#ffffff',
+            position: 'relative',
+            overflow: 'hidden',
+          }}>
+            {/* Close Button */}
+            <button
+              onClick={() => {
+                setShowHRPopup(false);
+                setShowMinimizedHR(true);
+                setIsHRHovered(false);
+                sessionStorage.setItem('hr_popup_shown', 'true');
+              }}
+              style={{
+                position: 'absolute',
+                top: '12px',
+                right: '12px',
+                background: 'rgba(255, 255, 255, 0.2)',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                color: '#ffffff',
+                zIndex: 10,
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.3)';
+                e.target.style.transform = 'rotate(90deg)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                e.target.style.transform = 'rotate(0deg)';
+              }}
+            >
+              ✕
+            </button>
+
+            {/* Icon with animation */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '1rem',
+              gap: '1rem',
+            }}>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                padding: '1rem',
+                borderRadius: '16px',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+              }}>
+                💼
+              </div>
+              <div>
+                <h3 style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '700',
+                  margin: 0,
+                  marginBottom: '0.25rem',
+                  textShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
+                }}>
+                  Are you hiring?
+                </h3>
+                <p style={{
+                  fontSize: '0.95rem',
+                  margin: 0,
+                  opacity: 0.95,
+                  fontWeight: '500',
+                }}>
+                  Let's talk! 💼✨
+                </p>
+              </div>
+            </div>
+
+            {/* Description */}
+            <p style={{
+              fontSize: '0.95rem',
+              lineHeight: '1.6',
+              marginBottom: '1.25rem',
+              opacity: 0.95,
+              fontWeight: '400',
+            }}>
+              Chat with my AI Assistant to learn about my experience, skills, and how I can contribute to your team. Get instant answers!
+            </p>
+
+            {/* Features */}
+            <div style={{
+              display: 'flex',
+              gap: '0.75rem',
+              marginBottom: '1.25rem',
+              flexWrap: 'wrap',
+            }}>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.15)',
+                padding: '0.5rem 0.75rem',
+                borderRadius: '20px',
+                fontSize: '0.85rem',
+                fontWeight: '500',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+              }}>
+                ⚡ Instant Responses
+              </div>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.15)',
+                padding: '0.5rem 0.75rem',
+                borderRadius: '20px',
+                fontSize: '0.85rem',
+                fontWeight: '500',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+              }}>
+                🎯 Detailed Analysis
+              </div>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.15)',
+                padding: '0.5rem 0.75rem',
+                borderRadius: '20px',
+                fontSize: '0.85rem',
+                fontWeight: '500',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+              }}>
+                🤖 AI-Powered
+              </div>
+            </div>
+
+            {/* Button */}
+            <button
+              onClick={() => {
+                sessionStorage.setItem('hr_popup_shown', 'true');
+                navigate('/hr-assistant');
+              }}
+              style={{
+                width: '100%',
+                background: 'rgba(255, 255, 255, 0.95)',
+                color: '#667eea',
+                fontWeight: '700',
+                fontSize: '1rem',
+                padding: '1rem',
+                borderRadius: '12px',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
+              }}
+            >
+              <span>Start Conversation</span>
+              <span>→</span>
+            </button>
+
+            {/* Decorative elements */}
+            <div style={{
+              position: 'absolute',
+              top: '-50px',
+              right: '-50px',
+              width: '150px',
+              height: '150px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: '50%',
+              filter: 'blur(40px)',
+            }}></div>
+            <div style={{
+              position: 'absolute',
+              bottom: '-30px',
+              left: '-30px',
+              width: '100px',
+              height: '100px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: '50%',
+              filter: 'blur(30px)',
+            }}></div>
+          </div>
+        </div>
+      )}
+
+      {/* Minimized HR Button - Shows when not hovered */}
+      {messages.length === 0 && showMinimizedHR && !showHRPopup && !isHRHovered && (
+        <button
+          onMouseEnter={() => setIsHRHovered(true)}
+          onClick={() => navigate('/hr-assistant')}
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            zIndex: 9999,
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            border: 'none',
+            boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#ffffff',
+            fontSize: '1.5rem',
+            transition: 'all 0.3s ease',
+            animation: 'pulse 2s infinite'
+          }}
+          aria-label="Open HR Assistant"
+        >
+          💼
+        </button>
+      )}
     </div>
   );
 };

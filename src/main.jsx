@@ -5,8 +5,11 @@ import ErrorBoundary from './ErrorBoundary';
 import ProjectsPage from './pages/ProjectsPage';
 import ProjectsViewPage from './pages/ProjectsViewPage';
 import HomePage from './pages/HomePage'; 
-import ContactPage from './pages/ContactPage'
+import ContactPage from './pages/ContactPage';
 import SendMailPage from './pages/SendMailPage';
+import HRAssistant from './pages/HRAssistant';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
 import './index.css'; 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -21,6 +24,9 @@ root.render(
           <Route path="/projects-view" element={<ProjectsViewPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/sendmail" element={<SendMailPage />} />
+          <Route path="/hr-assistant" element={<HRAssistant />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="*" element={<div>Not Found</div>} /> 
         </Routes>
       </BrowserRouter>
