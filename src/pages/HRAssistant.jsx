@@ -156,9 +156,9 @@ const HRAssistant = () => {
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: '#151515',
+      backgroundColor: '#f8fafc',
       fontFamily: '"Poppins", sans-serif',
-      color: '#ffffff',
+      color: '#1e293b',
       display: 'flex',
       flexDirection: 'column',
       width: '100vw',
@@ -174,20 +174,25 @@ const HRAssistant = () => {
           body, html, #root {
             width: 100vw;
             min-height: 100vh;
-            background: #151515;
+            background: #f8fafc;
           }
           @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
           }
+          @keyframes dotBounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+            40% { transform: translateY(-8px); opacity: 1; }
+          }
           .animate-slideUp {
             animation: slideUp 0.5s ease-out forwards;
           }
           .form-container {
-            background: rgba(255, 255, 255, 0.05);
+            background: #ffffff;
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
             width: 100%;
             max-width: 800px;
             margin: 2rem auto;
@@ -198,7 +203,7 @@ const HRAssistant = () => {
           }
           .form-field label {
             display: block;
-            color: rgba(255, 255, 255, 0.9);
+            color: #374151;
             font-size: 0.9rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
@@ -210,10 +215,10 @@ const HRAssistant = () => {
             padding: 1rem;
             font-size: 1rem;
             font-family: "Poppins", sans-serif;
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 4px;
+            color: #1e293b;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
             transition: all 0.3s ease;
             outline: none;
           }
@@ -223,12 +228,13 @@ const HRAssistant = () => {
           }
           input:focus,
           textarea:focus {
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 8px rgba(7, 177, 208, 0.3);
+            background: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
           }
           input::placeholder,
           textarea::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+            color: #9ca3af;
             font-style: italic;
           }
           .error-text {
@@ -242,19 +248,19 @@ const HRAssistant = () => {
             font-size: 1rem;
             font-family: "Poppins", sans-serif;
             font-weight: 600;
-            background: #07b1d0;
+            background: #404347;
             color: #ffffff;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             transition: background 0.3s ease, transform 0.3s ease;
           }
           button:hover {
-            background: #0cd2e8;
+            background: #2d3035;
             transform: scale(1.02);
           }
           button:disabled {
-            background: #06a2c0;
+            background: #9ca3af;
             cursor: not-allowed;
             opacity: 0.7;
           }
@@ -287,24 +293,32 @@ const HRAssistant = () => {
             40% { transform: scale(1); }
           }
           .chat-container {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 900px;
-            margin: 2rem auto;
-            display: flex;
-            flex-direction: column;
-            height: 70vh;
-          }
-          .chat-messages {
+            padding: 40px 1rem 75px;
             flex: 1;
             overflow-y: auto;
-            padding: 1.5rem;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f8fafc;
+            max-width: 100%;
+            width: 100%;
+            height: calc(100vh - 140px);
+            box-sizing: border-box;
+            position: relative;
+          }
+          .chat-messages {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            padding: 0 1rem;
           }
           .chat-message {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             display: flex;
+            width: 100%;
+            box-sizing: border-box;
           }
           .chat-message.user {
             justify-content: flex-end;
@@ -313,60 +327,119 @@ const HRAssistant = () => {
             justify-content: flex-start;
           }
           .message-bubble {
-            max-width: 70%;
-            padding: 1rem;
-            border-radius: 12px;
+            max-width: 100%;
+            padding: 1.25rem;
+            border-radius: 1.5rem;
             word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            box-sizing: border-box;
+            font-weight: 450;
+            font-size: 0.9rem;
+            line-height: 1.6;
           }
           .message-bubble.user {
-            background: #07b1d0;
-            color: #ffffff;
+            background: #e9e9e980;
+            color: #1e293b;
+            border: 2px solid #e9e9e980;
+            align-self: flex-end;
           }
           .message-bubble.bot {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
+            background: #ffffff;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+            align-self: flex-start;
           }
           .chat-input-container {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            background-color: #f8fafc;
             padding: 1rem;
+            box-sizing: border-box;
           }
           .chat-input-wrapper {
             display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            border-radius: 24px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 0.65rem;
+            width: 100%;
+            max-width: 900px;
+            min-height: 80px;
+            gap: 0.4rem;
+            box-sizing: border-box;
+          }
+          .chat-input-row {
+            display: flex;
+            align-items: center;
             gap: 0.5rem;
-            margin-bottom: 0.75rem;
+            width: 100%;
           }
           .chat-input-wrapper input {
             flex: 1;
             padding: 0.75rem 1rem;
-            background: rgba(255, 255, 255, 0.1);
             border: none;
-            border-radius: 4px;
-            color: #ffffff;
+            font-size: 1rem;
+            background: transparent;
+            color: #1e293b;
             font-family: "Poppins", sans-serif;
             outline: none;
+            resize: none;
+            min-height: 40px;
+            line-height: 1.5;
+            box-sizing: border-box;
           }
-          .chat-input-wrapper input:focus {
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 8px rgba(7, 177, 208, 0.3);
+          .chat-input-wrapper input::placeholder {
+            color: #9ca3af;
           }
-          .chat-input-wrapper button {
-            width: auto;
-            padding: 0.75rem 1.5rem;
+          .send-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            border-radius: 20px;
+            border: none;
+            background-color: #404347;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            width: 40px;
+            height: 40px;
+            box-sizing: border-box;
+          }
+          .send-button:hover {
+            background-color: #2d3035;
+          }
+          .send-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
           }
           .end-session-btn {
-            background: rgba(255, 255, 255, 0.1);
+            background: #ef4444;
             color: #ffffff;
-            padding: 0.5rem;
-            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-weight: 500;
           }
           .end-session-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: #dc2626;
           }
           .analysis-container {
-            background: rgba(255, 255, 255, 0.05);
+            background: #ffffff;
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
             width: 100%;
             max-width: 900px;
             margin: 2rem auto;
@@ -375,16 +448,17 @@ const HRAssistant = () => {
             margin-bottom: 2rem;
           }
           .analysis-section h3 {
-            color: #07b1d0;
+            color: #1e293b;
             font-size: 1.2rem;
             margin-bottom: 0.75rem;
           }
           .analysis-section p {
-            color: rgba(255, 255, 255, 0.8);
+            color: #4b5563;
             line-height: 1.6;
-            background: rgba(255, 255, 255, 0.05);
+            background: #f9fafb;
             padding: 1rem;
             border-radius: 8px;
+            border: 1px solid #e5e7eb;
           }
           .topic-tags {
             display: flex;
@@ -392,11 +466,12 @@ const HRAssistant = () => {
             gap: 0.5rem;
           }
           .topic-tag {
-            background: rgba(7, 177, 208, 0.2);
-            color: #07b1d0;
+            background: #e0f2fe;
+            color: #0369a1;
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.9rem;
+            border: 1px solid #bae6fd;
           }
           .interest-badge {
             display: inline-block;
@@ -410,19 +485,20 @@ const HRAssistant = () => {
             padding: 0;
           }
           .next-steps-list li {
-            background: rgba(255, 255, 255, 0.05);
+            background: #f9fafb;
             padding: 0.75rem 1rem;
             margin-bottom: 0.5rem;
             border-radius: 8px;
-            color: rgba(255, 255, 255, 0.8);
+            color: #4b5563;
             padding-left: 2rem;
             position: relative;
+            border: 1px solid #e5e7eb;
           }
           .next-steps-list li:before {
             content: "→";
             position: absolute;
             left: 0.75rem;
-            color: #07b1d0;
+            color: #3b82f6;
           }
           @media (max-width: 768px) {
             .form-container,
@@ -552,14 +628,14 @@ const HRAssistant = () => {
         {/* Header */}
         <div className="animate-slideUp" style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <h1 style={{
-            color: '#ffffff',
+            color: '#1e293b',
             fontSize: '2.5rem',
             fontWeight: 700,
             marginBottom: '0.5rem',
           }}>
             HR Assistant 💼
           </h1>
-          <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '1.1rem' }}>
+          <p style={{ color: '#6b7280', fontSize: '1.1rem' }}>
             Let's discuss how Siddharamayya can contribute to your team
           </p>
         </div>
@@ -568,7 +644,7 @@ const HRAssistant = () => {
         {step === 'form' && (
           <section className="form-container animate-slideUp">
             <h2 style={{
-              color: '#ffffff',
+              color: '#1e293b',
               fontSize: '1.8rem',
               fontWeight: 600,
               marginBottom: '1.5rem',
@@ -690,10 +766,37 @@ const HRAssistant = () => {
               {isLoading && (
                 <div className="chat-message bot">
                   <div className="message-bubble bot">
-                    <div className="loader active">
-                      <div className="bounce1"></div>
-                      <div className="bounce2"></div>
-                      <div className="bounce3"></div>
+                    <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                      <div
+                        style={{
+                          width: '8px',
+                          height: '8px',
+                          borderRadius: '50%',
+                          backgroundColor: '#94a3b8',
+                          animation: 'dotBounce 1.4s infinite ease-in-out',
+                          animationDelay: '0s'
+                        }}
+                      />
+                      <div
+                        style={{
+                          width: '8px',
+                          height: '8px',
+                          borderRadius: '50%',
+                          backgroundColor: '#94a3b8',
+                          animation: 'dotBounce 1.4s infinite ease-in-out',
+                          animationDelay: '0.2s'
+                        }}
+                      />
+                      <div
+                        style={{
+                          width: '8px',
+                          height: '8px',
+                          borderRadius: '50%',
+                          backgroundColor: '#94a3b8',
+                          animation: 'dotBounce 1.4s infinite ease-in-out',
+                          animationDelay: '0.4s'
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -703,28 +806,34 @@ const HRAssistant = () => {
 
             <div className="chat-input-container">
               <div className="chat-input-wrapper">
-                <input
-                  type="text"
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                  placeholder="Type your message..."
-                  disabled={isLoading}
-                />
-                <button
-                  onClick={handleSendMessage}
-                  disabled={isLoading || !inputMessage.trim()}
-                >
-                  <FiSend size={20} />
-                </button>
+                <div className="chat-input-row">
+                  <input
+                    type="text"
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
+                    placeholder="Type your message..."
+                    disabled={isLoading}
+                  />
+                  <button
+                    className="send-button"
+                    onClick={handleSendMessage}
+                    disabled={isLoading || !inputMessage.trim()}
+                    aria-label="Send message"
+                  >
+                    <FiSend size={20} color="white" />
+                  </button>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '0.25rem' }}>
+                  <button
+                    onClick={handleEndSession}
+                    disabled={isLoading}
+                    className="end-session-btn"
+                  >
+                    End Session
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={handleEndSession}
-                disabled={isLoading}
-                className="end-session-btn"
-              >
-                End Session
-              </button>
             </div>
           </div>
         )}
@@ -734,14 +843,14 @@ const HRAssistant = () => {
           <div className="analysis-container animate-slideUp">
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
               <h2 style={{
-                color: '#ffffff',
+                color: '#1e293b',
                 fontSize: '2rem',
                 fontWeight: 700,
                 marginBottom: '0.5rem',
               }}>
                 Session Analysis
               </h2>
-              <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+              <p style={{ color: '#6b7280' }}>
                 Here's what we discussed
               </p>
             </div>

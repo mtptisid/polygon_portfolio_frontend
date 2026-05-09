@@ -35,6 +35,191 @@ const HomePage = () => {
   const slideRef = useRef({ startX: 0, deltaX: 0, isSliding: false, sessionId: null, longPressTriggered: false });
 
   const models = ['DeepSeek R1', 'Gemini', 'Groq', 'OpenAI', 'Claude Sonet'];
+  
+  // Fallback content when all models fail
+  const getFallbackResponse = (question) => {
+    const normalizedQuestion = question.toLowerCase().trim();
+    
+    // Check for specific topics in the question
+    if (normalizedQuestion.includes('ai') || normalizedQuestion.includes('ml') || normalizedQuestion.includes('machine learning') || normalizedQuestion.includes('llm')) {
+      return `## 🤖 AI/ML Expertise
+
+**Siddharamayya Mathapati** is highly proficient in **AI/ML (85%)**, with extensive experience in:
+
+### 🎯 Core Competencies
+- **Large Language Models (LLMs)**: Fine-tuned LLMs using QLoRA and LoRA at Capgemini, optimizing efficiency for finance, healthcare, and cybersecurity
+- **Deep Learning**: Designed neural networks for NLP, computer vision, and predictive modeling using TensorFlow and PyTorch
+- **Generative AI**: Applied RLHF to align models, improving contextual accuracy by 20%
+- **RAG Applications**: Deployed Retrieval-Augmented Generation systems with FAISS and ChromaDB, enhancing response accuracy by 25%
+
+### 💼 Notable Projects
+- **CodeSage**: RAG-based documentation-driven code generation
+- **SysAdmin-GPT**: BERT-powered RHEL query classification
+- **Student Study Assistant**: AI chatbot with RAG capabilities
+
+### 🔧 MLOps Excellence
+- Automated model training, deployment, and monitoring with Kubernetes, Docker, and AWS SageMaker
+- Built retraining pipelines with drift detection, reducing errors by 30%
+
+### 📜 Certifications
+- LLM Engineering (Udemy)
+- Deep Learning Masterclass (Udemy)
+- MLOps Bootcamp
+
+*Note: AI models are temporarily unavailable. This is cached information from Siddharamayya's profile.*`;
+    }
+    
+    if (normalizedQuestion.includes('experience') || normalizedQuestion.includes('work') || normalizedQuestion.includes('job') || normalizedQuestion.includes('capgemini') || normalizedQuestion.includes('maveric')) {
+      return `## 💼 Professional Experience
+
+### Current Role
+**Senior AI Engineer** at **Maveric** (2025 - Present)
+- Leading AI/ML initiatives and advanced solutions
+
+### Previous Role
+**Senior Software Engineer** at **Capgemini Technology Service Limited India** (May 2021 - April 2025)
+
+#### Key Responsibilities:
+- ✅ Fine-tuned LLMs with QLoRA and LoRA for finance, healthcare, and cybersecurity, reducing memory usage by 30%
+- ✅ Designed RAG applications with FAISS and ChromaDB, improving accuracy by 25%
+- ✅ Automated MLOps pipelines using Kubernetes, Docker, and AWS SageMaker, cutting deployment time by 50%
+- ✅ Developed real-time inference pipelines with TensorRT and ONNX
+- ✅ Migrated legacy ML workloads to Spark and Kubernetes, enhancing scalability by 40%
+- ✅ Automated Linux infrastructure with Ansible and bash, optimizing performance
+- ✅ Mentored junior engineers and supervised research internships
+
+### Total Experience
+**4+ years** of hands-on experience in AI/ML, DevOps, and system automation
+
+*Note: AI models are temporarily unavailable. This is cached information from Siddharamayya's profile.*`;
+    }
+    
+    if (normalizedQuestion.includes('skill') || normalizedQuestion.includes('technology') || normalizedQuestion.includes('tech stack')) {
+      return `## 🛠️ Technical Skills
+
+### AI/ML Expertise
+- **LLMs**: Fine-tuning, RAG, Generative AI
+- **Frameworks**: TensorFlow, PyTorch, LangChain
+- **MLOps**: Docker, Kubernetes, AWS SageMaker
+
+### DevOps & Cloud
+- **Containerization**: Docker, Kubernetes
+- **Automation**: Ansible, Bash scripting
+- **Cloud**: AWS, GCP, Azure
+- **CI/CD**: Jenkins, GitLab CI
+
+### Web Development
+- **Backend**: FastAPI, Flask, Django
+- **Frontend**: React, JavaScript
+- **Databases**: MySQL, PostgreSQL, MongoDB, FAISS, ChromaDB
+
+### IoT & Embedded Systems
+- Raspberry Pi, ESP32, Arduino
+- Real-time systems development
+
+### Programming Languages
+- Python (Expert)
+- JavaScript, Bash, SQL
+
+*Note: AI models are temporarily unavailable. This is cached information from Siddharamayya's profile.*`;
+    }
+    
+    if (normalizedQuestion.includes('language') || normalizedQuestion.includes('speak') || normalizedQuestion.includes('communication')) {
+      return `## 🗣️ Languages
+
+**Siddharamayya Mathapati** is fluent in **seven languages**, enhancing his ability to collaborate across diverse teams:
+
+1. **Kannada**: Native; fluent in speaking, reading, and writing
+2. **English**: Professional fluency; excels in technical writing and global collaboration
+3. **Hindi**: Fluent; skilled in verbal and written communication
+4. **Telugu**: Conversational fluency; comfortable in professional discussions
+5. **Tamil**: Conversational fluency; adept in technical contexts
+6. **Marathi**: Intermediate fluency; effective in professional settings
+7. **Malayalam**: Basic proficiency; can engage in simple conversations
+
+His linguistic versatility supports his work in finance, healthcare, and IT across global teams.
+
+*Note: AI models are temporarily unavailable. This is cached information from Siddharamayya's profile.*`;
+    }
+    
+    if (normalizedQuestion.includes('contact') || normalizedQuestion.includes('email') || normalizedQuestion.includes('reach') || normalizedQuestion.includes('linkedin') || normalizedQuestion.includes('github')) {
+      return `## 📧 Contact Information
+
+### Get in Touch
+- **Email**: [msidrm455@gmail.com](mailto:msidrm455@gmail.com)
+- **LinkedIn**: [linkedin.com/in/siddharamayya-mathapati](https://linkedin.com/in/siddharamayya-mathapati)
+- **GitHub**: [github.com/mtptisid](https://github.com/mtptisid)
+- **Portfolio**: [portfolio.siddharamayya.in](https://portfolio.siddharamayya.in)
+
+### Availability
+**Immediately available** for new opportunities starting **May 2026**
+
+*Note: AI models are temporarily unavailable. This is cached information from Siddharamayya's profile.*`;
+    }
+    
+    if (normalizedQuestion.includes('project') || normalizedQuestion.includes('portfolio')) {
+      return `## 🚀 Notable Projects
+
+### AI/ML Projects
+- **CodeSage**: RAG-based documentation-driven code generation system
+- **SysAdmin-GPT**: BERT-powered RHEL query classification
+- **Student Study Assistant**: AI chatbot with RAG capabilities
+- **Heart Disease Prediction**: ML model for healthcare diagnostics
+- **Stock Price Prediction**: AI-powered financial modeling
+- **Crop Recommendation System**: Random Forest-based agricultural AI
+
+### DevOps & Automation
+- **Containerized Automation Lab**: Docker-based infrastructure automation
+- **Smart School Bus Tracking**: IoT + Real-time AI system
+
+### Web Applications
+- **Workout & Fitness Tracker**: Full-stack fitness management app
+- **Blood Donation Prediction**: ML-powered healthcare application
+
+### Explore More
+- **GitHub**: [github.com/mtptisid](https://github.com/mtptisid)
+- **Portfolio**: [portfolio.siddharamayya.in](https://portfolio.siddharamayya.in)
+
+*Note: AI models are temporarily unavailable. This is cached information from Siddharamayya's profile.*`;
+    }
+    
+    // Default comprehensive response
+    return `## 👋 About Siddharamayya Mathapati
+
+**Senior AI Engineer** with **4+ years** of experience specializing in AI/ML, MLOps, and system automation.
+
+### 🎯 Quick Overview
+- **Current Role**: Senior AI Engineer at Maveric (2025 - Present)
+- **Previous**: Senior Software Engineer at Capgemini (2021-2025)
+- **Expertise**: AI/ML (85%), LLMs, Deep Learning, MLOps, DevOps
+- **Availability**: Immediately available (May 2026)
+
+### 💡 Core Strengths
+- Fine-tuning LLMs with QLoRA and LoRA
+- Building RAG applications with FAISS and ChromaDB
+- Automating MLOps pipelines with Kubernetes and Docker
+- Cloud-native solutions on AWS, GCP, and Azure
+- Full-stack web development with React and FastAPI
+
+### 🗣️ Languages
+Fluent in **7 languages**: Kannada, English, Hindi, Telugu, Tamil, Marathi, Malayalam
+
+### 📫 Contact
+- **Email**: msidrm455@gmail.com
+- **LinkedIn**: [linkedin.com/in/siddharamayya-mathapati](https://linkedin.com/in/siddharamayya-mathapati)
+- **GitHub**: [github.com/mtptisid](https://github.com/mtptisid)
+- **Portfolio**: [portfolio.siddharamayya.in](https://portfolio.siddharamayya.in)
+
+### 💬 Ask Me About
+- AI/ML projects and expertise
+- Work experience and skills
+- Technical certifications
+- Contact information
+- Portfolio and projects
+
+*Note: AI models are temporarily unavailable. This is cached information from Siddharamayya's profile. Please try again later for AI-powered responses.*`;
+  };
+  
   const examplePrompts = [
     "What is the total experience of Siddharamayya?",
     "When will Siddharamayya be available to join?",
@@ -281,6 +466,53 @@ const HomePage = () => {
       setCurrentSessionId(sessionId);
     }
 
+    // **CACHE CHECK**: Search through all chat history for matching question
+    if (!retryWithGroq) {
+      const normalizedContent = content.trim().toLowerCase();
+      
+      // Search through all sessions in chat history
+      for (const session of chatHistory) {
+        for (let i = 0; i < session.messages.length - 1; i++) {
+          const msg = session.messages[i];
+          const nextMsg = session.messages[i + 1];
+          
+          // Check if this is a user message followed by a bot response
+          if (msg.isUser && !msg.is_bot && nextMsg.is_bot && !nextMsg.isUser) {
+            const cachedQuestion = msg.content.trim().toLowerCase();
+            
+            // If we find an exact match, return the cached response
+            if (cachedQuestion === normalizedContent) {
+              console.log('✅ Cache hit! Returning cached response for:', content);
+              
+              setIsLoading(false);
+              
+              // Add cached response with a small indicator
+              const cachedBotMessage = { 
+                content: nextMsg.content, 
+                isUser: false, 
+                is_bot: true 
+              };
+              setMessages(prev => [...prev, cachedBotMessage]);
+
+              // Update chat history with the new interaction
+              const currentTimestamp = Date.now();
+              const userMessage = { content, isUser: true, is_bot: false };
+              const updatedHistory = chatHistory.filter(s => s.session_id !== sessionId).concat({
+                session_id: sessionId,
+                messages: [...(chatHistory.find(s => s.session_id === sessionId)?.messages || []), userMessage, cachedBotMessage],
+                timestamp: currentTimestamp
+              });
+
+              setChatHistory(updatedHistory.sort((a, b) => b.timestamp - a.timestamp));
+              return; // Exit early, no API call needed
+            }
+          }
+        }
+      }
+      
+      console.log('❌ Cache miss. Making API call for:', content);
+    }
+
     // Use Groq as fallback if retrying, otherwise use selected model
     const modelToUse = retryWithGroq ? 'groq' : selectedModel.toLowerCase();
 
@@ -342,6 +574,32 @@ const HomePage = () => {
         return;
       }
       
+      // If Groq also returns error, provide fallback content
+      if (isErrorResponse && retryWithGroq) {
+        console.log('Groq also failed. Providing fallback response...');
+        setIsLoading(false);
+        
+        const fallbackContent = getFallbackResponse(content);
+        setMessages(prev => [...prev, { 
+          content: fallbackContent, 
+          isUser: false, 
+          is_bot: true 
+        }]);
+        
+        // Update chat history with fallback response
+        const currentTimestamp = Date.now();
+        const userMessage = { content, isUser: true, is_bot: false };
+        const fallbackMessage = { content: fallbackContent, isUser: false, is_bot: true };
+        const updatedHistory = chatHistory.filter(session => session.session_id !== sessionId).concat({
+          session_id: sessionId,
+          messages: [...(chatHistory.find(s => s.session_id === sessionId)?.messages || []), userMessage, fallbackMessage],
+          timestamp: currentTimestamp
+        });
+
+        setChatHistory(updatedHistory.sort((a, b) => b.timestamp - a.timestamp));
+        return;
+      }
+      
       // Clear loading state BEFORE updating messages
       setIsLoading(false);
       
@@ -375,11 +633,27 @@ const HomePage = () => {
         return;
       }
       
-      // If Groq also fails, show error
+      // If Groq also fails, show helpful fallback content instead of generic error
+      console.log('All models failed. Providing fallback response...');
+      const fallbackContent = getFallbackResponse(content);
+      
       setMessages(prev => [...prev, { 
-        content: `❌ Error: ${error.message}. All models are currently unavailable.`, 
-        isUser: false 
+        content: fallbackContent, 
+        isUser: false, 
+        is_bot: true 
       }]);
+      
+      // Update chat history with fallback response
+      const currentTimestamp = Date.now();
+      const userMessage = { content, isUser: true, is_bot: false };
+      const fallbackMessage = { content: fallbackContent, isUser: false, is_bot: true };
+      const updatedHistory = chatHistory.filter(session => session.session_id !== sessionId).concat({
+        session_id: sessionId,
+        messages: [...(chatHistory.find(s => s.session_id === sessionId)?.messages || []), userMessage, fallbackMessage],
+        timestamp: currentTimestamp
+      });
+
+      setChatHistory(updatedHistory.sort((a, b) => b.timestamp - a.timestamp));
     }
   };
 
