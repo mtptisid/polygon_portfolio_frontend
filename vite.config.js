@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       //'/api': 'https://portpoliosid.onrender.com',
-      '/api': 'https://my-portfolio-306678715125.us-central1.run.app/docs',
+      '/api': 'https://my-portfolio-306678715125.us-central1.run.app',
     }
   }
 })
