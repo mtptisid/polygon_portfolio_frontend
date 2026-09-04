@@ -7,7 +7,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'https://portpoliosid.onrender.com',
+      //'/api': 'https://portpoliosid.onrender.com',
+      '/api': 'https://my-portfolio-306678715125.us-central1.run.app/docs',
     }
   }
 })
