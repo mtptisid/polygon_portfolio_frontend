@@ -16,7 +16,7 @@ const AdminLogin = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://portpoliosid.onrender.com/api/admin/login', {
+      const response = await fetch('https://my-portfolio-306678715125.us-central1.run.app/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password })

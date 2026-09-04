@@ -60,7 +60,7 @@ const ContactPage = () => {
       }
 
       $.ajax({
-        url: 'https://portpoliosid.onrender.com/contact',
+        url: 'https://my-portfolio-306678715125.us-central1.run.app/contact',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),

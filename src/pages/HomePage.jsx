@@ -291,7 +291,7 @@ Fluent in **7 languages**: Kannada, English, Hindi, Telugu, Tamil, Marathi, Mala
 
   // Wake up the backend on component mount
   useEffect(() => {
-    fetch('https://portpoliosid.onrender.com/api/ai_chat/')
+    fetch('https://my-portfolio-306678715125.us-central1.run.app/api/ai_chat/')
       .then(response => {
         if (!response.ok) {
           console.error('Failed to wake up backend:', response.status);
@@ -524,7 +524,7 @@ Fluent in **7 languages**: Kannada, English, Hindi, Telugu, Tamil, Marathi, Mala
     };
 
     try {
-      const response = await fetch('https://portpoliosid.onrender.com/api/ai_chat/request', {
+      const response = await fetch('https://my-portfolio-306678715125.us-central1.run.app/api/ai_chat/request', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

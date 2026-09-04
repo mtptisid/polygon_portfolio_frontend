@@ -64,7 +64,7 @@ const SendMailPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://portpoliosid.onrender.com/sendmail/login', {
+      const response = await fetch('https://my-portfolio-306678715125.us-central1.run.app/sendmail/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -195,7 +195,7 @@ const SendMailPage = () => {
       });
 
       const token = localStorage.getItem('access_token');
-      const response = await fetch('https://portpoliosid.onrender.com/sendmail', {
+      const response = await fetch('https://my-portfolio-306678715125.us-central1.run.app/sendmail', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

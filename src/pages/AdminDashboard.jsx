@@ -34,7 +34,7 @@ const AdminDashboard = () => {
   const fetchSessions = async () => {
     const token = localStorage.getItem('admin_token');
     try {
-      const response = await fetch('https://portpoliosid.onrender.com/api/admin/sessions', {
+      const response = await fetch('https://my-portfolio-306678715125.us-central1.run.app/api/admin/sessions', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -83,7 +83,7 @@ const AdminDashboard = () => {
   const handleViewSession = async (sessionId) => {
     const token = localStorage.getItem('admin_token');
     try {
-      const response = await fetch(`https://portpoliosid.onrender.com/api/admin/session/${sessionId}`, {
+      const response = await fetch(`https://my-portfolio-306678715125.us-central1.run.app/api/admin/session/${sessionId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -101,7 +101,7 @@ const AdminDashboard = () => {
   const handleExportSession = async (sessionId) => {
     const token = localStorage.getItem('admin_token');
     try {
-      const response = await fetch(`https://portpoliosid.onrender.com/api/admin/export/${sessionId}`, {
+      const response = await fetch(`https://my-portfolio-306678715125.us-central1.run.app/api/admin/export/${sessionId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -126,7 +126,7 @@ const AdminDashboard = () => {
   const handleExportAll = async () => {
     const token = localStorage.getItem('admin_token');
     try {
-      const response = await fetch('https://portpoliosid.onrender.com/api/admin/export_all?format=csv', {
+      const response = await fetch('https://my-portfolio-306678715125.us-central1.run.app/api/admin/export_all?format=csv', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

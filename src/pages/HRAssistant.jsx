@@ -61,7 +61,7 @@ const HRAssistant = () => {
     setSuccess('');
     
     try {
-      const response = await fetch('https://portpoliosid.onrender.com/api/hr/start_session', {
+      const response = await fetch('https://my-portfolio-306678715125.us-central1.run.app/api/hr/start_session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -93,7 +93,7 @@ const HRAssistant = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://portpoliosid.onrender.com/api/hr/chat', {
+      const response = await fetch('https://my-portfolio-306678715125.us-central1.run.app/api/hr/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -121,7 +121,7 @@ const HRAssistant = () => {
   const handleEndSession = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://portpoliosid.onrender.com/api/hr/end_session', {
+      const response = await fetch('https://my-portfolio-306678715125.us-central1.run.app/api/hr/end_session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session_id: sessionId })
