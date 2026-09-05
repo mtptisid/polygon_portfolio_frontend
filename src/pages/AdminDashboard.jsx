@@ -161,6 +161,11 @@ const AdminDashboard = () => {
     }
   };
 
+  const formatSessionDate = (dateValue, formatStr) => {
+    const date = new Date(dateValue);
+    return isNaN(date.getTime()) ? 'N/A' : format(date, formatStr);
+  };
+
   // Calculate stats
   const totalSessions = sessions.length;
   const highInterestCount = sessions.filter(s => s.interest_level?.toLowerCase() === 'high').length;
@@ -550,7 +555,7 @@ const AdminDashboard = () => {
                         {session.role}
                       </td>
                       <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#9ca3af' }}>
-                        {format(new Date(session.created_at), 'MMM dd, yyyy')}
+                        {formatSessionDate(session.created_at, 'MMM dd, yyyy')}
                       </td>
                       <td style={{ padding: '1rem' }}>
                         <span style={{
@@ -698,7 +703,7 @@ const AdminDashboard = () => {
                 <div>
                   <p style={{ fontSize: '0.875rem', color: '#9ca3af', marginBottom: '0.25rem' }}>Date</p>
                   <p style={{ fontWeight: '600', color: '#ffffff' }}>
-                    {format(new Date(selectedSession.created_at), 'MMM dd, yyyy HH:mm')}
+                    {formatSessionDate(selectedSession.created_at, 'MMM dd, yyyy HH:mm')}
                   </p>
                 </div>
                 <div>
