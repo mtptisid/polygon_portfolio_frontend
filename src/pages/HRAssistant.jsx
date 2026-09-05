@@ -749,8 +749,8 @@ const HRAssistant = () => {
 
         {/* Chat Step */}
         {step === 'chat' && (
-          <div className="chat-container animate-slideUp">
-            <div className="chat-messages">
+          <div className="chat-container">
+            <div className="chat-messages animate-slideUp">
               {messages.map((msg, idx) => (
                 <div key={idx} className={`chat-message ${msg.isUser ? 'user' : 'bot'}`}>
                   <div className={`message-bubble ${msg.isUser ? 'user' : 'bot'}`}>
