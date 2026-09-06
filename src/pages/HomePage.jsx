@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { FiMessageSquare, FiSearch, FiCpu, FiPaperclip, FiArrowUpRight, FiArrowDown, FiTrash2, FiHome, FiBriefcase } from 'react-icons/fi';
 import { FaBrain, FaCode, FaUser, FaBriefcase, FaGraduationCap, FaLanguage, FaEnvelope, FaGithub, FaGlobe, FaTools, FaRobot, FaDollarSign, FaFileDownload } from 'react-icons/fa';
 import ChatContainer from './ChatContainer';
 import { formatRelative, isToday, isYesterday, startOfDay, differenceInDays, startOfMonth } from 'date-fns';
+import HomeIntro from '../components/HomeIntro';
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [showIntro, setShowIntro] = useState(true);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [selectedModel, setSelectedModel] = useState('Gemini');
@@ -1017,7 +1020,7 @@ Fluent in **7 languages**: Kannada, English, Hindi, Telugu, Tamil, Marathi, Mala
                   animation: `fadeInScale 0.5s ease-in-out ${(32 + 15) * 0.05}s forwards`,
                   opacity: 0, display: 'inline-block'
                 }}>{' — '}</span>
-                {'Crafting solutions with AI, data, and code'.split('').map((char, index) => (
+                {'Crafting solutions with AI, data and code'.split('').map((char, index) => (
                   <span key={index} style={{
                     animation: `fadeInScale 0.5s ease-in-out ${(32 + 15 + 3 + index) * 0.05}s forwards`,
                     opacity: 0,
@@ -1826,7 +1829,11 @@ Fluent in **7 languages**: Kannada, English, Hindi, Telugu, Tamil, Marathi, Mala
   };
 
   return (
-    <div style={styles.container}>
+    <>
+      <AnimatePresence>
+        {showIntro && <HomeIntro onComplete={() => setShowIntro(false)} />}
+      </AnimatePresence>
+      <div style={styles.container}>
       <style>
         {`
           * {
@@ -2623,7 +2630,8 @@ Fluent in **7 languages**: Kannada, English, Hindi, Telugu, Tamil, Marathi, Mala
           💼
         </button>
       )}
-    </div>
+      </div>
+    </>
   );
 };
 
