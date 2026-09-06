@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ErrorBoundary from './ErrorBoundary';
 import ProjectsPage from './pages/ProjectsPage';
 import ProjectsViewPage from './pages/ProjectsViewPage';
@@ -25,6 +25,7 @@ root.render(
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/sendmail" element={<SendMailPage />} />
           <Route path="/hr-assistant" element={<HRAssistant />} />
+          <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="*" element={<div>Not Found</div>} /> 

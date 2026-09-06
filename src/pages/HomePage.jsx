@@ -2220,15 +2220,6 @@ Fluent in **7 languages**: Kannada, English, Hindi, Telugu, Tamil, Marathi, Mala
               <FiBriefcase size={16} />
               <span className="hide-on-mobile">Projects</span>
             </button>
-            <button
-              style={styles.navLink}
-              onClick={() => navigate('/admin/login')}
-              onMouseEnter={(e) => e.target.style.color = '#08d7fc'}
-              onMouseLeave={(e) => e.target.style.color = '#ffffff'}
-            >
-              <FiCpu size={16} />
-              <span className="hide-on-mobile">Admin</span>
-            </button>
             <a
               href="https://mtptisid.github.io"
               style={styles.navLink}
