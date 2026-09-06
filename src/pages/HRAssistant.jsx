@@ -7,10 +7,17 @@ import { useNavigate } from 'react-router-dom';
 import HRIntro from '../components/HRIntro';
 import profileImg from '../assets/siddharamayya_image.jpeg';
 
+const API_BASE = 'https://my-portfolio-306678715125.us-central1.run.app';
+const SESSION_KEY = 'hr_session_id';
+const RECRUITER_KEY = 'hr_recruiter_info';
+const CHAT_HISTORY_KEY = 'hr_chat_history';
+
 const HRAssistant = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState('intro'); // 'intro', 'form', 'chat', 'analysis'
+  const [step, setStep] = useState('intro'); // 'intro', 'checking', 'form', 'chat', 'analysis'
   const [sessionId, setSessionId] = useState(null);
+  const [recruiterInfo, setRecruiterInfo] = useState(null);
+  const [resumeStatus, setResumeStatus] = useState('none'); // 'none', 'pending', 'resumed', 'error'
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -25,7 +32,81 @@ const HRAssistant = () => {
   const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [sendError, setSendError] = useState('');
+  const [failedMessage, setFailedMessage] = useState('');
   const chatEndRef = useRef(null);
+
+  const clearSession = () => {
+    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(RECRUITER_KEY);
+    localStorage.removeItem(CHAT_HISTORY_KEY);
+    setSessionId(null);
+    setMessages([]);
+    setRecruiterInfo(null);
+  };
+
+  const attemptResume = async (id) => {
+    setResumeStatus('pending');
+    try {
+      const response = await fetch(`${API_BASE}/api/hr/session/${id}/resume`);
+
+      if (response.status === 404) {
+        clearSession();
+        setResumeStatus('none');
+        return;
+      }
+      if (!response.ok) throw new Error('Failed to resume session');
+
+      const data = await response.json();
+      setSessionId(data.session_id);
+      if (data.recruiter_info) {
+        setRecruiterInfo(data.recruiter_info);
+        setFormData((prev) => ({ ...prev, ...data.recruiter_info }));
+        localStorage.setItem(RECRUITER_KEY, JSON.stringify(data.recruiter_info));
+      }
+      const restored = (data.chat_history || []).map((m) => ({
+        content: m.content,
+        isUser: m.role === 'user' || m.role === 'recruiter',
+      }));
+      setMessages(restored);
+      localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(restored));
+      setResumeStatus('resumed');
+    } catch (err) {
+      console.error('Error resuming session:', err);
+      setResumeStatus('error');
+    }
+  };
+
+  // On mount: optimistically load any cached session/messages, then verify with the backend
+  useEffect(() => {
+    const storedSessionId = localStorage.getItem(SESSION_KEY);
+    if (!storedSessionId) return;
+
+    const cachedInfo = localStorage.getItem(RECRUITER_KEY);
+    const cachedHistory = localStorage.getItem(CHAT_HISTORY_KEY);
+    if (cachedInfo) {
+      try { setRecruiterInfo(JSON.parse(cachedInfo)); } catch { /* ignore malformed cache */ }
+    }
+    if (cachedHistory) {
+      try { setMessages(JSON.parse(cachedHistory)); } catch { /* ignore malformed cache */ }
+    }
+    setSessionId(storedSessionId);
+    attemptResume(storedSessionId);
+  }, []);
+
+  // Once the intro finishes, land on chat/form depending on whether resume already resolved
+  const handleIntroComplete = () => {
+    if (resumeStatus === 'resumed') setStep('chat');
+    else if (resumeStatus === 'pending' || resumeStatus === 'error') setStep('checking');
+    else setStep('form');
+  };
+
+  // While waiting on a pending/errored resume check, move forward automatically once resolved
+  useEffect(() => {
+    if (step !== 'checking') return;
+    if (resumeStatus === 'resumed') setStep('chat');
+    else if (resumeStatus === 'none') setStep('form');
+  }, [resumeStatus, step]);
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -34,6 +115,12 @@ const HRAssistant = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Persist chat history locally so transient failures don't lose the conversation
+  useEffect(() => {
+    if (!sessionId || messages.length === 0) return;
+    localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(messages));
+  }, [messages, sessionId]);
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -63,7 +150,7 @@ const HRAssistant = () => {
     setSuccess('');
     
     try {
-      const response = await fetch('https://my-portfolio-306678715125.us-central1.run.app/api/hr/start_session', {
+      const response = await fetch(`${API_BASE}/api/hr/start_session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -73,7 +160,12 @@ const HRAssistant = () => {
 
       const data = await response.json();
       setSessionId(data.session_id);
-      setMessages([{ content: data.welcome_message, isUser: false }]);
+      const welcome = [{ content: data.welcome_message, isUser: false }];
+      setMessages(welcome);
+      setRecruiterInfo(formData);
+      localStorage.setItem(SESSION_KEY, data.session_id);
+      localStorage.setItem(RECRUITER_KEY, JSON.stringify(formData));
+      localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(welcome));
       setSuccess('Session started successfully!');
       setTimeout(() => {
         setStep('chat');
@@ -86,44 +178,56 @@ const HRAssistant = () => {
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim() || isLoading) return;
+  const handleSendMessage = async (retryContent) => {
+    const content = retryContent ?? inputMessage;
+    if (!content.trim() || isLoading) return;
 
-    const userMessage = { content: inputMessage, isUser: true };
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
+    if (!retryContent) {
+      setMessages(prev => [...prev, { content, isUser: true }]);
+      setInputMessage('');
+    }
     setIsLoading(true);
+    setSendError('');
 
     try {
-      const response = await fetch('https://my-portfolio-306678715125.us-central1.run.app/api/hr/chat', {
+      const response = await fetch(`${API_BASE}/api/hr/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           session_id: sessionId,
-          content: inputMessage,
+          content,
           model: 'gemini'
         })
       });
 
+      if (response.status === 404) {
+        clearSession();
+        setError('Your session has expired. Please start a new conversation.');
+        setStep('form');
+        return;
+      }
       if (!response.ok) throw new Error('Failed to send message');
 
       const data = await response.json();
       setMessages(prev => [...prev, { content: data.content, isUser: false }]);
+      setFailedMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
-      setMessages(prev => [...prev, { 
-        content: 'Sorry, there was an error. Please try again.', 
-        isUser: false 
-      }]);
+      setSendError('Message failed to send.');
+      setFailedMessage(content);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleRetrySend = () => {
+    if (failedMessage) handleSendMessage(failedMessage);
+  };
+
   const handleEndSession = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://my-portfolio-306678715125.us-central1.run.app/api/hr/end_session', {
+      const response = await fetch(`${API_BASE}/api/hr/end_session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session_id: sessionId })
@@ -138,8 +242,17 @@ const HRAssistant = () => {
       console.error('Error ending session:', error);
       setError('Failed to end session. Please try again.');
     } finally {
+      clearSession();
       setIsLoading(false);
     }
+  };
+
+  const handleNewSession = () => {
+    clearSession();
+    setFormData({ name: '', email: '', company: '', role: '', additional_notes: '' });
+    setError('');
+    setSuccess('');
+    setStep('form');
   };
 
   const getInterestBadgeColor = (level) => {
@@ -158,18 +271,18 @@ const HRAssistant = () => {
   return (
     <div style={{
       minHeight: '100vh',
-      background: step === 'form'
-        ? 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)'
-        : '#f8fafc',
+      background: step === 'intro'
+        ? 'transparent'
+        : 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)',
       fontFamily: '"Poppins", sans-serif',
-      color: step === 'form' ? '#e2e8f0' : '#1e293b',
+      color: '#e2e8f0',
       display: 'flex',
       flexDirection: 'column',
       width: '100vw',
       overflowX: 'hidden'
     }}>
       <AnimatePresence>
-        {step === 'intro' && <HRIntro onComplete={() => setStep('form')} />}
+        {step === 'intro' && <HRIntro onComplete={handleIntroComplete} />}
       </AnimatePresence>
       <style>
         {`
@@ -181,7 +294,7 @@ const HRAssistant = () => {
           body, html, #root {
             width: 100vw;
             min-height: 100vh;
-            background: #f8fafc;
+            background: #0f172a;
           }
           @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
@@ -190,6 +303,17 @@ const HRAssistant = () => {
           @keyframes dotBounce {
             0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
             40% { transform: translateY(-8px); opacity: 1; }
+          }
+          @keyframes hrSpin {
+            to { transform: rotate(360deg); }
+          }
+          .hr-checking-spinner {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.15);
+            border-top-color: #818cf8;
+            animation: hrSpin 0.8s linear infinite;
           }
           .animate-slideUp {
             animation: slideUp 0.5s ease-out forwards;
@@ -477,12 +601,27 @@ const HRAssistant = () => {
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #f8fafc;
+            background-color: transparent;
             max-width: 100%;
             width: 100%;
             height: calc(100vh - 140px);
             box-sizing: border-box;
             position: relative;
+          }
+          .chat-recruiter-banner {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 1.25rem;
+            padding: 0.65rem 1.1rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: #cbd5e1;
+            font-size: 0.85rem;
+            text-align: center;
+          }
+          .chat-recruiter-banner strong {
+            color: #ffffff;
           }
           .chat-messages {
             width: 100%;
@@ -516,15 +655,16 @@ const HRAssistant = () => {
             line-height: 1.6;
           }
           .message-bubble.user {
-            background: #e9e9e980;
-            color: #1e293b;
-            border: 2px solid #e9e9e980;
+            background: linear-gradient(135deg, rgba(102,126,234,0.28), rgba(118,75,162,0.28));
+            color: #ffffff;
+            border: 1px solid rgba(255,255,255,0.18);
             align-self: flex-end;
           }
           .message-bubble.bot {
-            background: #ffffff;
-            color: #1e293b;
-            border: 1px solid #e2e8f0;
+            background: rgba(255,255,255,0.06);
+            color: #e2e8f0;
+            border: 1px solid rgba(255,255,255,0.12);
+            backdrop-filter: blur(8px);
             align-self: flex-start;
           }
           .chat-input-container {
@@ -535,23 +675,43 @@ const HRAssistant = () => {
             z-index: 1000;
             display: flex;
             justify-content: center;
-            background-color: #f8fafc;
+            background: linear-gradient(to top, #0f172a 55%, transparent);
             padding: 1rem;
             box-sizing: border-box;
           }
           .chat-input-wrapper {
             display: flex;
             flex-direction: column;
-            background-color: #ffffff;
+            background-color: rgba(255,255,255,0.07);
             border-radius: 24px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.16);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
             padding: 0.65rem;
             width: 100%;
             max-width: 900px;
             min-height: 80px;
             gap: 0.4rem;
             box-sizing: border-box;
+          }
+          .chat-send-error {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: 12px;
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.35);
+            color: #fca5a5;
+            font-size: 0.8rem;
+          }
+          .chat-send-error button {
+            width: auto;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
+            background: rgba(239,68,68,0.25);
+            border-radius: 999px;
           }
           .chat-input-row {
             display: flex;
@@ -565,7 +725,7 @@ const HRAssistant = () => {
             border: none;
             font-size: 1rem;
             background: transparent;
-            color: #1e293b;
+            color: #ffffff;
             font-family: "Poppins", sans-serif;
             outline: none;
             resize: none;
@@ -574,7 +734,7 @@ const HRAssistant = () => {
             box-sizing: border-box;
           }
           .chat-input-wrapper input::placeholder {
-            color: #9ca3af;
+            color: #94a3b8;
           }
           .send-button {
             display: flex;
@@ -583,40 +743,56 @@ const HRAssistant = () => {
             padding: 0.5rem;
             border-radius: 20px;
             border: none;
-            background-color: #404347;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             cursor: pointer;
-            transition: background-color 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
             width: 40px;
             height: 40px;
             box-sizing: border-box;
           }
-          .send-button:hover {
-            background-color: #2d3035;
+          .send-button:hover:not(:disabled) {
+            transform: scale(1.06);
+            box-shadow: 0 6px 16px rgba(102,126,234,0.4);
           }
           .send-button:disabled {
-            background-color: #9ca3af;
+            background: #4b5563;
             cursor: not-allowed;
           }
           .end-session-btn {
-            background: #ef4444;
-            color: #ffffff;
+            background: rgba(239,68,68,0.12);
+            color: #fca5a5;
             padding: 0.5rem 1rem;
             font-size: 0.875rem;
             border-radius: 20px;
-            border: none;
+            border: 1px solid rgba(239,68,68,0.35);
             cursor: pointer;
             transition: background-color 0.2s ease;
             font-weight: 500;
           }
           .end-session-btn:hover {
-            background: #dc2626;
+            background: rgba(239,68,68,0.22);
+          }
+          .new-session-btn {
+            background: rgba(255,255,255,0.06);
+            color: #cbd5e1;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.18);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-weight: 500;
+          }
+          .new-session-btn:hover {
+            background: rgba(255,255,255,0.12);
           }
           .analysis-container {
-            background: #ffffff;
+            background: rgba(255,255,255,0.05);
             padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
             width: 100%;
             max-width: 900px;
             margin: 2rem auto;
@@ -625,17 +801,17 @@ const HRAssistant = () => {
             margin-bottom: 2rem;
           }
           .analysis-section h3 {
-            color: #1e293b;
+            color: #ffffff;
             font-size: 1.2rem;
             margin-bottom: 0.75rem;
           }
           .analysis-section p {
-            color: #4b5563;
+            color: #cbd5e1;
             line-height: 1.6;
-            background: #f9fafb;
+            background: rgba(255,255,255,0.04);
             padding: 1rem;
             border-radius: 8px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid rgba(255,255,255,0.1);
           }
           .topic-tags {
             display: flex;
@@ -643,12 +819,12 @@ const HRAssistant = () => {
             gap: 0.5rem;
           }
           .topic-tag {
-            background: #e0f2fe;
-            color: #0369a1;
+            background: rgba(102,126,234,0.15);
+            color: #a5b4fc;
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.9rem;
-            border: 1px solid #bae6fd;
+            border: 1px solid rgba(102,126,234,0.3);
           }
           .interest-badge {
             display: inline-block;
@@ -662,20 +838,20 @@ const HRAssistant = () => {
             padding: 0;
           }
           .next-steps-list li {
-            background: #f9fafb;
+            background: rgba(255,255,255,0.04);
             padding: 0.75rem 1rem;
             margin-bottom: 0.5rem;
             border-radius: 8px;
-            color: #4b5563;
+            color: #cbd5e1;
             padding-left: 2rem;
             position: relative;
-            border: 1px solid #e5e7eb;
+            border: 1px solid rgba(255,255,255,0.1);
           }
           .next-steps-list li:before {
             content: "→";
             position: absolute;
             left: 0.75rem;
-            color: #3b82f6;
+            color: #818cf8;
           }
           @media (max-width: 768px) {
             .chat-container,
@@ -823,19 +999,58 @@ const HRAssistant = () => {
         boxSizing: 'border-box',
       }}>
         {/* Header (chat/analysis steps only — form step has its own hero) */}
-        {step !== 'form' && (
+        {(step === 'chat' || step === 'analysis') && (
           <div className="animate-slideUp" style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h1 style={{
-              color: '#1e293b',
+              color: '#ffffff',
               fontSize: '2.5rem',
               fontWeight: 700,
               marginBottom: '0.5rem',
             }}>
               HR Assistant 💼
             </h1>
-            <p style={{ color: '#6b7280', fontSize: '1.1rem' }}>
+            <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>
               Let's discuss how Siddharamayya can contribute to your team
             </p>
+          </div>
+        )}
+
+        {/* Checking Step: verifying a resumed session */}
+        {step === 'checking' && (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '1.25rem',
+            minHeight: '60vh',
+            textAlign: 'center',
+          }}>
+            {resumeStatus === 'error' ? (
+              <>
+                <p style={{ color: '#ffffff', fontSize: '1.2rem', fontWeight: 600, margin: 0 }}>
+                  We couldn't reconnect to your previous session
+                </p>
+                <p style={{ color: '#94a3b8', fontSize: '0.95rem', maxWidth: '360px', margin: 0 }}>
+                  This can happen due to a network issue. You can try again or start a new conversation.
+                </p>
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                  <button className="submit-btn" style={{ width: 'auto', padding: '0.75rem 1.5rem' }} onClick={() => attemptResume(sessionId)}>
+                    Retry
+                  </button>
+                  <button style={{ width: 'auto', padding: '0.75rem 1.5rem', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)' }} onClick={handleNewSession}>
+                    Start New
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="hr-checking-spinner" />
+                <p style={{ color: '#94a3b8', fontSize: '0.95rem', margin: 0 }}>
+                  Reconnecting to your previous session...
+                </p>
+              </>
+            )}
           </div>
         )}
 
@@ -1054,6 +1269,13 @@ const HRAssistant = () => {
         {/* Chat Step */}
         {step === 'chat' && (
           <div className="chat-container">
+            {recruiterInfo && (
+              <div className="chat-recruiter-banner animate-slideUp">
+                Chatting as <strong>{recruiterInfo.name}</strong>
+                {recruiterInfo.company ? <> · {recruiterInfo.company}</> : null}
+                {recruiterInfo.role ? <> · {recruiterInfo.role}</> : null}
+              </div>
+            )}
             <div className="chat-messages animate-slideUp">
               {messages.map((msg, idx) => (
                 <div key={idx} className={`chat-message ${msg.isUser ? 'user' : 'bot'}`}>
@@ -1110,6 +1332,12 @@ const HRAssistant = () => {
 
             <div className="chat-input-container">
               <div className="chat-input-wrapper">
+                {sendError && (
+                  <div className="chat-send-error">
+                    <span>{sendError}</span>
+                    <button type="button" onClick={handleRetrySend}>Retry</button>
+                  </div>
+                )}
                 <div className="chat-input-row">
                   <input
                     type="text"
@@ -1121,14 +1349,21 @@ const HRAssistant = () => {
                   />
                   <button
                     className="send-button"
-                    onClick={handleSendMessage}
+                    onClick={() => handleSendMessage()}
                     disabled={isLoading || !inputMessage.trim()}
                     aria-label="Send message"
                   >
                     <FiSend size={20} color="white" />
                   </button>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '0.25rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', paddingTop: '0.25rem' }}>
+                  <button
+                    onClick={handleNewSession}
+                    disabled={isLoading}
+                    className="new-session-btn"
+                  >
+                    New Session
+                  </button>
                   <button
                     onClick={handleEndSession}
                     disabled={isLoading}
@@ -1147,14 +1382,14 @@ const HRAssistant = () => {
           <div className="analysis-container animate-slideUp">
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
               <h2 style={{
-                color: '#1e293b',
+                color: '#ffffff',
                 fontSize: '2rem',
                 fontWeight: 700,
                 marginBottom: '0.5rem',
               }}>
                 Session Analysis
               </h2>
-              <p style={{ color: '#6b7280' }}>
+              <p style={{ color: '#94a3b8' }}>
                 Here's what we discussed
               </p>
             </div>
@@ -1204,7 +1439,7 @@ const HRAssistant = () => {
               </ul>
             </div>
 
-            <button onClick={() => navigate('/')}>
+            <button onClick={() => navigate('/')} className="submit-btn">
               Back to Home
             </button>
           </div>
@@ -1213,8 +1448,9 @@ const HRAssistant = () => {
 
       {/* Footer */}
       <footer style={{
-        backgroundColor: '#daebdd',
-        color: '#000000',
+        backgroundColor: '#0f172a',
+        color: '#94a3b8',
+        borderTop: '1px solid rgba(255,255,255,0.08)',
         padding: '1.5rem',
         textAlign: 'center',
         width: '100vw',
